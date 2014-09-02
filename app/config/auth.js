@@ -1,20 +1,20 @@
 module.exports = {
 
 	'facebookAuth' : {
-		'clientID' 		: '', 
-		'clientSecret' 	: '', 
+		'clientID' 		: 'X', 
+		'clientSecret' 	: 'X', 
 		'callbackURL' 	: 'http://localhost:3000/auth/facebook/callback'
 	},
 
 	'twitterAuth' : {
-		'consumerKey' 		: '',
-		'consumerSecret' 	: '',
+		'consumerKey' 		: 'X',
+		'consumerSecret' 	: 'X',
 		'callbackURL' 		: 'http://localhost:3000/auth/twitter/callback'
 	},
 
 	'googleAuth' : {
-		'clientID' 		: '',
-		'clientSecret' 	: '',
+		'clientID' 		: 'X',
+		'clientSecret' 	: 'X',
 		'callbackURL' 	: 'http://localhost:3000/auth/google/callback'
 	}
 

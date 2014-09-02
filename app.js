@@ -18,10 +18,18 @@ var apiRoutes       = require('./app/routes/api');
 
 var mongoose        = require('mongoose');
 var User            = require('./app/models/user');
+var seeder 			= require('./app/config/seeder');
 var mongoUri        = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/bilancio';
 
-mongoose.connect(mongoUri); 
-console.log('Connected to MongoDB at: ' + mongoUri);
+mongoose.connect(mongoUri, function(err) {
+	if (err) throw err;	
+	console.log('Connected to MongoDB at: ' + mongoUri);
+	seeder.seed(function(initialized) {
+		if (initialized) {
+			console.log('DB initialized.');
+		}
+	});
+}); 
 
 passportConfig(passport,User);
 

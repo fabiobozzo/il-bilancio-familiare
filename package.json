@@ -26,6 +26,7 @@
     "jade": "^1.5.0",
     "jquery": "^2.1.1",
     "method-override": "*",
+    "moment": "^2.8.2",
     "mongoose": "^3.8.14",
     "morgan": "*",
     "node-underscorify": "0.0.12",
@@ -33,7 +34,8 @@
     "passport-facebook": "*",
     "passport-google-oauth": "*",
     "passport-local": "*",
-    "passport-twitter": "*"
+    "passport-twitter": "*",
+    "underscore": "^1.7.0"
   },
   "engines": {
     "node": "0.10.x"

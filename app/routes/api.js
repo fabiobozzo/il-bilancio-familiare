@@ -7,16 +7,24 @@ module.exports = function(app) {
 
 	router.route('/transactions')
 		.get(function(req, res) {
-			Transaction.find( function(err, transactions) {
+			Transaction.find( {user:req.user._id}, function(err, transactions) {
 				if (err) {
-					return res.json({error:err});
+					return res.json({error:err.message});
 				}
 				res.json(transactions);
 			});
 		})
 		.post(function(req,res) {
-			console.log(req.body);
-			res.send('ok');
+			var t = new Transaction( req.body );
+			t.dateAdded = new Date();
+			t.user = req.user._id;
+			t.save(function(err) {
+				if (err) {
+					console.error("Error saving transaction:: ",err);
+					return res.json({error:err.message});
+				}
+				res.json(t);
+			});
 		});
 
 	app.use('/api',router);

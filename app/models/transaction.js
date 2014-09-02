@@ -5,7 +5,8 @@ var transactionSchema = mongoose.Schema({
 
 	description     : String,
 	amount          : { type:Number, min:0.01, required:true }, 
-	date            : { type:Date, default:Date.now }, 
+	dateEntry       : { type:Date, default:Date.now }, 
+	dateAdded       : { type:Date, default:Date.now }, 
 	positive		: { type:Boolean, default:false }, 
 
 	category        : { type: ObjectId, ref: 'Category' },

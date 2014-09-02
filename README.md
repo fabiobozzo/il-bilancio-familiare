@@ -1,5 +1,4 @@
 # Il bilancio familiare
-=====================
 
 This project is a simple expense tracking software. 
 I developed it for learning purposes, but actually it is fully functional and ready to use.
