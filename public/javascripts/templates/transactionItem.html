@@ -1,4 +1,13 @@
-- <%= moment(dateEntry).format('DD/MM/YYYY') %><br />
-- <%= amount %><br />
-- <%= description %><br />
-<hr />
+<div class="col-sm-3 amount <%= positive ? 'positive' : 'negative' %> ">
+	<%= positive ? '+' : '-' %>
+	<%= amount %> €
+</div>
+<div class="col-sm-3 description">
+	<%= description %>
+</div>
+<div class="col-sm-3 category">
+	category
+</div>
+<div class="col-sm-3 entryDate">
+	<%= moment(dateEntry).format('DD/MM/YYYY') %>		
+</div>

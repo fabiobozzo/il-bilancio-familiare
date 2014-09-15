@@ -1,43 +1,46 @@
-<div class="row">
-	<div class="col-sm-6 col-sm-push-6 new-transaction">
-		<span class="add-entry-label hidden-xs">Inserimento </span>
-		<button type="button" class="btn btn-success add-positive-entry">
+<div class="controls-container">
+
+	<div class="new-transaction">
+		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->
+		<button type="button" class="btn btn-lg btn-success add-positive-entry">
 			<span class="visible-sm-* hidden-xs">Entrata</span>
 			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">+</span>
 		</button> 
-		<button type="button" class="btn btn-danger add-negative-entry">
+		<button type="button" class="btn btn-lg btn-danger add-negative-entry">
 			<span class="visible-sm-* hidden-xs">Uscita</span>
 			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">-</span>
 		</button>
 		<div class="clearfix"></div>
 	</div>
-	<div class="col-sm-3 col-sm-pull-6">saldo</div>
-	<div class="col-sm-3 col-sm-pull-6">filtro movimenti</div>
-</div>
 
-<div class="add-entry-form jumbotron">
-	<form role="form">
-		<div class="row">
-			<div class="col-md-2 form-group">
-				<label for="entryDate">Data</label>
-    			<input type="date" name="dateEntry" class="form-control" id="entryDate" placeholder="01/01/2014" />
+	<div class="balance">
+		<div class="panel panel-info">
+			<!-- <div class="panel-heading">
+				<h3 class="panel-title">Saldo</h3>
+			</div> -->
+			<div class="panel-body">
+				SALDO: € 0.00
 			</div>
-			<div class="col-md-2 form-group">
-				<label for="entryAmount">Importo (€)</label>
-    			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />
-			</div>
-			<div class="col-md-3 form-group">
-				<label for="entryDescription">Note</label>
-				<textarea name="description" class="form-control" rows="2" id="entryDescription" placeholder="Descrizione opzionale"></textarea>
-			</div>
-			<div class="col-md-5 form-group">
-				<label>Categoria</label>
-			</div>
-		</div>
-		<div class="text-right">
-			<button type="button" class="btn btn-primary add-entry">Conferma</button>
 		</div>
 	</div>
+
+	<div class="filters">
+		<div class="btn-group btn-group-lg">
+			<button type="button" class="btn btn-primary">
+				<span class="glyphicon glyphicon-list-alt"></span>
+				Tutti
+			</button>
+			<button type="button" class="btn btn-default">
+				<span class="glyphicon glyphicon-thumbs-up"></span>
+				Entrate
+			</button>
+			<button type="button" class="btn btn-default">
+				<span class="glyphicon glyphicon-thumbs-down"></span>
+				Uscite
+			</button>
+		</div>
+	</div>
+
 </div>
 
-<ul class="entry-list"></ul>
+<div class="entry-list"></div>

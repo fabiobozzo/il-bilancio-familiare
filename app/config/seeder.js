@@ -31,7 +31,6 @@ var categories = [
 ];
 
 exports.seed = function(callback) {
-	var initialized = false;
 	Category.find(function(err,results) {
 		if (err) {
 			console.log(err);

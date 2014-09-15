@@ -15314,27 +15314,52 @@ ApplicationState.fetch();
 new MenuView();
 new ContainerView();
 
-},{"../bower_components/bootstrap/dist/js/bootstrap.min.js":6,"./models/ApplicationState":9,"./views/ContainerView":13,"./views/MenuView":14,"backbone":2,"backbone.localstorage":1,"jquery":3}],8:[function(require,module,exports){
+},{"../bower_components/bootstrap/dist/js/bootstrap.min.js":6,"./models/ApplicationState":10,"./views/ContainerView":18,"./views/MenuView":19,"backbone":2,"backbone.localstorage":1,"jquery":3}],8:[function(require,module,exports){
+var Backbone 	= require('backbone');
+var Category = require('../models/Category')
+ 
+module.exports = Backbone.Collection.extend({
+	model: Category,
+	url: '/api/categories'
+});
+},{"../models/Category":11,"backbone":2}],9:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction')
  
-module.exports = Backbone.Collection.extend({
+var TransactionCollection = Backbone.Collection.extend({
 	model: Transaction,
 	url: '/api/transactions'
 });
-},{"../models/Transaction":10,"backbone":2}],9:[function(require,module,exports){
+
+console.log("Creating TransactionCollection");
+module.exports = new TransactionCollection();
+},{"../models/Transaction":12,"backbone":2}],10:[function(require,module,exports){
 var Backbone = require('backbone');
- 
+var moment = require('moment');
+
 var ApplicationState = Backbone.Model.extend({
 	defaults: {
 		id: 1,
-		currentView: 'transazioni'
+		currentView: 'transazioni', 
+		currentPeriod: moment().toDate(), 
+		positiveEntry: false
 	},
 	localStorage: new Backbone.LocalStorage('application-state'),
 });
 
+console.log("Creating ApplicationState");
 module.exports = new ApplicationState();
-},{"backbone":2}],10:[function(require,module,exports){
+},{"backbone":2,"moment":4}],11:[function(require,module,exports){
+var Backbone = require('backbone');
+ 
+module.exports = Backbone.Model.extend({
+	defaults: {
+		code: '',	
+		title: '',
+		positive: false
+	}
+});
+},{"backbone":2}],12:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -15345,31 +15370,83 @@ module.exports = Backbone.Model.extend({
 		positive: false
 	}
 });
-},{"backbone":2}],11:[function(require,module,exports){
+},{"backbone":2}],13:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='- '+
-((__t=( moment(dateEntry).format('DD/MM/YYYY') ))==null?'':__t)+
-'<br />\n- '+
+__p+='<a href="#" class="category-link">\n	<img src="/images/categories/'+
+((__t=( code ))==null?'':__t)+
+'.png" class="category-img" width="32" height="32" />\n	<div class="category-label">'+
+((__t=( title ))==null?'':__t)+
+'</div>\n</a>';
+}
+return __p;
+};
+
+},{}],14:[function(require,module,exports){
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group">\n			<label>Categoria</label>\n			<ul class="category-items"></ul>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-2 form-group">\n			<label for="entryDate">Data</label>\n			<input type="date" name="dateEntry" class="form-control" id="entryDate" placeholder="01/01/2014" />\n		</div>\n		<div class="col-md-2 form-group">\n			<label for="entryAmount">Importo (€)</label>\n			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />\n		</div>\n		<div class="col-md-6 form-group">\n			<label for="entryDescription">Note</label>\n			<textarea name="description" class="form-control" rows="2" id="entryDescription" placeholder="Descrizione opzionale"></textarea>\n		</div>\n		<div class="col-md-2 text-right">\n			<a href="#" class="hide-add-entry">Annulla</a> \n			<button type="button" class="btn btn-primary add-entry">Conferma</button>\n		</div>\n	</div>\n</form>';
+}
+return __p;
+};
+
+},{}],15:[function(require,module,exports){
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div class="col-sm-3 amount '+
+((__t=( positive ? 'positive' : 'negative' ))==null?'':__t)+
+' ">\n	'+
+((__t=( positive ? '+' : '-' ))==null?'':__t)+
+'\n	'+
 ((__t=( amount ))==null?'':__t)+
-'<br />\n- '+
+' €\n</div>\n<div class="col-sm-3 description">\n	'+
 ((__t=( description ))==null?'':__t)+
-'<br />\n<hr />\n';
+'\n</div>\n<div class="col-sm-3 category">\n	category\n</div>\n<div class="col-sm-3 entryDate">\n	'+
+((__t=( moment(dateEntry).format('DD/MM/YYYY') ))==null?'':__t)+
+'		\n</div>\n';
 }
 return __p;
 };
 
-},{}],12:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="row">\n	<div class="col-sm-6 col-sm-push-6 new-transaction">\n		<span class="add-entry-label hidden-xs">Inserimento </span>\n		<button type="button" class="btn btn-success add-positive-entry">\n			<span class="visible-sm-* hidden-xs">Entrata</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-danger add-negative-entry">\n			<span class="visible-sm-* hidden-xs">Uscita</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n	<div class="col-sm-3 col-sm-pull-6">saldo</div>\n	<div class="col-sm-3 col-sm-pull-6">filtro movimenti</div>\n</div>\n\n<div class="add-entry-form jumbotron">\n	<form role="form">\n		<div class="row">\n			<div class="col-md-2 form-group">\n				<label for="entryDate">Data</label>\n    			<input type="date" name="dateEntry" class="form-control" id="entryDate" placeholder="01/01/2014" />\n			</div>\n			<div class="col-md-2 form-group">\n				<label for="entryAmount">Importo (€)</label>\n    			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />\n			</div>\n			<div class="col-md-3 form-group">\n				<label for="entryDescription">Note</label>\n				<textarea name="description" class="form-control" rows="2" id="entryDescription" placeholder="Descrizione opzionale"></textarea>\n			</div>\n			<div class="col-md-5 form-group">\n				<label>Categoria</label>\n			</div>\n		</div>\n		<div class="text-right">\n			<button type="button" class="btn btn-primary add-entry">Conferma</button>\n		</div>\n	</div>\n</div>\n\n<ul class="entry-list"></ul>';
+__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="visible-sm-* hidden-xs">Entrata</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="visible-sm-* hidden-xs">Uscita</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance">\n		<div class="panel panel-info">\n			<!-- <div class="panel-heading">\n				<h3 class="panel-title">Saldo</h3>\n			</div> -->\n			<div class="panel-body">\n				SALDO: € 0.00\n			</div>\n		</div>\n	</div>\n\n	<div class="filters">\n		<div class="btn-group btn-group-lg">\n			<button type="button" class="btn btn-primary">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutti\n			</button>\n			<button type="button" class="btn btn-default">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				Entrate\n			</button>\n			<button type="button" class="btn btn-default">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				Uscite\n			</button>\n		</div>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>';
 }
 return __p;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
+var Backbone = require('backbone');
+var template = require('../templates/categoryItem.html');
+
+module.exports = Backbone.View.extend({
+
+	tagName: 'li',
+	className: 'category-item',
+	template: template, 
+
+	initialize: function(model) {
+		this.model = model;
+	},
+
+	render: function() {
+		this.$el.html( this.template(this.model.toJSON()) );
+		return this;
+	},
+
+	close: function() {
+		this.remove();
+		this.unbind();
+		this.stopListening();
+	}
+
+});
+},{"../templates/categoryItem.html":13,"backbone":2}],18:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
@@ -15411,7 +15488,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":9,"./TransactionView":16,"backbone":2}],14:[function(require,module,exports){
+},{"../models/ApplicationState":10,"./TransactionView":22,"backbone":2}],19:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
  
@@ -15447,7 +15524,87 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":9,"backbone":2}],15:[function(require,module,exports){
+},{"../models/ApplicationState":10,"backbone":2}],20:[function(require,module,exports){
+var moment = require('moment');
+var Backbone = require('backbone');
+var template = require('../templates/transactionEditor.html');
+var CategoryCollection = require('../collections/Categories');
+var CategoryItemView = require('../views/CategoryItemView');
+
+module.exports = Backbone.View.extend({
+
+	className: 'add-entry-form', 
+	template: template, 
+
+	initialize: function(options) {
+
+		this.collection = options.collection;
+		this.parent = options.parent;
+
+		this.categorySubviews = [];
+		this.categories = new CategoryCollection();
+		this.listenTo( this.categories, 'reset', this.renderCategories );
+		this.categories.fetch({reset:true});
+	},
+
+	render: function() {
+		this.$el.html( this.template() );
+		return this;
+	},
+
+	events: {
+		'click .add-entry' : 'addEntry',
+		'click .hide-add-entry' : 'hide'
+	},
+
+	hide: function(event) {
+		event.preventDefault();
+		this.$el.slideUp();
+		this.parent.$el.find('.new-transaction button').removeClass('selected');
+	},
+
+	show: function() {
+		this.$el.slideDown();
+	},
+
+	addEntry: function() {
+		
+		var entryData = {};
+
+		entryData.positive = this.parent.$el.find('.new-transaction button.selected').hasClass('add-positive-entry');
+		entryData.amount = this.$el.find('input[name=amount]').val();
+		entryData.dateEntry = moment( this.$el.find('input[name=dateEntry]').val(), 'DD-MM-YYYY' ).toDate();
+		entryData.description = this.$el.find('textarea[name=description]').val();
+
+		this.collection.create( entryData, {wait:true} );
+		this.hide();
+	},
+
+	renderCategories: function() {
+		this.clearCategorySubviews();
+		this.categories.each(function(item) {
+			var c = new CategoryItemView( item );
+			this.categorySubviews.push( c );
+			this.$el.find('.category-items').append( c.render().el );
+		}, this);
+	},
+
+	clearCategorySubviews: function() {
+		this.categorySubviews.forEach(function(v) {
+			if (v.close) v.close();
+		});
+		this.categorySubviews = [];
+	},
+
+	close: function() {
+		this.clearCategorySubviews();
+		this.remove();
+		this.unbind();
+		this.stopListening();
+	}
+
+});
+},{"../collections/Categories":8,"../templates/transactionEditor.html":14,"../views/CategoryItemView":17,"backbone":2,"moment":4}],21:[function(require,module,exports){
 var moment = require('moment');
 var _ = require('underscore');
 var Backbone = require('backbone');
@@ -15455,7 +15612,8 @@ var template = require('../templates/transactionItem.html');
 
 module.exports = Backbone.View.extend({
 
-	tagName: 'li',
+	tagName: 'div',
+	className: 'row entryRow',
 	template: template, 
 
 	initialize: function(model) {
@@ -15475,12 +15633,12 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/transactionItem.html":11,"backbone":2,"moment":4,"underscore":5}],16:[function(require,module,exports){
-var moment = require('moment');
+},{"../templates/transactionItem.html":15,"backbone":2,"moment":4,"underscore":5}],22:[function(require,module,exports){
 var Backbone = require('backbone');
 var template = require('../templates/transactions.html');
 var TransactionCollection = require('../collections/Transactions');
-var TransactionRowView = require('./TransactionRowView');
+var TransactionItemView = require('./TransactionItem');
+var TransactionEditorView = require('./TransactionEditor');
 
 module.exports = Backbone.View.extend({
 
@@ -15488,63 +15646,68 @@ module.exports = Backbone.View.extend({
 
 	initialize: function() {
 		
-		this.collection = new TransactionCollection();
-		this.collection.fetch({ reset:true });
-		this.listenTo( this.collection, 'reset', this.render );
-		this.listenTo( this.collection, 'add', this.render );
+		this.collection = TransactionCollection;
+		this.fetch();
+		
+		this.listenTo( this.collection, 'reset', this.renderEntries );
+		this.listenTo( this.collection, 'add', this.fetch );
 		
 		this.rowViews = [];
 		this.render();
 	},
 
+	fetch: function() { 
+		this.collection.fetch({ reset:true });
+	},
 
 	render: function() {
-		this.rowViews = [];
+		
 		this.$el.html( template() );
-		this.collection.each(function(item) {
-			this.renderEntry(item);
-		}, this);
+
+		this.editorView = new TransactionEditorView({
+			collection: this.collection, 
+			parent: this
+		});
+		this.$el.find('.new-transaction').after( this.editorView.render().el );
+
+		this.renderEntries();
+		
 		return this;
 	},
 
-	renderEntry: function( entry ) {
-		var row = new TransactionRowView( entry );
-		this.rowViews.push( row );
-		this.$el.find('.entry-list').prepend( row.render().el );
+	renderEntries: function() {
+		this.clearEntryRows();
+		this.collection.each(function(item) {
+			var row = new TransactionItemView( item );
+			this.rowViews.push( row );
+			this.$el.find('.entry-list').append( row.render().el );
+		}, this);
 	},
 
 	events: {
-		'click .new-transaction button': 'showAddEntryForm',
-		'click .add-entry' : 'addEntry'
+		'click .new-transaction button': 'showAddEntryForm'
 	},
 
 	showAddEntryForm: function(event) {
-		console.log(event.currentTarget);
-		this.$el.find('.add-entry-form').slideDown();
+		event.preventDefault();
+		
 		this.$el.find('.new-transaction button').removeClass('selected');
 		$(event.currentTarget).addClass('selected');
-	},
-
-	addEntry: function() {
 		
-		var entryData = {};
-		var form = this.$el.find('.add-entry-form');
-
-		entryData.positive = this.$el.find('.new-transaction button.selected').hasClass('add-positive-entry');
-		entryData.amount = $(form).find('input[name=amount]').val();
-		entryData.dateEntry = moment( $(form).find('input[name=dateEntry]').val(), 'DD-MM-YYYY' ).toDate();
-		entryData.description = $(form).find('textarea[name=description]').val();
-
-		console.log(entryData);
-		this.collection.create( entryData );
+		this.editorView.show();	
 	},
 
-	close: function() {
-
+	clearEntryRows: function() {
 		this.rowViews.forEach(function(v) {
 			if (v.close) v.close();
 		});
 		this.rowViews = [];
+	},
+
+	close: function() {
+
+		this.clearEntryRows();
+		this.editorView.close();
 
 		this.remove();
 		this.unbind();
@@ -15552,4 +15715,4 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../collections/Transactions":8,"../templates/transactions.html":12,"./TransactionRowView":15,"backbone":2,"moment":4}]},{},[7]);
+},{"../collections/Transactions":9,"../templates/transactions.html":16,"./TransactionEditor":20,"./TransactionItem":21,"backbone":2}]},{},[7]);

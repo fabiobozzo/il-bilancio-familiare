@@ -1,8 +1,8 @@
-var moment = require('moment');
 var Backbone = require('backbone');
 var template = require('../templates/transactions.html');
 var TransactionCollection = require('../collections/Transactions');
-var TransactionRowView = require('./TransactionRowView');
+var TransactionItemView = require('./TransactionItem');
+var TransactionEditorView = require('./TransactionEditor');
 
 module.exports = Backbone.View.extend({
 
@@ -10,63 +10,68 @@ module.exports = Backbone.View.extend({
 
 	initialize: function() {
 		
-		this.collection = new TransactionCollection();
-		this.collection.fetch({ reset:true });
-		this.listenTo( this.collection, 'reset', this.render );
-		this.listenTo( this.collection, 'add', this.render );
+		this.collection = TransactionCollection;
+		this.fetch();
+		
+		this.listenTo( this.collection, 'reset', this.renderEntries );
+		this.listenTo( this.collection, 'add', this.fetch );
 		
 		this.rowViews = [];
 		this.render();
 	},
 
+	fetch: function() { 
+		this.collection.fetch({ reset:true });
+	},
 
 	render: function() {
-		this.rowViews = [];
+		
 		this.$el.html( template() );
-		this.collection.each(function(item) {
-			this.renderEntry(item);
-		}, this);
+
+		this.editorView = new TransactionEditorView({
+			collection: this.collection, 
+			parent: this
+		});
+		this.$el.find('.new-transaction').after( this.editorView.render().el );
+
+		this.renderEntries();
+		
 		return this;
 	},
 
-	renderEntry: function( entry ) {
-		var row = new TransactionRowView( entry );
-		this.rowViews.push( row );
-		this.$el.find('.entry-list').prepend( row.render().el );
+	renderEntries: function() {
+		this.clearEntryRows();
+		this.collection.each(function(item) {
+			var row = new TransactionItemView( item );
+			this.rowViews.push( row );
+			this.$el.find('.entry-list').append( row.render().el );
+		}, this);
 	},
 
 	events: {
-		'click .new-transaction button': 'showAddEntryForm',
-		'click .add-entry' : 'addEntry'
+		'click .new-transaction button': 'showAddEntryForm'
 	},
 
 	showAddEntryForm: function(event) {
-		console.log(event.currentTarget);
-		this.$el.find('.add-entry-form').slideDown();
+		event.preventDefault();
+		
 		this.$el.find('.new-transaction button').removeClass('selected');
 		$(event.currentTarget).addClass('selected');
-	},
-
-	addEntry: function() {
 		
-		var entryData = {};
-		var form = this.$el.find('.add-entry-form');
-
-		entryData.positive = this.$el.find('.new-transaction button.selected').hasClass('add-positive-entry');
-		entryData.amount = $(form).find('input[name=amount]').val();
-		entryData.dateEntry = moment( $(form).find('input[name=dateEntry]').val(), 'DD-MM-YYYY' ).toDate();
-		entryData.description = $(form).find('textarea[name=description]').val();
-
-		console.log(entryData);
-		this.collection.create( entryData );
+		this.editorView.show();	
 	},
 
-	close: function() {
-
+	clearEntryRows: function() {
 		this.rowViews.forEach(function(v) {
 			if (v.close) v.close();
 		});
 		this.rowViews = [];
+	},
+
+	close: function() {
+
+		this.clearEntryRows();
+		this.editorView.close();
 
 		this.remove();
 		this.unbind();

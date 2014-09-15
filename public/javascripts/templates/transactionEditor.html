@@ -1,0 +1,26 @@
+<form role="form">
+	<div class="row">
+		<div class="col-md-12 form-group">
+			<label>Categoria</label>
+			<ul class="category-items"></ul>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-2 form-group">
+			<label for="entryDate">Data</label>
+			<input type="date" name="dateEntry" class="form-control" id="entryDate" placeholder="01/01/2014" />
+		</div>
+		<div class="col-md-2 form-group">
+			<label for="entryAmount">Importo (€)</label>
+			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />
+		</div>
+		<div class="col-md-6 form-group">
+			<label for="entryDescription">Note</label>
+			<textarea name="description" class="form-control" rows="2" id="entryDescription" placeholder="Descrizione opzionale"></textarea>
+		</div>
+		<div class="col-md-2 text-right">
+			<a href="#" class="hide-add-entry">Annulla</a> 
+			<button type="button" class="btn btn-primary add-entry">Conferma</button>
+		</div>
+	</div>
+</form>

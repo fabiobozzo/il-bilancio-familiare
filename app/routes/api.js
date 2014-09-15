@@ -1,5 +1,6 @@
 var express 	= require('express');
 var Transaction = require('../models/transaction');
+var Category = require('../models/category');
 
 module.exports = function(app) {
 
@@ -7,7 +8,7 @@ module.exports = function(app) {
 
 	router.route('/transactions')
 		.get(function(req, res) {
-			Transaction.find( {user:req.user._id}, function(err, transactions) {
+			Transaction.find( {user:req.user._id}, null, {sort: {dateEntry: -1} }, function(err, transactions) {
 				if (err) {
 					return res.json({error:err.message});
 				}
@@ -26,6 +27,16 @@ module.exports = function(app) {
 				res.json(t);
 			});
 		});
+
+	router.route('/categories')
+		.get(function(req, res) {
+			Category.find( {}, null, {sort: {title: 1} }, function(err, categories) {
+				if (err) {
+					return res.json({error:err.message});
+				}
+				res.json(categories);
+			});
+		})
 
 	app.use('/api',router);
 

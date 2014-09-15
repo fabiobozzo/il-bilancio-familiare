@@ -1,11 +1,10 @@
-var moment = require('moment');
-var _ = require('underscore');
 var Backbone = require('backbone');
-var template = require('../templates/transactionItem.html');
+var template = require('../templates/categoryItem.html');
 
 module.exports = Backbone.View.extend({
 
 	tagName: 'li',
+	className: 'category-item',
 	template: template, 
 
 	initialize: function(model) {
@@ -13,8 +12,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function() {
-		var data = _.extend( this.model.toJSON(), {moment:moment} );
-		this.$el.html( this.template(data) );
+		this.$el.html( this.template(this.model.toJSON()) );
 		return this;
 	},
 
