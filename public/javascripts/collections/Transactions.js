@@ -2,8 +2,20 @@ var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction')
  
 var TransactionCollection = Backbone.Collection.extend({
+	
 	model: Transaction,
-	url: '/api/transactions'
+	
+	url: '/api/transactions',
+	
+	initialize: function() {
+		this.hasNextPage = false;
+	},
+
+	parse: function(response) {
+		this.hasNextPage = response.hasNextPage;
+		return response.transactions || [];
+	}
+
 });
 
 console.log("Creating TransactionCollection");

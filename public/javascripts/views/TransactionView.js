@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var _ = require('underscore');
 var template = require('../templates/transactions.html');
 var TransactionCollection = require('../collections/Transactions');
 var TransactionItemView = require('./TransactionItem');
@@ -10,18 +11,21 @@ module.exports = Backbone.View.extend({
 
 	initialize: function() {
 		
-		this.collection = TransactionCollection;
-		this.fetch();
-		
-		this.listenTo( this.collection, 'reset', this.renderEntries );
-		this.listenTo( this.collection, 'add', this.fetch );
-		
+		this.collection = TransactionCollection;		
+		this.listenTo( this.collection, 'reset', this.renderFirstPage );
+		this.listenTo( this.collection, 'add', this.renderRow );
+
+		this.page = 1;
 		this.rowViews = [];
 		this.render();
+		_.bindAll(this, 'setMoreEntriesVisibility');
+		this.collection.fetch({ reset:true });
+
 	},
 
-	fetch: function() { 
-		this.collection.fetch({ reset:true });
+	events: {
+		'click .new-transaction button': 'showAddEntryForm',
+		'click .more-entries': 'renderNextPage'
 	},
 
 	render: function() {
@@ -34,22 +38,51 @@ module.exports = Backbone.View.extend({
 		});
 		this.$el.find('.new-transaction').after( this.editorView.render().el );
 
-		this.renderEntries();
+		this.renderFirstPage();
 		
 		return this;
 	},
 
-	renderEntries: function() {
-		this.clearEntryRows();
-		this.collection.each(function(item) {
-			var row = new TransactionItemView( item );
-			this.rowViews.push( row );
-			this.$el.find('.entry-list').append( row.render().el );
-		}, this);
+	renderRow: function(model) {
+		var row = new TransactionItemView( model );
+		this.rowViews.push( row );
+		this.$el.find('.entry-list').append( row.render().el );
 	},
 
-	events: {
-		'click .new-transaction button': 'showAddEntryForm'
+	renderFirstPage: function() {
+		this.clearEntryRows();
+		this.collection.each(function(item) {
+			this.renderRow(item);
+		}, this);
+		this.setMoreEntriesVisibility();
+	},
+
+	renderNextPage: function() {
+		this.page++;
+		this.collection.fetch({ 
+			add: true, 
+			remove: false, 
+			merge: false, 
+			data: {
+				p: this.page
+			}, 
+			success: this.setMoreEntriesVisibility
+		});
+	},
+
+	clearEntryRows: function() {
+		this.rowViews.forEach(function(v) {
+			if (v.close) v.close();
+		});
+		this.rowViews = [];
+	},
+
+	setMoreEntriesVisibility: function() {
+		if (this.collection.hasNextPage) {
+			this.$el.find('.more-entries').show();
+		} else {
+			this.$el.find('.more-entries').hide();
+		}
 	},
 
 	showAddEntryForm: function(event) {
@@ -61,11 +94,8 @@ module.exports = Backbone.View.extend({
 		this.editorView.show();	
 	},
 
-	clearEntryRows: function() {
-		this.rowViews.forEach(function(v) {
-			if (v.close) v.close();
-		});
-		this.rowViews = [];
+	hasPositiveEntrySelected: function() {
+		return this.$el.find('.new-transaction button.selected').hasClass('add-positive-entry');
 	},
 
 	close: function() {

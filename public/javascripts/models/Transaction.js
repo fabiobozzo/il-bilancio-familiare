@@ -6,5 +6,6 @@ module.exports = Backbone.Model.extend({
 		amount: 0,
 		dateEntry: new Date(),
 		positive: false
-	}
+	},
+	url: '/api/transactions'
 });

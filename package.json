@@ -13,6 +13,7 @@
     "backbone.localstorage": "^1.1.13",
     "bcrypt": "*",
     "body-parser": "*",
+    "booty-datepicker": "^1.0.5",
     "bower-resolve": "^2.2.0",
     "browserify": "^5.10.1",
     "browserify-shim": "^3.7.0",

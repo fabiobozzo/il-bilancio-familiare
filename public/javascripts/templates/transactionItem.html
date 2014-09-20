@@ -2,12 +2,13 @@
 	<%= positive ? '+' : '-' %>
 	<%= amount %> €
 </div>
-<div class="col-sm-3 description">
+<div class="col-sm-2 category">
+	<img src="/images/categories/<%= category.code %>.png" class="category-img" width="16" height="16" align="absmiddle" />
+	<span class="category-label"><%= category.title %></span>
+</div>
+<div class="col-sm-4 description">
 	<%= description %>
 </div>
-<div class="col-sm-3 category">
-	category
-</div>
-<div class="col-sm-3 entryDate">
+<div class="col-sm-3 entry-date">
 	<%= moment(dateEntry).format('DD/MM/YYYY') %>		
 </div>

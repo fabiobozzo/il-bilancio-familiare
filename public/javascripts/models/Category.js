@@ -4,6 +4,7 @@ module.exports = Backbone.Model.extend({
 	defaults: {
 		code: '',	
 		title: '',
-		positive: false
+		positive: false, 
+		selected: false
 	}
 });
