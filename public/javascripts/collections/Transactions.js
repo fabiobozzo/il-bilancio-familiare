@@ -13,6 +13,7 @@ var TransactionCollection = Backbone.Collection.extend({
 
 	parse: function(response) {
 		this.hasNextPage = response.hasNextPage;
+		this.balance = response.balance;
 		return response.transactions || [];
 	}
 

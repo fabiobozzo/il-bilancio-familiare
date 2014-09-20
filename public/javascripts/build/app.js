@@ -15684,6 +15684,7 @@ var TransactionCollection = Backbone.Collection.extend({
 
 	parse: function(response) {
 		this.hasNextPage = response.hasNextPage;
+		this.balance = response.balance;
 		return response.transactions || [];
 	}
 
@@ -15779,7 +15780,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="visible-sm-* hidden-xs">Entrata</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="visible-sm-* hidden-xs">Uscita</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance">\n		<div class="panel panel-info">\n			<!-- <div class="panel-heading">\n				<h3 class="panel-title">Saldo</h3>\n			</div> -->\n			<div class="panel-body">\n				SALDO: € 0.00\n			</div>\n		</div>\n	</div>\n\n	<div class="filters">\n		<div class="btn-group btn-group-lg">\n			<button type="button" class="btn btn-primary">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutti\n			</button>\n			<button type="button" class="btn btn-default">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				Entrate\n			</button>\n			<button type="button" class="btn btn-default">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				Uscite\n			</button>\n		</div>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-primary more-entries">Altri...</button>\n</div>';
+__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="visible-sm-* hidden-xs">Entrata</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="visible-sm-* hidden-xs">Uscita</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance">\n		<div class="panel panel-info">\n			<!-- <div class="panel-heading">\n				<h3 class="panel-title">Saldo</h3>\n			</div> -->\n			<div class="panel-body">\n				SALDO: € <span class="balance-value">0.00</span>\n			</div>\n		</div>\n	</div>\n\n	<div class="filters">\n		<div class="btn-group btn-group-lg">\n			<button type="button" class="btn btn-primary">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutti\n			</button>\n			<button type="button" class="btn btn-default">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				Entrate\n			</button>\n			<button type="button" class="btn btn-default">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				Uscite\n			</button>\n		</div>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-primary more-entries">Altri...</button>\n</div>';
 }
 return __p;
 };
@@ -15858,12 +15859,12 @@ module.exports = Backbone.View.extend({
 	},
 
 	close: function() {
-		this.remove();
-		this.unbind();
-		this.stopListening();
 		if (this.innerView) {
 			this.innerView.close();
 		}
+		this.remove();
+		this.unbind();
+		this.stopListening();
 	}
 
 });
@@ -16119,6 +16120,7 @@ module.exports = Backbone.View.extend({
 			this.renderRow(item);
 		}, this);
 		this.setMoreEntriesVisibility();
+		this.updateBalance();
 	},
 
 	renderNextPage: function() {
@@ -16147,7 +16149,11 @@ module.exports = Backbone.View.extend({
 		} else {
 			this.$el.find('.more-entries').hide();
 		}
-	},
+	}, 
+
+	updateBalance: function() {
+		this.$el.find('.balance .balance-value').text(this.collection.balance);
+	}, 
 
 	showAddEntryForm: function(event) {
 		event.preventDefault();

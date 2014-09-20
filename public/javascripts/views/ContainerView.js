@@ -30,12 +30,12 @@ module.exports = Backbone.View.extend({
 	},
 
 	close: function() {
-		this.remove();
-		this.unbind();
-		this.stopListening();
 		if (this.innerView) {
 			this.innerView.close();
 		}
+		this.remove();
+		this.unbind();
+		this.stopListening();
 	}
 
 });

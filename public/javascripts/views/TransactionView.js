@@ -15,8 +15,7 @@ module.exports = Backbone.View.extend({
 		this.listenTo( this.collection, 'reset', this.renderFirstPage );
 		this.listenTo( this.collection, 'add', this.renderRow );
 
-		this.page = 1;
-		this.rowViews = [];
+		this.clearEntryRows();
 		this.render();
 		_.bindAll(this, 'setMoreEntriesVisibility');
 		this.collection.fetch({ reset:true });
@@ -55,6 +54,7 @@ module.exports = Backbone.View.extend({
 			this.renderRow(item);
 		}, this);
 		this.setMoreEntriesVisibility();
+		this.updateBalance();
 	},
 
 	renderNextPage: function() {
@@ -74,6 +74,7 @@ module.exports = Backbone.View.extend({
 		this.rowViews.forEach(function(v) {
 			if (v.close) v.close();
 		});
+		this.page = 1;
 		this.rowViews = [];
 	},
 
@@ -83,7 +84,11 @@ module.exports = Backbone.View.extend({
 		} else {
 			this.$el.find('.more-entries').hide();
 		}
-	},
+	}, 
+
+	updateBalance: function() {
+		this.$el.find('.balance .balance-value').text(this.collection.balance);
+	}, 
 
 	showAddEntryForm: function(event) {
 		event.preventDefault();

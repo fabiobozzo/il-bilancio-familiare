@@ -1,4 +1,6 @@
-var express 	= require('express');
+var express = require('express');
+var async = require('async');
+
 var Transaction = require('../models/transaction');
 var Category = require('../models/category');
 
@@ -14,7 +16,7 @@ module.exports = function(app) {
 			var limit = req.query.limit || TRANSACTIONS_PER_PAGE;
 			var page = req.query.p || 1;
 			var filter = req.query.filter || '';
-			var search = { user:req.user._id };
+			var baseSearch = search = { user:req.user._id };
 			var options = { sort: {dateEntry: -1}, skip: (page-1) * limit, limit: limit+1 };
 
 			switch (filter) {
@@ -22,21 +24,47 @@ module.exports = function(app) {
 				case 'negative': search.positive = false; break;
 			}
 			
-			Transaction
-				.find( search, null, options)
-				.populate('category')
-				.exec( function(err, results) {
-					if (err) {
-						return res.json({error:err.message});
-					}
-					var hasNextPage = results.length > TRANSACTIONS_PER_PAGE;
-					if (hasNextPage) {
-						results.pop();
-					}
-					res.json({
-						hasNextPage: hasNextPage,
-						transactions: results
+			async.parallel({
+				transactions: function(callback) {
+					Transaction
+						.find( search, null, options)
+						.populate('category')
+						.exec( function(err, transactions) {
+							callback(err,transactions);
 					});
+				}, 
+				totalPositive: function(callback) {
+					var matcher = baseSearch;
+					matcher.positive = true;
+					Transaction.aggregate(
+						{ $match: matcher },
+						{ $group: {_id:null,sum:{$sum: '$amount'}} },
+						function(err,result) {
+							callback(err,result);
+						}
+					);
+				},
+				totalNegative: function(callback) {
+					var matcher = baseSearch;
+					matcher.positive = false;
+					Transaction.aggregate(
+						{ $match: matcher },
+						{ $group: {_id:null,sum:{$sum: '$amount'}} },
+						function(err,result) {
+							callback(err,result);
+						}
+					);
+				}
+			}, function(err, results) {
+				if (err) {
+					return res.json({error:err.message});
+				}
+				results.hasNextPage = results.transactions.length > TRANSACTIONS_PER_PAGE;
+				if (results.hasNextPage) {
+					results.transactions.pop();
+				}
+				results.balance = results.totalPositive[0].sum - results.totalNegative[0].sum;
+				res.json(results);
 			});
 
 		})
