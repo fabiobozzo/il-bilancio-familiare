@@ -20,6 +20,7 @@
     "browserify-shim": "^3.7.0",
     "connect-flash": "*",
     "cookie-parser": "*",
+    "debowerify": "^0.8.1",
     "express": "^4.8.1",
     "express-session": "*",
     "grunt-browserify": "^2.1.4",

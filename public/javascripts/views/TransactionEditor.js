@@ -1,6 +1,10 @@
 var moment = require('moment');
-var datepicker = require('booty-datepicker');
 var Backbone = require('backbone');
+var _ = require('underscore');
+
+require('jquery');
+require('pickadate');
+
 var template = require('../templates/transactionEditor.html');
 var Transaction = require('../models/Transaction');
 var CategoryCollection = require('../collections/Categories');
@@ -20,29 +24,32 @@ module.exports = Backbone.View.extend({
 		this.categories = new CategoryCollection();
 		this.listenTo( this.categories, 'reset', this.renderCategories );
 		this.categories.fetch({reset:true});
+
+		_.bindAll(this, 'entryAdded');
+		_.bindAll(this, 'entryAddError');
 	},
 
 	render: function() {
 		
 		this.$el.html( this.template() );
 		
-		var defaultOptions = {
-			RAW_FORMAT: 'YYYY-MM-DD',
-			INPUT_FORMATS: ['DD/MM/YYYY'],
-			DISPLAY_FORMAT: 'DD/MM/YYYY',
-			formatter: function (value) {
-				return moment(value, this.RAW_FORMAT, true).format(this.DISPLAY_FORMAT);
-			},
-			validate: function (value) {
-				return moment(value, this.INPUT_FORMATS, true).isValid();
-			},
-			parser: function (value) {
-				return moment(value, this.INPUT_FORMATS, true).format(this.RAW_FORMAT);
-			}
-		};
-		datepicker(defaultOptions);
-
 		this.resetForm();
+
+		this.$el.find('.form-group input[name=dateEntry]').pickadate({
+			monthsFull: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+			monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+			weekdaysFull: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+			weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
+			today: 'Oggi',
+			clear: 'Reset',
+			close: 'Chiudi',
+			format: 'dd/mm/yyyy',
+			formatSubmit: 'yyyy-mm-dd',
+			hiddenPrefix: 'prefix__',
+			hiddenSuffix: '__suffix',
+			hiddenName: 'pickadate-hidden-field',
+			firstDay: 1
+		});
 
 		return this;
 	},
@@ -59,7 +66,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	show: function() {
-		this.renderCategories();
+		this.updateCategories();
 		this.$el.slideDown();
 	},
 
@@ -73,36 +80,37 @@ module.exports = Backbone.View.extend({
 		entryData.description = this.$el.find('input[name=description]').val();
 
 		var selectedCategories = this.categories.where({selected:true});
-		if (selectedCategories.length>1) throw "Errore, due categorie selezionate!";
 		entryData.category = selectedCategories[0].get('_id');
 
-		// this.collection.create( entryData, {wait:true} );
 		var newEntry = new Transaction();
 
-		var _this = this;
 		newEntry.save( entryData, {
 			wait:true,
-			success: function(model, response) {
-				_this.resetForm();
-				_this.collection.fetch({reset:true});
-			},
-			error: function(model, response) {
-				alert("Errore salvataggio transazione. Riprovare più tardi!");
-			}
+			success: this.entryAdded,
+			error: this.entryAddError
 		});
 
 		this.hide();
 	},
 
+	entryAdded: function(model, response) {
+		this.resetForm();
+		this.collection.fetch({
+			reset: true,
+			filter: this.collection.filter 
+		});
+	},
+
+	entryAddError: function(model, response) {
+		alert("Errore salvataggio transazione. Riprovare più tardi!");
+	},
+
 	renderCategories: function() {
-		var showPositiveCategories = this.parent.hasPositiveEntrySelected();
 		this.clearCategorySubviews();
 		this.categories.each(function(item) {
-			if ( item.get('positive')==showPositiveCategories ) {
-				var c = new CategoryItemView( item );
-				this.categorySubviews.push( c );
-				this.$el.find('.category-items').append( c.render().el );	
-			}
+			var c = new CategoryItemView( item );
+			this.categorySubviews.push( c );
+			this.$el.find('.category-items').append( c.render().el );	
 		}, this);
 	},
 
@@ -111,6 +119,17 @@ module.exports = Backbone.View.extend({
 			if (v.close) v.close();
 		});
 		this.categorySubviews = [];
+	},
+
+	updateCategories: function() {
+		var showPositiveCategories = this.parent.hasPositiveEntrySelected();
+		this.categorySubviews.forEach(function(v) {
+			if ( v.model.get('positive')==showPositiveCategories ) { 
+				v.$el.show();
+			} else {
+				v.$el.hide();
+			}
+		});
 	},
 
 	resetForm: function() {

@@ -13,11 +13,16 @@ module.exports = function(grunt) {
 
 		browserify: {
 			home: {
-				files: { 'public/javascripts/build/home.js': ['public/javascripts/home.js'] }
+				files: { 'public/javascripts/build/home.js': ['public/javascripts/home.js'] }, 
+				options: { 
+					transform: ['debowerify'] 
+				}
 			},
 			app: {
 				files: { 'public/javascripts/build/app.js': ['public/javascripts/app.js'] },
-				options: { transform: ['node-underscorify'] }
+				options: { 
+					transform: ['node-underscorify','debowerify'] 
+				}
 			}
 		}
 	});

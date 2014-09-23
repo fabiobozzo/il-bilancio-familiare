@@ -1,5 +1,5 @@
 var $ = window.$ = window.jQuery = require('jquery');
-var bootstrap = require('../bower_components/bootstrap/dist/js/bootstrap.min.js');
+var bootstrap = require('bootstrap');
 
 $(function() {
 	

@@ -17,10 +17,19 @@
 			font-size: 1.5em;
 		}
 
+		.filters {
+			.type {
+				button.selected:extend(.btn-primary) {};
+			}
+		}
+
 		.add-entry-form {
 			display:none;
 			padding:1.5em;
 			background: #CCC;
+			.entryDate {
+				cursor:pointer;
+			}
 			.hide-add-entry {
 				margin-right: 0.5em;
 			}
@@ -113,6 +122,10 @@
 				display: block;
 			}
 		}
+	}
+
+	.transactions-date-header {
+		display: block;
 	}
 
 }

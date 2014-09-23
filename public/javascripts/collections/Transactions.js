@@ -9,6 +9,7 @@ var TransactionCollection = Backbone.Collection.extend({
 	
 	initialize: function() {
 		this.hasNextPage = false;
+		this.filter = 'all';
 	},
 
 	parse: function(response) {

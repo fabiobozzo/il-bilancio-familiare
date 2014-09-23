@@ -32,28 +32,27 @@ module.exports = function(app) {
 						.exec( function(err, transactions) {
 							callback(err,transactions);
 					});
-				}, 
-				totalPositive: function(callback) {
-					var matcher = baseSearch;
-					matcher.positive = true;
-					Transaction.aggregate(
-						{ $match: matcher },
-						{ $group: {_id:null,sum:{$sum: '$amount'}} },
-						function(err,result) {
-							callback(err,result);
-						}
-					);
 				},
-				totalNegative: function(callback) {
-					var matcher = baseSearch;
-					matcher.positive = false;
+				balance: function(callback) {
 					Transaction.aggregate(
-						{ $match: matcher },
-						{ $group: {_id:null,sum:{$sum: '$amount'}} },
+						[
+							{ "$group": {
+								"_id": null,
+								"total": {
+									"$sum": {
+										"$cond": [
+											"$positive",
+											"$amount",
+											{ "$subtract": [ 0, "$amount" ] }
+										]
+									}
+								}
+							}}
+						],
 						function(err,result) {
 							callback(err,result);
 						}
-					);
+					)
 				}
 			}, function(err, results) {
 				if (err) {
@@ -63,7 +62,7 @@ module.exports = function(app) {
 				if (results.hasNextPage) {
 					results.transactions.pop();
 				}
-				results.balance = results.totalPositive[0].sum - results.totalNegative[0].sum;
+				results.balance = results.balance[0].total;
 				res.json(results);
 			});
 
@@ -78,6 +77,9 @@ module.exports = function(app) {
 				}
 				res.json(t);
 			});
+		})
+		.delete(function(req,res) {
+			console.log(req.body);
 		});
 
 	router.route('/categories')
