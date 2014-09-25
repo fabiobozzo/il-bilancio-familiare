@@ -77,9 +77,13 @@ module.exports = function(app) {
 				}
 				res.json(t);
 			});
-		})
+		});
+
+	router.route('/transactions/:id')
 		.delete(function(req,res) {
-			console.log(req.body);
+			Transaction.findByIdAndRemove(req.params.id, function (err,transaction) {
+				res.json(true);
+			});
 		});
 
 	router.route('/categories')

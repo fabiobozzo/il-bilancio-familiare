@@ -11307,8 +11307,8 @@ return jQuery;
 }));
 
 },{}],3:[function(require,module,exports){
-var $ = window.$ = window.jQuery = require("./../bower_components/jquery/dist/jquery.js");
-var bootstrap = require("./../bower_components/bootstrap/dist/js/bootstrap.js");
+var $ = window.$ = window.jQuery = require("./bower_components/jquery/dist/jquery.js");
+var bootstrap = require("./bower_components/bootstrap/dist/js/bootstrap.js");
 
 $(function() {
 	
@@ -11333,4 +11333,4 @@ $(function() {
 	});
 
 });
-},{"./../bower_components/bootstrap/dist/js/bootstrap.js":1,"./../bower_components/jquery/dist/jquery.js":2}]},{},[3]);
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":1,"./bower_components/jquery/dist/jquery.js":2}]},{},[3]);

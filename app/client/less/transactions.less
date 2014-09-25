@@ -1,0 +1,140 @@
+.transactionView {
+
+	.controls-container {
+		
+		.flex-display;
+		.flex-flow(row wrap);
+		
+		>div {
+			.flex(1 100%);
+		}
+
+		.new-transaction {
+			text-align: right;
+		}
+
+		.balance {
+			font-size: 1.5em;
+		}
+
+		.filters {
+			.type {
+				button.selected:extend(.btn-primary) {};
+			}
+		}
+
+		.add-entry-form {
+			display:none;
+			padding:1.5em;
+			background: #CCC;
+			.entryDate {
+				cursor:pointer;
+			}
+			.hide-add-entry {
+				margin-right: 0.5em;
+			}
+			.category-items {
+				-webkit-padding-start: 0;
+				li {
+					cursor: pointer;
+					width: 80px;
+					display: inline-block;
+					vertical-align: top;
+					text-align: center;
+					padding:10px 0;
+					&.selected {
+						box-shadow: 0px 5px 10px #444 inset;
+					}
+					.category-label {
+						font-size:0.8em;
+					}
+					.category-img {
+						width: 32px;
+						height: 32px;
+						margin-bottom: 3px;
+					}
+				}
+			}
+		}
+
+		@media(max-width:@screen-xs-max) {
+			.new-transaction {
+				.btn {
+					float:left;	
+					width:50%;
+					margin:0;
+					border-radius: 0;
+					-webkit-border-radius: 0;
+					-moz-border-radius: 0;
+				}
+			}
+		}
+
+		@media(min-width:@screen-sm-min) {
+
+			.balance { 
+				.flex(1 auto);
+				.flex-order(1);
+			}
+
+			.filters {
+				.flex(3 0px);
+				.flex-order(2);	
+			}
+
+			.new-transaction { 
+				.flex(1 auto);
+				.flex-order(3);	
+			}
+
+			.add-entry-form { 
+				.flex-order(4);		
+			}
+
+		}
+	}
+
+	.entryRow {
+		padding: 1em 0;
+		border-bottom: 1px dotted #CCC;
+		.amount {
+			font-size: 1.5em;
+			&.positive {
+				color:#0A0;
+			}
+			&.negative {
+				color:#F00;
+			}
+		}
+		.entry-date {
+			text-align: right;
+		}
+		.category {
+			text-align: center;
+			img {
+				width: 16px;
+				height: 16px;
+				vertical-align: middle;
+				
+			}
+			.category-label {
+				font-size: 0.6em;
+				display: block;
+			}
+		}
+		.delete {
+			button {
+				color:#F00;
+			}
+		}
+	}
+
+	.transactions-date-header {
+		display: block;
+	}
+
+	button.more-entries {
+		margin-top: 1em;
+	}
+
+}

@@ -4,22 +4,22 @@ module.exports = function(grunt) {
 		less: {
 			production: {
 				options: {
-					paths: ["public/less"],
+					paths: ["app/client/less"],
 					cleancss: true
 				},
-				files: {"public/stylesheets/build.css": "public/less/all.less"}
+				files: {"public/stylesheets/build.css": "app/client/less/all.less"}
 			}
 		},
 
 		browserify: {
 			home: {
-				files: { 'public/javascripts/build/home.js': ['public/javascripts/home.js'] }, 
+				files: { 'public/javascripts/build/home.js': ['app/client/home.js'] }, 
 				options: { 
 					transform: ['debowerify'] 
 				}
 			},
 			app: {
-				files: { 'public/javascripts/build/app.js': ['public/javascripts/app.js'] },
+				files: { 'public/javascripts/build/app.js': ['app/client/app.js'] },
 				options: { 
 					transform: ['node-underscorify','debowerify'] 
 				}

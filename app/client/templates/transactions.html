@@ -1,0 +1,42 @@
+<div class="controls-container">
+
+	<div class="new-transaction">
+		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->
+		<button type="button" class="btn btn-lg btn-success add-positive-entry">
+			<span class="visible-sm-* hidden-xs">Entrata</span>
+			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">+</span>
+		</button> 
+		<button type="button" class="btn btn-lg btn-danger add-negative-entry">
+			<span class="visible-sm-* hidden-xs">Uscita</span>
+			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">-</span>
+		</button>
+		<div class="clearfix"></div>
+	</div>
+
+	<div class="balance">
+		SALDO: € <span class="balance-value">0.00</span>
+	</div>
+
+	<div class="filters">
+		<div class="btn-group btn-group-lg type">
+			<button type="button" class="btn btn-default selected" data-filter="all">
+				<span class="glyphicon glyphicon-list-alt"></span>
+				Tutti
+			</button>
+			<button type="button" class="btn btn-default" data-filter="positive">
+				<span class="glyphicon glyphicon-thumbs-up"></span>
+				Entrate
+			</button>
+			<button type="button" class="btn btn-default" data-filter="negative">
+				<span class="glyphicon glyphicon-thumbs-down"></span>
+				Uscite
+			</button>
+		</div>
+	</div>
+
+</div>
+
+<div class="entry-list"></div>
+<div class="text-center">
+	<button class="btn btn-default more-entries">Altri...</button>
+</div>
