@@ -11,5 +11,4 @@ var ApplicationState = Backbone.Model.extend({
 	localStorage: new Backbone.LocalStorage('application-state'),
 });
 
-console.log("Creating ApplicationState");
 module.exports = new ApplicationState();

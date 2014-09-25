@@ -20,5 +20,4 @@ var TransactionCollection = Backbone.Collection.extend({
 
 });
 
-console.log("Creating TransactionCollection");
 module.exports = new TransactionCollection();

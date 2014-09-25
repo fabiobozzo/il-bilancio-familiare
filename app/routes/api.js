@@ -1,5 +1,4 @@
 var express = require('express');
-var async = require('async');
 
 var Transaction = require('../models/transaction');
 var Category = require('../models/category');
@@ -23,47 +22,22 @@ module.exports = function(app) {
 				case 'positive': search.positive = true; break;
 				case 'negative': search.positive = false; break;
 			}
-			
-			async.parallel({
-				transactions: function(callback) {
-					Transaction
-						.find( search, null, options)
-						.populate('category')
-						.exec( function(err, transactions) {
-							callback(err,transactions);
-					});
-				},
-				balance: function(callback) {
-					Transaction.aggregate(
-						[
-							{ "$group": {
-								"_id": null,
-								"total": {
-									"$sum": {
-										"$cond": [
-											"$positive",
-											"$amount",
-											{ "$subtract": [ 0, "$amount" ] }
-										]
-									}
-								}
-							}}
-						],
-						function(err,result) {
-							callback(err,result);
-						}
-					)
-				}
-			}, function(err, results) {
-				if (err) {
-					return res.json({error:err.message});
-				}
-				results.hasNextPage = results.transactions.length > TRANSACTIONS_PER_PAGE;
-				if (results.hasNextPage) {
-					results.transactions.pop();
-				}
-				results.balance = results.balance[0].total;
-				res.json(results);
+
+			Transaction
+				.find( search, null, options)
+				.populate('category')
+				.exec( function(err, transactions) {
+					if (err) {
+						return res.json({error:err.message});
+					}
+					var result = {
+						transactions: transactions,
+						hasNextPage: transactions.length > TRANSACTIONS_PER_PAGE
+					};
+					if (result.hasNextPage) {
+						result.transactions.pop();
+					}
+					res.json(result);
 			});
 
 		})
@@ -77,6 +51,32 @@ module.exports = function(app) {
 				}
 				res.json(t);
 			});
+		});
+
+	router.route('/transactions/balance')
+		.get(function(req,res) {
+			Transaction.aggregate(
+				[
+					{ "$group": {
+						"_id": null,
+						"total": {
+							"$sum": {
+								"$cond": [
+									"$positive",
+									"$amount",
+									{ "$subtract": [ 0, "$amount" ] }
+								]
+							}
+						}
+					}}
+				],
+				function(err,result) {
+					if (err) {
+						return res.json({error:err.message});
+					}
+					res.json({balance:result[0].total});
+				}
+			);
 		});
 
 	router.route('/transactions/:id')

@@ -1,6 +1,8 @@
 var moment = require('moment');
 var _ = require('underscore');
 var Backbone = require('backbone');
+
+var TransactionBalance = require('../models/TransactionBalance');
 var template = require('../templates/transactionItem.html');
 
 module.exports = Backbone.View.extend({
@@ -24,7 +26,14 @@ module.exports = Backbone.View.extend({
 	},
 
 	delete: function() {
-		this.model.destroy();
+		this.model.destroy({
+			success: function() {
+				TransactionBalance.fetch();
+			},
+			error: function() {
+				alert('Errore. Impossibile eliminare questa transazione.');
+			}
+		});
 		this.close();
 	},
 

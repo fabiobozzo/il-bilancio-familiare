@@ -4,6 +4,7 @@ var moment = require('moment');
 
 var template = require('../templates/transactions.html');
 var templateGroupHeader = require('../templates/transactionsHeader.html');
+var TransactionBalance = require('../models/TransactionBalance');
 var TransactionCollection = require('../collections/Transactions');
 var TransactionItemView = require('./TransactionItem');
 var TransactionEditorView = require('./TransactionEditor');
@@ -17,6 +18,7 @@ module.exports = Backbone.View.extend({
 		this.collection = TransactionCollection;		
 		this.listenTo( this.collection, 'reset', this.renderFirstPage );
 		this.listenTo( this.collection, 'add', this.renderRow );
+		this.listenTo( TransactionBalance, 'sync', this.updateBalance );
 
 		this.page = 1;
 		this.rowViews = [];
@@ -67,7 +69,7 @@ module.exports = Backbone.View.extend({
 			this.renderRow(item);
 		}, this);
 		this.setMoreEntriesVisibility();
-		this.updateBalance();
+		TransactionBalance.fetch();
 	},
 
 	renderNextPage: function() {
@@ -99,8 +101,8 @@ module.exports = Backbone.View.extend({
 		}
 	}, 
 
-	updateBalance: function() {
-		this.$el.find('.balance .balance-value').text(this.collection.balance);
+	updateBalance: function(model) {
+		this.$el.find('.balance .balance-value').text(model.get('balance'));
 	}, 
 
 	showAddEntryForm: function(event) {

@@ -14,7 +14,7 @@ ApplicationState.fetch();
 new MenuView();
 new ContainerView();
 
-},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":8,"./views/ContainerView":17,"./views/MenuView":18,"backbone":23,"backbone.localstorage":22}],2:[function(require,module,exports){
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":8,"./views/ContainerView":18,"./views/MenuView":19,"backbone":24,"backbone.localstorage":23}],2:[function(require,module,exports){
 /*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -13760,7 +13760,7 @@ module.exports = Backbone.Collection.extend({
 	model: Category,
 	url: '/api/categories'
 });
-},{"../models/Category":9,"backbone":23}],6:[function(require,module,exports){
+},{"../models/Category":9,"backbone":24}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction')
  
@@ -13783,9 +13783,8 @@ var TransactionCollection = Backbone.Collection.extend({
 
 });
 
-console.log("Creating TransactionCollection");
 module.exports = new TransactionCollection();
-},{"../models/Transaction":10,"backbone":23}],7:[function(require,module,exports){
+},{"../models/Transaction":10,"backbone":24}],7:[function(require,module,exports){
 exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
@@ -13804,9 +13803,8 @@ var ApplicationState = Backbone.Model.extend({
 	localStorage: new Backbone.LocalStorage('application-state'),
 });
 
-console.log("Creating ApplicationState");
 module.exports = new ApplicationState();
-},{"backbone":23,"moment":24}],9:[function(require,module,exports){
+},{"backbone":24,"moment":25}],9:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13819,7 +13817,7 @@ module.exports = Backbone.Model.extend({
 		selected: false
 	}
 });
-},{"backbone":23}],10:[function(require,module,exports){
+},{"backbone":24}],10:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13832,7 +13830,19 @@ module.exports = Backbone.Model.extend({
 	},
 	urlRoot: '/api/transactions'
 });
-},{"backbone":23}],11:[function(require,module,exports){
+},{"backbone":24}],11:[function(require,module,exports){
+var Backbone = require('backbone');
+ 
+var TransactionBalance = Backbone.Model.extend({
+	defaults: {
+		id: null,
+		balance: 0
+	},
+	url: '/api/transactions/balance'
+});
+
+module.exports = new TransactionBalance();
+},{"backbone":24}],12:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13845,7 +13855,7 @@ __p+='<a href="#" class="category-link">\n	<img src="/images/categories/'+
 return __p;
 };
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13854,7 +13864,7 @@ __p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group
 return __p;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13877,7 +13887,7 @@ __p+='<div class="col-sm-3 amount '+
 return __p;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13886,7 +13896,7 @@ __p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!--
 return __p;
 };
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13897,7 +13907,7 @@ __p+='<div class="transactions-date-header">'+
 return __p;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var Backbone = require('backbone');
 var template = require('../templates/categoryItem.html');
 
@@ -13938,7 +13948,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/categoryItem.html":11,"backbone":23}],17:[function(require,module,exports){
+},{"../templates/categoryItem.html":12,"backbone":24}],18:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
@@ -13980,7 +13990,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":8,"./TransactionView":21,"backbone":23}],18:[function(require,module,exports){
+},{"../models/ApplicationState":8,"./TransactionView":22,"backbone":24}],19:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
  
@@ -14016,7 +14026,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":8,"backbone":23}],19:[function(require,module,exports){
+},{"../models/ApplicationState":8,"backbone":24}],20:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14165,10 +14175,12 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../collections/Categories":5,"../config/settings":7,"../models/Transaction":10,"../templates/transactionEditor.html":12,"../views/CategoryItemView":16,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":23,"moment":24,"underscore":25}],20:[function(require,module,exports){
+},{"../collections/Categories":5,"../config/settings":7,"../models/Transaction":10,"../templates/transactionEditor.html":13,"../views/CategoryItemView":17,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":24,"moment":25,"underscore":26}],21:[function(require,module,exports){
 var moment = require('moment');
 var _ = require('underscore');
 var Backbone = require('backbone');
+
+var TransactionBalance = require('../models/TransactionBalance');
 var template = require('../templates/transactionItem.html');
 
 module.exports = Backbone.View.extend({
@@ -14192,7 +14204,14 @@ module.exports = Backbone.View.extend({
 	},
 
 	delete: function() {
-		this.model.destroy();
+		this.model.destroy({
+			success: function() {
+				TransactionBalance.fetch();
+			},
+			error: function() {
+				alert('Errore. Impossibile eliminare questa transazione.');
+			}
+		});
 		this.close();
 	},
 
@@ -14203,13 +14222,14 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/transactionItem.html":13,"backbone":23,"moment":24,"underscore":25}],21:[function(require,module,exports){
+},{"../models/TransactionBalance":11,"../templates/transactionItem.html":14,"backbone":24,"moment":25,"underscore":26}],22:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
 
 var template = require('../templates/transactions.html');
 var templateGroupHeader = require('../templates/transactionsHeader.html');
+var TransactionBalance = require('../models/TransactionBalance');
 var TransactionCollection = require('../collections/Transactions');
 var TransactionItemView = require('./TransactionItem');
 var TransactionEditorView = require('./TransactionEditor');
@@ -14223,6 +14243,7 @@ module.exports = Backbone.View.extend({
 		this.collection = TransactionCollection;		
 		this.listenTo( this.collection, 'reset', this.renderFirstPage );
 		this.listenTo( this.collection, 'add', this.renderRow );
+		this.listenTo( TransactionBalance, 'sync', this.updateBalance );
 
 		this.page = 1;
 		this.rowViews = [];
@@ -14273,7 +14294,7 @@ module.exports = Backbone.View.extend({
 			this.renderRow(item);
 		}, this);
 		this.setMoreEntriesVisibility();
-		this.updateBalance();
+		TransactionBalance.fetch();
 	},
 
 	renderNextPage: function() {
@@ -14305,8 +14326,8 @@ module.exports = Backbone.View.extend({
 		}
 	}, 
 
-	updateBalance: function() {
-		this.$el.find('.balance .balance-value').text(this.collection.balance);
+	updateBalance: function(model) {
+		this.$el.find('.balance .balance-value').text(model.get('balance'));
 	}, 
 
 	showAddEntryForm: function(event) {
@@ -14350,7 +14371,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../collections/Transactions":6,"../templates/transactions.html":14,"../templates/transactionsHeader.html":15,"./TransactionEditor":19,"./TransactionItem":20,"backbone":23,"moment":24,"underscore":25}],22:[function(require,module,exports){
+},{"../collections/Transactions":6,"../models/TransactionBalance":11,"../templates/transactions.html":15,"../templates/transactionsHeader.html":16,"./TransactionEditor":20,"./TransactionItem":21,"backbone":24,"moment":25,"underscore":26}],23:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
  * Version 1.1.13
@@ -14605,7 +14626,7 @@ Backbone.sync = function(method, model, options) {
 return Backbone.LocalStorage;
 }));
 
-},{"backbone":23}],23:[function(require,module,exports){
+},{"backbone":24}],24:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -16215,7 +16236,7 @@ return Backbone.LocalStorage;
 
 }));
 
-},{"underscore":25}],24:[function(require,module,exports){
+},{"underscore":26}],25:[function(require,module,exports){
 (function (global){
 //! moment.js
 //! version : 2.8.2
@@ -19034,7 +19055,7 @@ return Backbone.LocalStorage;
 }).call(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
