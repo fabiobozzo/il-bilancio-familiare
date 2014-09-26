@@ -57,6 +57,7 @@ module.exports = function(app) {
 		.get(function(req,res) {
 			Transaction.aggregate(
 				[
+					{ $match: { user:req.user._id } },
 					{ "$group": {
 						"_id": null,
 						"total": {
@@ -74,7 +75,7 @@ module.exports = function(app) {
 					if (err) {
 						return res.json({error:err.message});
 					}
-					res.json({balance:result[0].total});
+					res.json({ balance: (result.length>0) ? result[0].total : 0 });
 				}
 			);
 		});

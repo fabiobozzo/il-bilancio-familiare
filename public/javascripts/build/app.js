@@ -14191,6 +14191,7 @@ module.exports = Backbone.View.extend({
 
 	initialize: function(model) {
 		this.model = model;
+		_.bindAll(this, 'delete');
 	},
 
 	events: {
@@ -14204,15 +14205,17 @@ module.exports = Backbone.View.extend({
 	},
 
 	delete: function() {
+		var el = this.$el;
 		this.model.destroy({
 			success: function() {
 				TransactionBalance.fetch();
+				el.addClass('deleted');
+				el.find('.delete button').hide();
 			},
 			error: function() {
 				alert('Errore. Impossibile eliminare questa transazione.');
 			}
 		});
-		this.close();
 	},
 
 	close: function() {

@@ -97,6 +97,15 @@
 	.entryRow {
 		padding: 1em 0;
 		border-bottom: 1px dotted #CCC;
+		&.deleted {
+			div, span {
+				font-size: 1em;
+				font-weight: bold;
+				color:#CCC !important;
+				text-decoration: line-through !important;	
+			}
+			img { display: none; }
+		}
 		.amount {
 			font-size: 1.5em;
 			&.positive {
