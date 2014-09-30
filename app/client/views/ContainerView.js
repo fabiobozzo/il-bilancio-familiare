@@ -9,7 +9,7 @@ module.exports = Backbone.View.extend({
 	el: '#containerView', 
 
 	initialize: function() {
-		this.listenTo( ApplicationState, 'change', this.render );	
+		this.listenTo( ApplicationState, 'change:currentView', this.render );	
 		this.render();
 	},
 

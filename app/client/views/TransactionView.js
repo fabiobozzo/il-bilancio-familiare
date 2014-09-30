@@ -8,6 +8,9 @@ var TransactionBalance = require('../models/TransactionBalance');
 var TransactionCollection = require('../collections/Transactions');
 var TransactionItemView = require('./TransactionItem');
 var TransactionEditorView = require('./TransactionEditor');
+var TransactionPeriodView = require('./TransactionPeriod');
+var Settings = require('../../config/settings');
+var ApplicationState = require('../models/ApplicationState');
 
 module.exports = Backbone.View.extend({
 
@@ -19,6 +22,7 @@ module.exports = Backbone.View.extend({
 		this.listenTo( this.collection, 'reset', this.renderFirstPage );
 		this.listenTo( this.collection, 'add', this.renderRow );
 		this.listenTo( TransactionBalance, 'sync', this.updateBalance );
+		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
 
 		this.page = 1;
 		this.rowViews = [];
@@ -33,18 +37,26 @@ module.exports = Backbone.View.extend({
 	events: {
 		'click .new-transaction button': 'showAddEntryForm',
 		'click .more-entries': 'renderNextPage',
-		'click .filters .type button': 'filter'
+		'click .filters .type button': 'filter',
+		'click .period-chooser': 'showPeriodChooser'
 	},
 
 	render: function() {
 		
 		this.$el.html( template() );
+		this.updateCurrentPeriod();
 
 		this.editorView = new TransactionEditorView({
 			collection: this.collection, 
 			parent: this
 		});
 		this.$el.find('.new-transaction').after( this.editorView.render().el );
+
+		this.periodChooserView = new TransactionPeriodView({
+			collection: this.collection, 
+			parent: this
+		});
+		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
 
 		this.renderFirstPage();
 		
@@ -105,13 +117,26 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.balance .balance-value').text(model.get('balance'));
 	}, 
 
+	updateCurrentPeriod: function() {
+		var month = Settings.monthsFull[ ApplicationState.get('currentPeriod').getMonth() ];
+		var year = ApplicationState.get('currentPeriod').getFullYear();
+		this.$el.find('.period-chooser .text').html( month + ' ' + year );
+		this.periodChooserView.hide();
+	},
+
 	showAddEntryForm: function(event) {
 		event.preventDefault();
 		
 		this.$el.find('.new-transaction button').removeClass('selected');
 		$(event.currentTarget).addClass('selected');
 		
+		this.periodChooserView.hide();
 		this.editorView.show();	
+	},
+
+	showPeriodChooser: function(event) {
+		this.editorView.hide();
+		this.periodChooserView.show();		
 	},
 
 	hasPositiveEntrySelected: function() {
@@ -139,6 +164,7 @@ module.exports = Backbone.View.extend({
 
 		this.clearEntryRows();
 		this.editorView.close();
+		this.periodChooserView.close();
 
 		this.remove();
 		this.unbind();

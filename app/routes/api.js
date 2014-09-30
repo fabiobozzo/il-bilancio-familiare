@@ -2,8 +2,7 @@ var express = require('express');
 
 var Transaction = require('../models/transaction');
 var Category = require('../models/category');
-
-var TRANSACTIONS_PER_PAGE = 3;
+var Settings = require('../config/settings');
 
 module.exports = function(app) {
 
@@ -12,7 +11,7 @@ module.exports = function(app) {
 	router.route('/transactions')
 		.get(function(req, res) {
 			
-			var limit = req.query.limit || TRANSACTIONS_PER_PAGE;
+			var limit = req.query.limit || Settings.TRANSACTIONS_PER_PAGE;
 			var page = req.query.p || 1;
 			var filter = req.query.filter || '';
 			var baseSearch = search = { user:req.user._id };
@@ -32,7 +31,7 @@ module.exports = function(app) {
 					}
 					var result = {
 						transactions: transactions,
-						hasNextPage: transactions.length > TRANSACTIONS_PER_PAGE
+						hasNextPage: transactions.length > Settings.TRANSACTIONS_PER_PAGE
 					};
 					if (result.hasNextPage) {
 						result.transactions.pop();

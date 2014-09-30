@@ -3,12 +3,12 @@
 	<div class="new-transaction">
 		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->
 		<button type="button" class="btn btn-lg btn-success add-positive-entry">
-			<span class="visible-sm-* hidden-xs">Entrata</span>
-			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">+</span>
+			<span class="hidden-xs">Entrata</span>
+			<span class="hidden-sm hidden-md hidden-lg">+</span>
 		</button> 
 		<button type="button" class="btn btn-lg btn-danger add-negative-entry">
-			<span class="visible-sm-* hidden-xs">Uscita</span>
-			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">-</span>
+			<span class="hidden-xs">Uscita</span>
+			<span class="hidden-sm hidden-md hidden-lg">-</span>
 		</button>
 		<div class="clearfix"></div>
 	</div>
@@ -18,20 +18,24 @@
 	</div>
 
 	<div class="filters">
-		<div class="btn-group btn-group-lg type">
+		<div class="btn-group type">
 			<button type="button" class="btn btn-default selected" data-filter="all">
 				<span class="glyphicon glyphicon-list-alt"></span>
-				Tutti
+				Tutto
 			</button>
 			<button type="button" class="btn btn-default" data-filter="positive">
 				<span class="glyphicon glyphicon-thumbs-up"></span>
-				Entrate
+				<span class="hidden-xs">Entrate</span>
 			</button>
 			<button type="button" class="btn btn-default" data-filter="negative">
 				<span class="glyphicon glyphicon-thumbs-down"></span>
-				Uscite
+				<span class="hidden-xs">Uscite</span>
 			</button>
 		</div>
+		<button class="btn btn-default period-chooser" type="button">
+			<span class="text">?</span>
+			<span class="caret"></span>
+		</button>
 	</div>
 
 </div>

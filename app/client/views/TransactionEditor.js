@@ -9,7 +9,7 @@ var template = require('../templates/transactionEditor.html');
 var Transaction = require('../models/Transaction');
 var CategoryCollection = require('../collections/Categories');
 var CategoryItemView = require('../views/CategoryItemView');
-var Settings = require('../config/settings');
+var Settings = require('../../config/settings');
 
 module.exports = Backbone.View.extend({
 

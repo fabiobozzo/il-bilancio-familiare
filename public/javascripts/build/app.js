@@ -14,7 +14,7 @@ ApplicationState.fetch();
 new MenuView();
 new ContainerView();
 
-},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":8,"./views/ContainerView":18,"./views/MenuView":19,"backbone":24,"backbone.localstorage":23}],2:[function(require,module,exports){
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":7,"./views/ContainerView":18,"./views/MenuView":19,"backbone":26,"backbone.localstorage":25}],2:[function(require,module,exports){
 /*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -13760,7 +13760,7 @@ module.exports = Backbone.Collection.extend({
 	model: Category,
 	url: '/api/categories'
 });
-},{"../models/Category":9,"backbone":24}],6:[function(require,module,exports){
+},{"../models/Category":8,"backbone":26}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction')
  
@@ -13784,12 +13784,7 @@ var TransactionCollection = Backbone.Collection.extend({
 });
 
 module.exports = new TransactionCollection();
-},{"../models/Transaction":10,"backbone":24}],7:[function(require,module,exports){
-exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
-exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
-exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-exports.weekdaysShort = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-},{}],8:[function(require,module,exports){
+},{"../models/Transaction":9,"backbone":26}],7:[function(require,module,exports){
 var Backbone = require('backbone');
 var moment = require('moment');
 
@@ -13804,7 +13799,7 @@ var ApplicationState = Backbone.Model.extend({
 });
 
 module.exports = new ApplicationState();
-},{"backbone":24,"moment":25}],9:[function(require,module,exports){
+},{"backbone":26,"moment":27}],8:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13817,7 +13812,7 @@ module.exports = Backbone.Model.extend({
 		selected: false
 	}
 });
-},{"backbone":24}],10:[function(require,module,exports){
+},{"backbone":26}],9:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13830,7 +13825,7 @@ module.exports = Backbone.Model.extend({
 	},
 	urlRoot: '/api/transactions'
 });
-},{"backbone":24}],11:[function(require,module,exports){
+},{"backbone":26}],10:[function(require,module,exports){
 var Backbone = require('backbone');
  
 var TransactionBalance = Backbone.Model.extend({
@@ -13842,7 +13837,7 @@ var TransactionBalance = Backbone.Model.extend({
 });
 
 module.exports = new TransactionBalance();
-},{"backbone":24}],12:[function(require,module,exports){
+},{"backbone":26}],11:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13855,7 +13850,7 @@ __p+='<a href="#" class="category-link">\n	<img src="/images/categories/'+
 return __p;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13864,7 +13859,7 @@ __p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group
 return __p;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13887,11 +13882,53 @@ __p+='<div class="col-sm-3 amount '+
 return __p;
 };
 
+},{}],14:[function(require,module,exports){
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<form role="form">\n	<div class="row">\n		<div class="col-sm-4 form-group">\n			<label>Mese</label>\n			<select name="month" class="month" class="transactions-period-month">\n				';
+ 
+					var now = new Date();
+					var currentMonth = now.getMonth();
+					var im = 0; 
+					_.each(settings.monthsFull, function(m) { 
+				
+__p+=' \n					<option '+
+((__t=( currentMonth == im ? 'selected=\'selected\'' : '' ))==null?'':__t)+
+' value="'+
+((__t=( im ))==null?'':__t)+
+'">'+
+((__t=( m ))==null?'':__t)+
+'</option>\n				';
+ 
+						im++;
+					}); 
+				
+__p+='\n			</select>\n		</div>\n		<div class="col-sm-4 form-group">\n			<label>Anno</label>\n			<select name="year" class="year" class="transactions-period-year">\n				';
+ 
+					var currentYear = now.getFullYear();
+					var startYear = (new Date().getFullYear()) -settings.pastYears; 
+					var endYear = (new Date().getFullYear()) +settings.futureYears; 
+					for (var y = startYear; y<=endYear; y++) {
+				
+__p+=' \n					<option '+
+((__t=( currentYear == y ? 'selected=\'selected\'' : '' ))==null?'':__t)+
+' value="'+
+((__t=( y ))==null?'':__t)+
+'">'+
+((__t=( y ))==null?'':__t)+
+'</option>\n				';
+ } 
+__p+='\n			</select>\n		</div>\n		<div class="col-md-2 text-right">\n			<!-- <label>&nbsp;</label> -->\n			<div class="input-group">\n				<a href="#" class="hide-transactions-period">Annulla</a> &nbsp;\n				<button type="button" class="btn btn-primary confirm-transactions-period">Conferma</button>\n			</div>\n		</div>\n	</div>\n</form>';
+}
+return __p;
+};
+
 },{}],15:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="visible-sm-* hidden-xs">Entrata</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="visible-sm-* hidden-xs">Uscita</span>\n			<span class="visible-xs-* hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance">\n		SALDO: € <span class="balance-value">0.00</span>\n	</div>\n\n	<div class="filters">\n		<div class="btn-group btn-group-lg type">\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutti\n			</button>\n			<button type="button" class="btn btn-default" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				Entrate\n			</button>\n			<button type="button" class="btn btn-default" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				Uscite\n			</button>\n		</div>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
+__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance">\n		SALDO: € <span class="balance-value">0.00</span>\n	</div>\n\n	<div class="filters">\n		<div class="btn-group type">\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button>\n			<button type="button" class="btn btn-default" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs">Uscite</span>\n			</button>\n		</div>\n		<button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
 }
 return __p;
 };
@@ -13948,7 +13985,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/categoryItem.html":12,"backbone":24}],18:[function(require,module,exports){
+},{"../templates/categoryItem.html":11,"backbone":26}],18:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
@@ -13960,7 +13997,7 @@ module.exports = Backbone.View.extend({
 	el: '#containerView', 
 
 	initialize: function() {
-		this.listenTo( ApplicationState, 'change', this.render );	
+		this.listenTo( ApplicationState, 'change:currentView', this.render );	
 		this.render();
 	},
 
@@ -13990,7 +14027,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":8,"./TransactionView":22,"backbone":24}],19:[function(require,module,exports){
+},{"../models/ApplicationState":7,"./TransactionView":23,"backbone":26}],19:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
  
@@ -14026,7 +14063,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":8,"backbone":24}],20:[function(require,module,exports){
+},{"../models/ApplicationState":7,"backbone":26}],20:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14038,7 +14075,7 @@ var template = require('../templates/transactionEditor.html');
 var Transaction = require('../models/Transaction');
 var CategoryCollection = require('../collections/Categories');
 var CategoryItemView = require('../views/CategoryItemView');
-var Settings = require('../config/settings');
+var Settings = require('../../config/settings');
 
 module.exports = Backbone.View.extend({
 
@@ -14175,7 +14212,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../collections/Categories":5,"../config/settings":7,"../models/Transaction":10,"../templates/transactionEditor.html":13,"../views/CategoryItemView":17,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":24,"moment":25,"underscore":26}],21:[function(require,module,exports){
+},{"../../config/settings":24,"../collections/Categories":5,"../models/Transaction":9,"../templates/transactionEditor.html":12,"../views/CategoryItemView":17,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":26,"moment":27,"underscore":28}],21:[function(require,module,exports){
 var moment = require('moment');
 var _ = require('underscore');
 var Backbone = require('backbone');
@@ -14225,7 +14262,74 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/TransactionBalance":11,"../templates/transactionItem.html":14,"backbone":24,"moment":25,"underscore":26}],22:[function(require,module,exports){
+},{"../models/TransactionBalance":10,"../templates/transactionItem.html":13,"backbone":26,"moment":27,"underscore":28}],22:[function(require,module,exports){
+var moment = require('moment');
+var Backbone = require('backbone');
+var _ = require('underscore');
+
+var template = require('../templates/transactionPeriod.html');
+var Transaction = require('../models/Transaction');
+var Settings = require('../../config/settings');
+var ApplicationState = require('../models/ApplicationState');
+
+module.exports = Backbone.View.extend({
+
+	className: 'transactions-period-form', 
+	template: template, 
+
+	initialize: function(options) {
+
+		this.collection = options.collection;
+		this.parent = options.parent;
+	},
+
+	render: function() {
+		
+		var templateData = {
+			settings:Settings, 
+			applicationState:ApplicationState, 
+			_:_
+		};
+
+		this.$el.html( this.template(templateData) );		
+		this.resetForm();
+
+		return this;
+	},
+
+	events: {
+		'click .hide-transactions-period' : 'hide',
+		'click .confirm-transactions-period' : 'confirm'
+	},
+
+	confirm: function(event) {
+		var year = this.$el.find('select.year').val();
+		var month = parseInt(this.$el.find('select.month').val()) +1;
+		ApplicationState.set('currentPeriod', moment(year+'-'+month+'-01','YYYY-MM-DD').toDate() );
+	},
+
+	hide: function(event) {
+		if (event) event.preventDefault();
+		this.$el.slideUp();
+	},
+
+	show: function() {
+		this.$el.slideDown();
+	},
+
+	resetForm: function() {
+		this.$el.find('.form-group select').val('');
+		
+	}, 
+
+	close: function() {
+		this.remove();
+		this.unbind();
+		this.stopListening();
+	}
+
+});
+},{"../../config/settings":24,"../models/ApplicationState":7,"../models/Transaction":9,"../templates/transactionPeriod.html":14,"backbone":26,"moment":27,"underscore":28}],23:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
@@ -14236,6 +14340,9 @@ var TransactionBalance = require('../models/TransactionBalance');
 var TransactionCollection = require('../collections/Transactions');
 var TransactionItemView = require('./TransactionItem');
 var TransactionEditorView = require('./TransactionEditor');
+var TransactionPeriodView = require('./TransactionPeriod');
+var Settings = require('../../config/settings');
+var ApplicationState = require('../models/ApplicationState');
 
 module.exports = Backbone.View.extend({
 
@@ -14247,6 +14354,7 @@ module.exports = Backbone.View.extend({
 		this.listenTo( this.collection, 'reset', this.renderFirstPage );
 		this.listenTo( this.collection, 'add', this.renderRow );
 		this.listenTo( TransactionBalance, 'sync', this.updateBalance );
+		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
 
 		this.page = 1;
 		this.rowViews = [];
@@ -14261,18 +14369,26 @@ module.exports = Backbone.View.extend({
 	events: {
 		'click .new-transaction button': 'showAddEntryForm',
 		'click .more-entries': 'renderNextPage',
-		'click .filters .type button': 'filter'
+		'click .filters .type button': 'filter',
+		'click .period-chooser': 'showPeriodChooser'
 	},
 
 	render: function() {
 		
 		this.$el.html( template() );
+		this.updateCurrentPeriod();
 
 		this.editorView = new TransactionEditorView({
 			collection: this.collection, 
 			parent: this
 		});
 		this.$el.find('.new-transaction').after( this.editorView.render().el );
+
+		this.periodChooserView = new TransactionPeriodView({
+			collection: this.collection, 
+			parent: this
+		});
+		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
 
 		this.renderFirstPage();
 		
@@ -14333,13 +14449,26 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.balance .balance-value').text(model.get('balance'));
 	}, 
 
+	updateCurrentPeriod: function() {
+		var month = Settings.monthsFull[ ApplicationState.get('currentPeriod').getMonth() ];
+		var year = ApplicationState.get('currentPeriod').getFullYear();
+		this.$el.find('.period-chooser .text').html( month + ' ' + year );
+		console.log('updateCurrentPeriod:: '+month+' '+year);
+	},
+
 	showAddEntryForm: function(event) {
 		event.preventDefault();
 		
 		this.$el.find('.new-transaction button').removeClass('selected');
 		$(event.currentTarget).addClass('selected');
 		
+		this.periodChooserView.hide();
 		this.editorView.show();	
+	},
+
+	showPeriodChooser: function(event) {
+		this.editorView.hide();
+		this.periodChooserView.show();		
 	},
 
 	hasPositiveEntrySelected: function() {
@@ -14367,6 +14496,7 @@ module.exports = Backbone.View.extend({
 
 		this.clearEntryRows();
 		this.editorView.close();
+		this.periodChooserView.close();
 
 		this.remove();
 		this.unbind();
@@ -14374,7 +14504,16 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../collections/Transactions":6,"../models/TransactionBalance":11,"../templates/transactions.html":15,"../templates/transactionsHeader.html":16,"./TransactionEditor":20,"./TransactionItem":21,"backbone":24,"moment":25,"underscore":26}],23:[function(require,module,exports){
+},{"../../config/settings":24,"../collections/Transactions":6,"../models/ApplicationState":7,"../models/TransactionBalance":10,"../templates/transactions.html":15,"../templates/transactionsHeader.html":16,"./TransactionEditor":20,"./TransactionItem":21,"./TransactionPeriod":22,"backbone":26,"moment":27,"underscore":28}],24:[function(require,module,exports){
+exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+exports.weekdaysShort = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+exports.pastYears = 3;
+exports.futureYears = 2;
+
+exports.TRANSACTIONS_PER_PAGE = 3;
+},{}],25:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
  * Version 1.1.13
@@ -14629,7 +14768,7 @@ Backbone.sync = function(method, model, options) {
 return Backbone.LocalStorage;
 }));
 
-},{"backbone":24}],24:[function(require,module,exports){
+},{"backbone":26}],26:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -16239,7 +16378,7 @@ return Backbone.LocalStorage;
 
 }));
 
-},{"underscore":26}],25:[function(require,module,exports){
+},{"underscore":28}],27:[function(require,module,exports){
 (function (global){
 //! moment.js
 //! version : 2.8.2
@@ -19058,7 +19197,7 @@ return Backbone.LocalStorage;
 }).call(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors

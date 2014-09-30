@@ -1,0 +1,40 @@
+<form role="form">
+	<div class="row">
+		<div class="col-sm-4 form-group">
+			<label>Mese</label>
+			<select name="month" class="month" class="transactions-period-month">
+				<% 
+					var now = new Date();
+					var currentMonth = now.getMonth();
+					var im = 0; 
+					_.each(settings.monthsFull, function(m) { 
+				%> 
+					<option <%= currentMonth == im ? 'selected=\'selected\'' : '' %> value="<%= im %>"><%= m %></option>
+				<% 
+						im++;
+					}); 
+				%>
+			</select>
+		</div>
+		<div class="col-sm-4 form-group">
+			<label>Anno</label>
+			<select name="year" class="year" class="transactions-period-year">
+				<% 
+					var currentYear = now.getFullYear();
+					var startYear = (new Date().getFullYear()) -settings.pastYears; 
+					var endYear = (new Date().getFullYear()) +settings.futureYears; 
+					for (var y = startYear; y<=endYear; y++) {
+				%> 
+					<option <%= currentYear == y ? 'selected=\'selected\'' : '' %> value="<%= y %>"><%= y %></option>
+				<% } %>
+			</select>
+		</div>
+		<div class="col-md-2 text-right">
+			<!-- <label>&nbsp;</label> -->
+			<div class="input-group">
+				<a href="#" class="hide-transactions-period">Annulla</a> &nbsp;
+				<button type="button" class="btn btn-primary confirm-transactions-period">Conferma</button>
+			</div>
+		</div>
+	</div>
+</form>
