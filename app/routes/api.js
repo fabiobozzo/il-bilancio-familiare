@@ -1,4 +1,5 @@
 var express = require('express');
+var moment = require('moment');
 
 var Transaction = require('../models/transaction');
 var Category = require('../models/category');
@@ -14,13 +15,21 @@ module.exports = function(app) {
 			var limit = req.query.limit || Settings.TRANSACTIONS_PER_PAGE;
 			var page = req.query.p || 1;
 			var filter = req.query.filter || '';
-			var baseSearch = search = { user:req.user._id };
+			var month = req.query.m || parseInt((new Date()).getMonth())+1;
+			var year = req.query.y || parseInt((new Date()).getFullYear());
+			
+			var search = { user:req.user._id };
 			var options = { sort: {dateEntry: -1}, skip: (page-1) * limit, limit: limit+1 };
 
 			switch (filter) {
 				case 'positive': search.positive = true; break;
 				case 'negative': search.positive = false; break;
 			}
+
+			search.dateEntry = { 
+				$gte: moment([year, month - 1]), 
+				$lte: moment([year, month - 1]).endOf('month')
+			};
 
 			Transaction
 				.find( search, null, options)

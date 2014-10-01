@@ -22,12 +22,11 @@ module.exports = Backbone.View.extend({
 		
 		var templateData = {
 			settings:Settings, 
-			applicationState:ApplicationState, 
+			currentMonth: parseInt(ApplicationState.get('currentPeriod').getMonth()),
+			currentYear: parseInt(ApplicationState.get('currentPeriod').getFullYear()), 
 			_:_
 		};
-
 		this.$el.html( this.template(templateData) );		
-		this.resetForm();
 
 		return this;
 	},
@@ -41,6 +40,7 @@ module.exports = Backbone.View.extend({
 		var year = this.$el.find('select.year').val();
 		var month = parseInt(this.$el.find('select.month').val()) +1;
 		ApplicationState.set('currentPeriod', moment(year+'-'+month+'-01','YYYY-MM-DD').toDate() );
+		this.hide();
 	},
 
 	hide: function(event) {
@@ -51,11 +51,6 @@ module.exports = Backbone.View.extend({
 	show: function() {
 		this.$el.slideDown();
 	},
-
-	resetForm: function() {
-		this.$el.find('.form-group select').val('');
-		
-	}, 
 
 	close: function() {
 		this.remove();

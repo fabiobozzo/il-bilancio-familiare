@@ -4,8 +4,6 @@
 			<label>Mese</label>
 			<select name="month" class="month" class="transactions-period-month">
 				<% 
-					var now = new Date();
-					var currentMonth = now.getMonth();
 					var im = 0; 
 					_.each(settings.monthsFull, function(m) { 
 				%> 
@@ -20,7 +18,6 @@
 			<label>Anno</label>
 			<select name="year" class="year" class="transactions-period-year">
 				<% 
-					var currentYear = now.getFullYear();
 					var startYear = (new Date().getFullYear()) -settings.pastYears; 
 					var endYear = (new Date().getFullYear()) +settings.futureYears; 
 					for (var y = startYear; y<=endYear; y++) {

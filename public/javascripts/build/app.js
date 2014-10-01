@@ -13762,7 +13762,8 @@ module.exports = Backbone.Collection.extend({
 });
 },{"../models/Category":8,"backbone":26}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
-var Transaction = require('../models/Transaction')
+var Transaction = require('../models/Transaction');
+var ApplicationState = require('../models/ApplicationState');
  
 var TransactionCollection = Backbone.Collection.extend({
 	
@@ -13771,20 +13772,58 @@ var TransactionCollection = Backbone.Collection.extend({
 	url: '/api/transactions',
 	
 	initialize: function() {
+		
 		this.hasNextPage = false;
 		this.filter = 'all';
+		this.page = 1;
+		this.updateCurrentPeriod();
+
+		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
 	},
 
 	parse: function(response) {
 		this.hasNextPage = response.hasNextPage;
 		this.balance = response.balance;
 		return response.transactions || [];
+	},
+
+	refetch: function() {
+		this.page = 1;
+		this.fetch({
+			reset:true,
+			data: {
+				filter: this.filter, 
+				p: this.page, 
+				m: this.month, 
+				y: this.year
+			}
+		});
+	},
+
+	fetchNextPage: function(callback) {
+		this.page++;
+		this.fetch({ 
+			add: true, 
+			data: {
+				filter: this.filter, 
+				p: this.page, 
+				m: this.month, 
+				y: this.year
+			}, 
+			success: callback
+		});
+	},
+
+	updateCurrentPeriod: function() {
+		this.month = parseInt(ApplicationState.get('currentPeriod').getMonth()) +1;
+		this.year = parseInt(ApplicationState.get('currentPeriod').getFullYear());
 	}
 
 });
 
 module.exports = new TransactionCollection();
-},{"../models/Transaction":9,"backbone":26}],7:[function(require,module,exports){
+console.log("new TransactionCollection");
+},{"../models/ApplicationState":7,"../models/Transaction":9,"backbone":26}],7:[function(require,module,exports){
 var Backbone = require('backbone');
 var moment = require('moment');
 
@@ -13799,6 +13838,7 @@ var ApplicationState = Backbone.Model.extend({
 });
 
 module.exports = new ApplicationState();
+console.log("new ApplicationState");
 },{"backbone":26,"moment":27}],8:[function(require,module,exports){
 var Backbone = require('backbone');
  
@@ -13888,8 +13928,6 @@ var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments
 with(obj||{}){
 __p+='<form role="form">\n	<div class="row">\n		<div class="col-sm-4 form-group">\n			<label>Mese</label>\n			<select name="month" class="month" class="transactions-period-month">\n				';
  
-					var now = new Date();
-					var currentMonth = now.getMonth();
 					var im = 0; 
 					_.each(settings.monthsFull, function(m) { 
 				
@@ -13906,7 +13944,6 @@ __p+=' \n					<option '+
 				
 __p+='\n			</select>\n		</div>\n		<div class="col-sm-4 form-group">\n			<label>Anno</label>\n			<select name="year" class="year" class="transactions-period-year">\n				';
  
-					var currentYear = now.getFullYear();
 					var startYear = (new Date().getFullYear()) -settings.pastYears; 
 					var endYear = (new Date().getFullYear()) +settings.futureYears; 
 					for (var y = startYear; y<=endYear; y++) {
@@ -14162,10 +14199,7 @@ module.exports = Backbone.View.extend({
 
 	entryAdded: function(model, response) {
 		this.resetForm();
-		this.collection.fetch({
-			reset: true,
-			filter: this.collection.filter 
-		});
+		this.collection.refetch();
 	},
 
 	entryAddError: function(model, response) {
@@ -14287,12 +14321,11 @@ module.exports = Backbone.View.extend({
 		
 		var templateData = {
 			settings:Settings, 
-			applicationState:ApplicationState, 
+			currentMonth: parseInt(ApplicationState.get('currentPeriod').getMonth()),
+			currentYear: parseInt(ApplicationState.get('currentPeriod').getFullYear()), 
 			_:_
 		};
-
 		this.$el.html( this.template(templateData) );		
-		this.resetForm();
 
 		return this;
 	},
@@ -14306,6 +14339,7 @@ module.exports = Backbone.View.extend({
 		var year = this.$el.find('select.year').val();
 		var month = parseInt(this.$el.find('select.month').val()) +1;
 		ApplicationState.set('currentPeriod', moment(year+'-'+month+'-01','YYYY-MM-DD').toDate() );
+		this.hide();
 	},
 
 	hide: function(event) {
@@ -14316,11 +14350,6 @@ module.exports = Backbone.View.extend({
 	show: function() {
 		this.$el.slideDown();
 	},
-
-	resetForm: function() {
-		this.$el.find('.form-group select').val('');
-		
-	}, 
 
 	close: function() {
 		this.remove();
@@ -14356,14 +14385,13 @@ module.exports = Backbone.View.extend({
 		this.listenTo( TransactionBalance, 'sync', this.updateBalance );
 		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
 
-		this.page = 1;
 		this.rowViews = [];
 		this.displayDay = '';
 
 		this.render();
 		_.bindAll(this, 'setMoreEntriesVisibility');
 		
-		this.collection.fetch({ reset:true });
+		this.collection.refetch();
 	},
 
 	events: {
@@ -14376,7 +14404,6 @@ module.exports = Backbone.View.extend({
 	render: function() {
 		
 		this.$el.html( template() );
-		this.updateCurrentPeriod();
 
 		this.editorView = new TransactionEditorView({
 			collection: this.collection, 
@@ -14391,6 +14418,7 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
 
 		this.renderFirstPage();
+		this.updateCurrentPeriod();
 		
 		return this;
 	},
@@ -14417,22 +14445,13 @@ module.exports = Backbone.View.extend({
 	},
 
 	renderNextPage: function() {
-		this.page++;
-		this.collection.fetch({ 
-			add: true, 
-			data: {
-				p: this.page,
-				filter: this.collection.filter
-			}, 
-			success: this.setMoreEntriesVisibility
-		});
+		this.collection.fetchNextPage(this.setMoreEntriesVisibility);
 	},
 
 	clearEntryRows: function() {
 		this.rowViews.forEach(function(v) {
 			if (v.close) v.close();
 		});
-		this.page = 1;
 		this.rowViews = [];
 		this.$el.find('.entry-list').html('');
 	},
@@ -14453,7 +14472,8 @@ module.exports = Backbone.View.extend({
 		var month = Settings.monthsFull[ ApplicationState.get('currentPeriod').getMonth() ];
 		var year = ApplicationState.get('currentPeriod').getFullYear();
 		this.$el.find('.period-chooser .text').html( month + ' ' + year );
-		console.log('updateCurrentPeriod:: '+month+' '+year);
+		this.periodChooserView.hide();
+		this.collection.refetch();
 	},
 
 	showAddEntryForm: function(event) {
@@ -14482,13 +14502,8 @@ module.exports = Backbone.View.extend({
 		
 		this.$el.find('.filters .type button').removeClass('selected');
 		button.addClass('selected');
-		
-		this.collection.fetch({
-			reset:true,
-			data: {
-				filter: this.collection.filter
-			}
-		});
+
+		this.collection.refetch();
 
 	},
 

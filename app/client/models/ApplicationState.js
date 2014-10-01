@@ -12,3 +12,4 @@ var ApplicationState = Backbone.Model.extend({
 });
 
 module.exports = new ApplicationState();
+console.log("new ApplicationState");

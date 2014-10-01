@@ -17,7 +17,6 @@
     "bower-resolve": "^2.2.0",
     "browserify": "^5.10.1",
     "browserify-shim": "^3.7.0",
-    "captchapng": "0.0.1",
     "connect-flash": "*",
     "cookie-parser": "*",
     "debowerify": "^0.8.1",

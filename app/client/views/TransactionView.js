@@ -24,14 +24,13 @@ module.exports = Backbone.View.extend({
 		this.listenTo( TransactionBalance, 'sync', this.updateBalance );
 		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
 
-		this.page = 1;
 		this.rowViews = [];
 		this.displayDay = '';
 
 		this.render();
 		_.bindAll(this, 'setMoreEntriesVisibility');
 		
-		this.collection.fetch({ reset:true });
+		this.collection.refetch();
 	},
 
 	events: {
@@ -44,7 +43,6 @@ module.exports = Backbone.View.extend({
 	render: function() {
 		
 		this.$el.html( template() );
-		this.updateCurrentPeriod();
 
 		this.editorView = new TransactionEditorView({
 			collection: this.collection, 
@@ -59,6 +57,7 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
 
 		this.renderFirstPage();
+		this.updateCurrentPeriod();
 		
 		return this;
 	},
@@ -85,22 +84,13 @@ module.exports = Backbone.View.extend({
 	},
 
 	renderNextPage: function() {
-		this.page++;
-		this.collection.fetch({ 
-			add: true, 
-			data: {
-				p: this.page,
-				filter: this.collection.filter
-			}, 
-			success: this.setMoreEntriesVisibility
-		});
+		this.collection.fetchNextPage(this.setMoreEntriesVisibility);
 	},
 
 	clearEntryRows: function() {
 		this.rowViews.forEach(function(v) {
 			if (v.close) v.close();
 		});
-		this.page = 1;
 		this.rowViews = [];
 		this.$el.find('.entry-list').html('');
 	},
@@ -122,6 +112,7 @@ module.exports = Backbone.View.extend({
 		var year = ApplicationState.get('currentPeriod').getFullYear();
 		this.$el.find('.period-chooser .text').html( month + ' ' + year );
 		this.periodChooserView.hide();
+		this.collection.refetch();
 	},
 
 	showAddEntryForm: function(event) {
@@ -150,13 +141,8 @@ module.exports = Backbone.View.extend({
 		
 		this.$el.find('.filters .type button').removeClass('selected');
 		button.addClass('selected');
-		
-		this.collection.fetch({
-			reset:true,
-			data: {
-				filter: this.collection.filter
-			}
-		});
+
+		this.collection.refetch();
 
 	},
 

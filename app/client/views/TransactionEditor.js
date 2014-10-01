@@ -96,10 +96,7 @@ module.exports = Backbone.View.extend({
 
 	entryAdded: function(model, response) {
 		this.resetForm();
-		this.collection.fetch({
-			reset: true,
-			filter: this.collection.filter 
-		});
+		this.collection.refetch();
 	},
 
 	entryAddError: function(model, response) {
