@@ -1,28 +1,23 @@
 # Il bilancio familiare
 
 This project is a simple expense tracking software. 
-I developed it for learning purposes, but actually it is fully functional and ready to use.
+It has been developed for learning purposes, however it is fully functional and ready to use.
 
-You can use it to keep track of your personal financial situation, tracking incomes and outcomes, 
+Everybody can use it to keep track of personal financial situation, tracking incomes and outcomes, 
 and having a detailed reporting dashboard. 
 
-Keeping track of your activities is always a good but boring habit. The solution is to have a tool 
-that makes accomplishing this task easy and flexible.
+Keeping track of your activities is always a good but boring habit. 
+The solution is having a tool that makes accomplishing that task easy and flexible.
 
 ## Features
 
 * Classic login + social networks authentication
-* Basic transaction registration
-* ...
+* Basic transaction registration ( in / out )
+* Transactions reporting by date and category
+* Day 0 balance calculation
+* Goals
 
 ## Technology
 
-Il bilancio familiare is written for Node.js platform, and makes use of several technologies: 
-
-* MongoDB: storage engine
-* ExpressJS: web mvc framework (server-side) + Jade template engine
-* PassportJS: (multi)authentication provider
-* BackboneJS: single page application mvc framework (client-side)
-* Twitter Bootstrap: responsive gui framework
-* LESS: css preprocessor
-* Grunt: task runner, build tool
+Il bilancio familiare is written for Node.js platform, and uses MongoDB as its storage engine.
+Running the project is very easy, just edit 'mongoUri' app.js with you Mongo instance endpoint uri and launch it with 'node app.js'.
