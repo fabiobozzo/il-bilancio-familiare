@@ -69,13 +69,14 @@ module.exports = Backbone.View.extend({
 	show: function() {
 		this.updateCategories();
 		this.$el.slideDown();
+		this.$el.find('.entryAmountKind').html( this.parent.isPositiveEntrySelected() ? '+' : '-' );
 	},
 
 	addEntry: function() {
 		
 		var entryData = {};
 
-		entryData.positive = this.parent.hasPositiveEntrySelected();
+		entryData.positive = this.parent.isPositiveEntrySelected();
 		entryData.amount = this.$el.find('input[name=amount]').val();
 		entryData.dateEntry = moment( this.$el.find('input[name=dateEntry]').val(), 'DD-MM-YYYY' ).toDate();
 		entryData.description = this.$el.find('input[name=description]').val();
@@ -120,7 +121,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	updateCategories: function() {
-		var showPositiveCategories = this.parent.hasPositiveEntrySelected();
+		var showPositiveCategories = this.parent.isPositiveEntrySelected();
 		this.categorySubviews.forEach(function(v) {
 			if ( v.model.get('positive')==showPositiveCategories ) { 
 				v.$el.show();

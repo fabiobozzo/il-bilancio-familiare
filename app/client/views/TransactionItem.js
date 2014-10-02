@@ -27,17 +27,19 @@ module.exports = Backbone.View.extend({
 	},
 
 	delete: function() {
-		var el = this.$el;
-		this.model.destroy({
-			success: function() {
-				TransactionBalance.fetch();
-				el.addClass('deleted');
-				el.find('.delete button').hide();
-			},
-			error: function() {
-				alert('Errore. Impossibile eliminare questa transazione.');
-			}
-		});
+		if (confirm("Confermi di voler eliminare questa transazione?")) {
+			var el = this.$el;
+			this.model.destroy({
+				success: function() {
+					TransactionBalance.fetch();
+					el.addClass('deleted');
+					el.find('.delete button').hide();
+				},
+				error: function() {
+					alert('Errore. Impossibile eliminare questa transazione.');
+				}
+			});
+		}
 	},
 
 	close: function() {

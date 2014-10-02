@@ -1,18 +1,15 @@
-<div class="col-sm-3 amount <%= positive ? 'positive' : 'negative' %> ">
+<div class="col-xs-6 col-sm-3 amount <%= positive ? 'positive' : 'negative' %> ">
 	<%= positive ? '+' : '-' %>
 	<%= amount %> €
 </div>
-<div class="col-sm-2 category">
+<div class="col-xs-4 col-sm-2 category">
 	<img src="/images/categories/<%= category.code %>.png" class="category-img" width="16" height="16" align="absmiddle" />
 	<span class="category-label"><%= category.title %></span>
 </div>
-<div class="col-sm-6 description">
+<div class="hidden-xs col-sm-6 description">
 	<%= description %>
 </div>
-<!-- <div class="col-sm-2 entry-date">
-	<%= moment(dateEntry).format('DD/MM/YYYY') %>		
-</div> -->
-<div class="col-sm-1 delete">
+<div class="col-xs-2 col-sm-1 delete">
 	<button type="button" class="btn btn-default">
 		<span class="glyphicon glyphicon-remove"></span>
 	</button>

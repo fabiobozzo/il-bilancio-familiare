@@ -130,7 +130,7 @@ module.exports = Backbone.View.extend({
 		this.periodChooserView.show();		
 	},
 
-	hasPositiveEntrySelected: function() {
+	isPositiveEntrySelected: function() {
 		return this.$el.find('.new-transaction button.selected').hasClass('add-positive-entry');
 	},
 

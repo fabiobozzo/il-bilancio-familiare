@@ -13894,7 +13894,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group">\n			<label>Categoria</label>\n			<ul class="category-items"></ul>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-2 form-group">\n			<label for="entryAmount">Importo (€)</label>\n			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />\n		</div>\n		<div class="col-md-6 form-group">\n			<label for="entryDescription">Note</label>\n			<input type="text" name="description" class="form-control" id="entryDescription" placeholder="Descrizione opzionale" />\n		</div>\n		<div class="col-md-2 form-group">\n			<label for="entryDate">Data</label>\n			<div class="input-group">\n				<input type="date" name="dateEntry" class="form-control entryDate" id="entryDate" placeholder="gg/mm/aaaa" />\n				<span class="input-group-addon" data-toggle="booty-datepicker">     \n					<span class="glyphicon glyphicon-calendar"></span>\n				</span>\n			</div>\n		</div>\n		<div class="col-md-2 text-right">\n			<label>&nbsp;</label>\n			<div class="input-group">\n				<a href="#" class="hide-add-entry">Annulla</a> \n				<button type="button" class="btn btn-primary add-entry">Conferma</button>\n			</div>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-12" id="pickadate-container"></div>\n	</div>\n</form>';
+__p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group">\n			<label>Categoria</label>\n			<ul class="category-items"></ul>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-2 form-group">\n			<label for="entryAmount">Importo (€) <span class="entryAmountKind"></span></label>\n			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />\n		</div>\n		<div class="col-md-6 form-group">\n			<label for="entryDescription">Note</label>\n			<input type="text" name="description" class="form-control" id="entryDescription" placeholder="Descrizione opzionale" />\n		</div>\n		<div class="col-md-2 form-group">\n			<label for="entryDate">Data</label>\n			<div class="input-group">\n				<input type="date" name="dateEntry" class="form-control entryDate" id="entryDate" placeholder="gg/mm/aaaa" />\n				<span class="input-group-addon" data-toggle="booty-datepicker">     \n					<span class="glyphicon glyphicon-calendar"></span>\n				</span>\n			</div>\n		</div>\n		<div class="col-md-2 text-right">\n			<label>&nbsp;</label>\n			<div class="input-group">\n				<a href="#" class="hide-add-entry">Annulla</a> \n				<button type="button" class="btn btn-primary add-entry">Conferma</button>\n			</div>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-12" id="pickadate-container"></div>\n	</div>\n</form>';
 }
 return __p;
 };
@@ -13903,21 +13903,19 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="col-sm-3 amount '+
+__p+='<div class="col-xs-6 col-sm-3 amount '+
 ((__t=( positive ? 'positive' : 'negative' ))==null?'':__t)+
 ' ">\n	'+
 ((__t=( positive ? '+' : '-' ))==null?'':__t)+
 '\n	'+
 ((__t=( amount ))==null?'':__t)+
-' €\n</div>\n<div class="col-sm-2 category">\n	<img src="/images/categories/'+
+' €\n</div>\n<div class="col-xs-4 col-sm-2 category">\n	<img src="/images/categories/'+
 ((__t=( category.code ))==null?'':__t)+
 '.png" class="category-img" width="16" height="16" align="absmiddle" />\n	<span class="category-label">'+
 ((__t=( category.title ))==null?'':__t)+
-'</span>\n</div>\n<div class="col-sm-6 description">\n	'+
+'</span>\n</div>\n<div class="hidden-xs col-sm-6 description">\n	'+
 ((__t=( description ))==null?'':__t)+
-'\n</div>\n<!-- <div class="col-sm-2 entry-date">\n	'+
-((__t=( moment(dateEntry).format('DD/MM/YYYY') ))==null?'':__t)+
-'		\n</div> -->\n<div class="col-sm-1 delete">\n	<button type="button" class="btn btn-default">\n		<span class="glyphicon glyphicon-remove"></span>\n	</button>\n</div>\n';
+'\n</div>\n<div class="col-xs-2 col-sm-1 delete">\n	<button type="button" class="btn btn-default">\n		<span class="glyphicon glyphicon-remove"></span>\n	</button>\n</div>\n';
 }
 return __p;
 };
@@ -13965,7 +13963,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance">\n		SALDO: € <span class="balance-value">0.00</span>\n	</div>\n\n	<div class="filters">\n		<div class="btn-group type">\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button>\n			<button type="button" class="btn btn-default" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs">Uscite</span>\n			</button>\n		</div>\n		<button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
+__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance alert alert-success text-center">\n		SALDO: € <span class="balance-value">0.00</span>\n	</div>\n\n	<div class="filters text-center">\n		<div class="btn-group type">\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button>\n			<button type="button" class="btn btn-default" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs hidden-sm">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs hidden-sm">Uscite</span>\n			</button>\n		</div>\n		<button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
 }
 return __p;
 };
@@ -13974,9 +13972,9 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="transactions-date-header">'+
+__p+='<div class="transactions-date-header">\n	<span class="label label-info">'+
 ((__t=( displayDay ))==null?'':__t)+
-'</div>';
+'</span>\n</div>';
 }
 return __p;
 };
@@ -14172,13 +14170,14 @@ module.exports = Backbone.View.extend({
 	show: function() {
 		this.updateCategories();
 		this.$el.slideDown();
+		this.$el.find('.entryAmountKind').html( this.parent.isPositiveEntrySelected() ? '+' : '-' );
 	},
 
 	addEntry: function() {
 		
 		var entryData = {};
 
-		entryData.positive = this.parent.hasPositiveEntrySelected();
+		entryData.positive = this.parent.isPositiveEntrySelected();
 		entryData.amount = this.$el.find('input[name=amount]').val();
 		entryData.dateEntry = moment( this.$el.find('input[name=dateEntry]').val(), 'DD-MM-YYYY' ).toDate();
 		entryData.description = this.$el.find('input[name=description]').val();
@@ -14223,7 +14222,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	updateCategories: function() {
-		var showPositiveCategories = this.parent.hasPositiveEntrySelected();
+		var showPositiveCategories = this.parent.isPositiveEntrySelected();
 		this.categorySubviews.forEach(function(v) {
 			if ( v.model.get('positive')==showPositiveCategories ) { 
 				v.$el.show();
@@ -14276,17 +14275,19 @@ module.exports = Backbone.View.extend({
 	},
 
 	delete: function() {
-		var el = this.$el;
-		this.model.destroy({
-			success: function() {
-				TransactionBalance.fetch();
-				el.addClass('deleted');
-				el.find('.delete button').hide();
-			},
-			error: function() {
-				alert('Errore. Impossibile eliminare questa transazione.');
-			}
-		});
+		if (confirm("Confermi di voler eliminare questa transazione?")) {
+			var el = this.$el;
+			this.model.destroy({
+				success: function() {
+					TransactionBalance.fetch();
+					el.addClass('deleted');
+					el.find('.delete button').hide();
+				},
+				error: function() {
+					alert('Errore. Impossibile eliminare questa transazione.');
+				}
+			});
+		}
 	},
 
 	close: function() {
@@ -14491,7 +14492,7 @@ module.exports = Backbone.View.extend({
 		this.periodChooserView.show();		
 	},
 
-	hasPositiveEntrySelected: function() {
+	isPositiveEntrySelected: function() {
 		return this.$el.find('.new-transaction button.selected').hasClass('add-positive-entry');
 	},
 
