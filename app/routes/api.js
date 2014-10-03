@@ -45,7 +45,8 @@ module.exports = function(app) {
 					if (result.hasNextPage) {
 						result.transactions.pop();
 					}
-					res.json(result);
+					setTimeout(function() { res.json(result); },3000);
+					
 			});
 
 		})
@@ -83,7 +84,7 @@ module.exports = function(app) {
 					if (err) {
 						return res.json({error:err.message});
 					}
-					res.json({ balance: (result.length>0) ? result[0].total : 0 });
+					setTimeout(function() { res.json({ balance: (result.length>0) ? result[0].total : 0 }); },3000);
 				}
 			);
 		});

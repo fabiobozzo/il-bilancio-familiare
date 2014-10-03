@@ -58,6 +58,7 @@
 			}
 		}
 
+		// XS
 		@media(max-width:@screen-xs-max) {
 			.new-transaction {
 				.btn {
@@ -69,8 +70,12 @@
 					-moz-border-radius: 0;
 				}
 			}
+			.balance { 
+				margin-top: 1em;
+			}
 		}
 
+		// SM - UP
 		@media(min-width:@screen-sm-min) {
 
 			.balance { 
@@ -149,10 +154,9 @@
 	.transactions-date-header {
 		display: block;
 		text-align: center;
-		.label {
-			display: block;
-			margin-top: 2em;
-		}
+		margin-top: 1em;
+		font-size: 1.5em;
+		border-bottom: 2px solid #777;
 	}
 
 	button.more-entries {

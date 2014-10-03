@@ -23,4 +23,6 @@ $(function() {
 		$('.full-height').css({'min-height': (viewportheight)-(headerheight) });
 	});
 
+	localStorage.clear();
+
 });

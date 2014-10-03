@@ -29,6 +29,9 @@ module.exports = Backbone.View.extend({
 
 		this.render();
 		_.bindAll(this, 'setMoreEntriesVisibility');
+		_.bindAll(this, 'renderRow');
+		_.bindAll(this, 'showTransactionsLoader');
+		_.bindAll(this, 'showBalanceLoader');
 		
 		this.collection.refetch();
 	},
@@ -56,30 +59,35 @@ module.exports = Backbone.View.extend({
 		});
 		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
 
-		this.renderFirstPage();
 		this.updateCurrentPeriod();
+		this.showBalanceLoader();
+		this.showTransactionsLoader();
 		
 		return this;
 	},
 
 	renderRow: function(model) {
-		var day = moment(model.get('dateEntry')).format('DD/MM/YYYY')
+		var day = moment(model.get('dateEntry')).format('DD/MM/YYYY');
+		var dayToDisplay = Settings.weekdaysFull[moment(model.get('dateEntry')).format('d')] + ' ' + moment(model.get('dateEntry')).format('D');
 		if ( day!=this.displayDay ) {
 			this.displayDay = day;
-			this.$el.find('.entry-list').append(templateGroupHeader( {displayDay:day} ));
+			this.$el.find('.entry-list').append(templateGroupHeader( {displayDay:dayToDisplay} ));
 		}
-		var row = new TransactionItemView( model );
+		var row = new TransactionItemView( model,this );
 		this.rowViews.push( row );
 		this.$el.find('.entry-list').append( row.render().el );
 	},
 
 	renderFirstPage: function() {
+
 		this.displayDay = '';
 		this.clearEntryRows();
 		this.collection.each(function(item) {
 			this.renderRow(item);
 		}, this);
 		this.setMoreEntriesVisibility();
+
+		this.showBalanceLoader();
 		TransactionBalance.fetch();
 	},
 
@@ -107,11 +115,21 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.balance .balance-value').text(model.get('balance'));
 	}, 
 
+	showBalanceLoader: function() {
+		this.$el.find('.controls-container .balance .balance-value').html(Settings.LOADER_GIF_TAG);
+	},
+
+	showTransactionsLoader: function() {
+		this.$el.find('.entry-list').html(Settings.LOADER_GIF_TAG);
+	},
+
 	updateCurrentPeriod: function() {
 		var month = Settings.monthsFull[ ApplicationState.get('currentPeriod').getMonth() ];
 		var year = ApplicationState.get('currentPeriod').getFullYear();
 		this.$el.find('.period-chooser .text').html( month + ' ' + year );
 		this.periodChooserView.hide();
+
+		this.showTransactionsLoader();
 		this.collection.refetch();
 	},
 
@@ -142,6 +160,7 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.filters .type button').removeClass('selected');
 		button.addClass('selected');
 
+		this.showTransactionsLoader();
 		this.collection.refetch();
 
 	},

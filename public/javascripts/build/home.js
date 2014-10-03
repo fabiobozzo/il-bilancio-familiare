@@ -11332,5 +11332,7 @@ $(function() {
 		$('.full-height').css({'min-height': (viewportheight)-(headerheight) });
 	});
 
+	localStorage.clear();
+
 });
 },{"./bower_components/bootstrap/dist/js/bootstrap.js":1,"./bower_components/jquery/dist/jquery.js":2}]},{},[3]);

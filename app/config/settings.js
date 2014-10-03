@@ -6,3 +6,4 @@ exports.pastYears = 3;
 exports.futureYears = 2;
 
 exports.TRANSACTIONS_PER_PAGE = 3;
+exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';

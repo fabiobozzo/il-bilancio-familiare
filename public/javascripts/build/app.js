@@ -13915,7 +13915,7 @@ __p+='<div class="col-xs-6 col-sm-3 amount '+
 ((__t=( category.title ))==null?'':__t)+
 '</span>\n</div>\n<div class="hidden-xs col-sm-6 description">\n	'+
 ((__t=( description ))==null?'':__t)+
-'\n</div>\n<div class="col-xs-2 col-sm-1 delete">\n	<button type="button" class="btn btn-default">\n		<span class="glyphicon glyphicon-remove"></span>\n	</button>\n</div>\n';
+'\n</div>\n<div class="col-xs-2 col-sm-1 text-center delete">\n	<button type="button" class="btn btn-default">\n		<span class="glyphicon glyphicon-remove"></span>\n	</button>\n</div>\n';
 }
 return __p;
 };
@@ -13972,9 +13972,9 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="transactions-date-header">\n	<span class="label label-info">'+
+__p+='<div class="transactions-date-header">\n	'+
 ((__t=( displayDay ))==null?'':__t)+
-'</span>\n</div>';
+'\n</div>';
 }
 return __p;
 };
@@ -14259,8 +14259,9 @@ module.exports = Backbone.View.extend({
 	className: 'row entryRow',
 	template: template, 
 
-	initialize: function(model) {
+	initialize: function(model,parent) {
 		this.model = model;
+		this.parent = parent;
 		_.bindAll(this, 'delete');
 	},
 
@@ -14279,7 +14280,10 @@ module.exports = Backbone.View.extend({
 			var el = this.$el;
 			this.model.destroy({
 				success: function() {
+
+					this.parent.showBalanceLoader();
 					TransactionBalance.fetch();
+					
 					el.addClass('deleted');
 					el.find('.delete button').hide();
 				},
@@ -14391,6 +14395,9 @@ module.exports = Backbone.View.extend({
 
 		this.render();
 		_.bindAll(this, 'setMoreEntriesVisibility');
+		_.bindAll(this, 'renderRow');
+		_.bindAll(this, 'showTransactionsLoader');
+		_.bindAll(this, 'showBalanceLoader');
 		
 		this.collection.refetch();
 	},
@@ -14418,30 +14425,36 @@ module.exports = Backbone.View.extend({
 		});
 		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
 
-		this.renderFirstPage();
 		this.updateCurrentPeriod();
+		this.showBalanceLoader();
+		this.showTransactionsLoader();
+		this.setMoreEntriesVisibility();
 		
 		return this;
 	},
 
 	renderRow: function(model) {
-		var day = moment(model.get('dateEntry')).format('DD/MM/YYYY')
+		var day = moment(model.get('dateEntry')).format('DD/MM/YYYY');
+		var dayToDisplay = Settings.weekdaysFull[moment(model.get('dateEntry')).format('d')] + ' ' + moment(model.get('dateEntry')).format('D');
 		if ( day!=this.displayDay ) {
 			this.displayDay = day;
-			this.$el.find('.entry-list').append(templateGroupHeader( {displayDay:day} ));
+			this.$el.find('.entry-list').append(templateGroupHeader( {displayDay:dayToDisplay} ));
 		}
-		var row = new TransactionItemView( model );
+		var row = new TransactionItemView( model,this );
 		this.rowViews.push( row );
 		this.$el.find('.entry-list').append( row.render().el );
 	},
 
 	renderFirstPage: function() {
+
 		this.displayDay = '';
 		this.clearEntryRows();
 		this.collection.each(function(item) {
 			this.renderRow(item);
 		}, this);
 		this.setMoreEntriesVisibility();
+
+		this.showBalanceLoader();
 		TransactionBalance.fetch();
 	},
 
@@ -14469,11 +14482,21 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.balance .balance-value').text(model.get('balance'));
 	}, 
 
+	showBalanceLoader: function() {
+		this.$el.find('.controls-container .balance .balance-value').html(Settings.LOADER_GIF_TAG);
+	},
+
+	showTransactionsLoader: function() {
+		this.$el.find('.entry-list').html(Settings.LOADER_GIF_TAG);
+	},
+
 	updateCurrentPeriod: function() {
 		var month = Settings.monthsFull[ ApplicationState.get('currentPeriod').getMonth() ];
 		var year = ApplicationState.get('currentPeriod').getFullYear();
 		this.$el.find('.period-chooser .text').html( month + ' ' + year );
 		this.periodChooserView.hide();
+
+		this.showTransactionsLoader();
 		this.collection.refetch();
 	},
 
@@ -14504,6 +14527,7 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.filters .type button').removeClass('selected');
 		button.addClass('selected');
 
+		this.showTransactionsLoader();
 		this.collection.refetch();
 
 	},
@@ -14529,6 +14553,7 @@ exports.pastYears = 3;
 exports.futureYears = 2;
 
 exports.TRANSACTIONS_PER_PAGE = 3;
+exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';
 },{}],25:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
@@ -16397,7 +16422,7 @@ return Backbone.LocalStorage;
 },{"underscore":28}],27:[function(require,module,exports){
 (function (global){
 //! moment.js
-//! version : 2.8.2
+//! version : 2.8.3
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -16408,7 +16433,7 @@ return Backbone.LocalStorage;
     ************************************/
 
     var moment,
-        VERSION = '2.8.2',
+        VERSION = '2.8.3',
         // the global-scope this is NOT the global object in Node.js
         globalScope = typeof global !== 'undefined' ? global : this,
         oldGlobalMoment,
@@ -17891,6 +17916,9 @@ return Backbone.LocalStorage;
         for (i = 0; i < config._f.length; i++) {
             currentScore = 0;
             tempConfig = copyConfig({}, config);
+            if (config._useUTC != null) {
+                tempConfig._useUTC = config._useUTC;
+            }
             tempConfig._pf = defaultParsingFlags();
             tempConfig._f = config._f[i];
             makeDateFromStringAndFormat(tempConfig);
@@ -17955,6 +17983,14 @@ return Backbone.LocalStorage;
         }
     }
 
+    function map(arr, fn) {
+        var res = [], i;
+        for (i = 0; i < arr.length; ++i) {
+            res.push(fn(arr[i], i));
+        }
+        return res;
+    }
+
     function makeDateFromInput(config) {
         var input = config._i, matched;
         if (input === undefined) {
@@ -17966,7 +18002,9 @@ return Backbone.LocalStorage;
         } else if (typeof input === 'string') {
             makeDateFromString(config);
         } else if (isArray(input)) {
-            config._a = input.slice(0);
+            config._a = map(input.slice(0), function (obj) {
+                return parseInt(obj, 10);
+            });
             dateFromConfig(config);
         } else if (typeof(input) === 'object') {
             dateFromObject(config);
@@ -18521,7 +18559,7 @@ return Backbone.LocalStorage;
                 this._isUTC = false;
 
                 if (keepLocalTime) {
-                    this.add(this._d.getTimezoneOffset(), 'm');
+                    this.add(this._dateTzOffset(), 'm');
                 }
             }
             return this;
@@ -18539,7 +18577,7 @@ return Backbone.LocalStorage;
         diff : function (input, units, asFloat) {
             var that = makeAs(input, this),
                 zoneDiff = (this.zone() - that.zone()) * 6e4,
-                diff, output;
+                diff, output, daysAdjust;
 
             units = normalizeUnits(units);
 
@@ -18550,11 +18588,12 @@ return Backbone.LocalStorage;
                 output = ((this.year() - that.year()) * 12) + (this.month() - that.month());
                 // adjust by taking difference in days, average number of days
                 // and dst in the given months.
-                output += ((this - moment(this).startOf('month')) -
-                        (that - moment(that).startOf('month'))) / diff;
+                daysAdjust = (this - moment(this).startOf('month')) -
+                    (that - moment(that).startOf('month'));
                 // same as above but with zones, to negate all dst
-                output -= ((this.zone() - moment(this).startOf('month').zone()) -
-                        (that.zone() - moment(that).startOf('month').zone())) * 6e4 / diff;
+                daysAdjust -= ((this.zone() - moment(this).startOf('month').zone()) -
+                        (that.zone() - moment(that).startOf('month').zone())) * 6e4;
+                output += daysAdjust / diff;
                 if (units === 'year') {
                     output = output / 12;
                 }
@@ -18663,18 +18702,33 @@ return Backbone.LocalStorage;
         },
 
         isAfter: function (input, units) {
-            units = typeof units !== 'undefined' ? units : 'millisecond';
-            return +this.clone().startOf(units) > +moment(input).startOf(units);
+            units = normalizeUnits(typeof units !== 'undefined' ? units : 'millisecond');
+            if (units === 'millisecond') {
+                input = moment.isMoment(input) ? input : moment(input);
+                return +this > +input;
+            } else {
+                return +this.clone().startOf(units) > +moment(input).startOf(units);
+            }
         },
 
         isBefore: function (input, units) {
-            units = typeof units !== 'undefined' ? units : 'millisecond';
-            return +this.clone().startOf(units) < +moment(input).startOf(units);
+            units = normalizeUnits(typeof units !== 'undefined' ? units : 'millisecond');
+            if (units === 'millisecond') {
+                input = moment.isMoment(input) ? input : moment(input);
+                return +this < +input;
+            } else {
+                return +this.clone().startOf(units) < +moment(input).startOf(units);
+            }
         },
 
         isSame: function (input, units) {
-            units = units || 'ms';
-            return +this.clone().startOf(units) === +makeAs(input, this).startOf(units);
+            units = normalizeUnits(units || 'millisecond');
+            if (units === 'millisecond') {
+                input = moment.isMoment(input) ? input : moment(input);
+                return +this === +input;
+            } else {
+                return +this.clone().startOf(units) === +makeAs(input, this).startOf(units);
+            }
         },
 
         min: deprecate(
@@ -18714,7 +18768,7 @@ return Backbone.LocalStorage;
                     input = input * 60;
                 }
                 if (!this._isUTC && keepLocalTime) {
-                    localAdjust = this._d.getTimezoneOffset();
+                    localAdjust = this._dateTzOffset();
                 }
                 this._offset = input;
                 this._isUTC = true;
@@ -18732,7 +18786,7 @@ return Backbone.LocalStorage;
                     }
                 }
             } else {
-                return this._isUTC ? offset : this._d.getTimezoneOffset();
+                return this._isUTC ? offset : this._dateTzOffset();
             }
             return this;
         },
@@ -18836,10 +18890,15 @@ return Backbone.LocalStorage;
         // instance.  Otherwise, it will return the locale configuration
         // variables for this instance.
         locale : function (key) {
+            var newLocaleData;
+
             if (key === undefined) {
                 return this._locale._abbr;
             } else {
-                this._locale = moment.localeData(key);
+                newLocaleData = moment.localeData(key);
+                if (newLocaleData != null) {
+                    this._locale = newLocaleData;
+                }
                 return this;
             }
         },
@@ -18850,14 +18909,19 @@ return Backbone.LocalStorage;
                 if (key === undefined) {
                     return this.localeData();
                 } else {
-                    this._locale = moment.localeData(key);
-                    return this;
+                    return this.locale(key);
                 }
             }
         ),
 
         localeData : function () {
             return this._locale;
+        },
+
+        _dateTzOffset : function () {
+            // On Firefox.24 Date#getTimezoneOffset returns a floating point.
+            // https://github.com/moment/moment/pull/1871
+            return Math.round(this._d.getTimezoneOffset() / 15) * 15;
         }
     });
 
@@ -19055,19 +19119,21 @@ return Backbone.LocalStorage;
             var days, months;
             units = normalizeUnits(units);
 
-            days = this._days + this._milliseconds / 864e5;
             if (units === 'month' || units === 'year') {
+                days = this._days + this._milliseconds / 864e5;
                 months = this._months + daysToYears(days) * 12;
                 return units === 'month' ? months : months / 12;
             } else {
-                days += yearsToDays(this._months / 12);
+                // handle milliseconds separately because of floating point math errors (issue #1867)
+                days = this._days + yearsToDays(this._months / 12);
                 switch (units) {
-                    case 'week': return days / 7;
-                    case 'day': return days;
-                    case 'hour': return days * 24;
-                    case 'minute': return days * 24 * 60;
-                    case 'second': return days * 24 * 60 * 60;
-                    case 'millisecond': return days * 24 * 60 * 60 * 1000;
+                    case 'week': return days / 7 + this._milliseconds / 6048e5;
+                    case 'day': return days + this._milliseconds / 864e5;
+                    case 'hour': return days * 24 + this._milliseconds / 36e5;
+                    case 'minute': return days * 24 * 60 + this._milliseconds / 6e4;
+                    case 'second': return days * 24 * 60 * 60 + this._milliseconds / 1000;
+                    // Math.floor prevents floating point math errors here
+                    case 'millisecond': return Math.floor(days * 24 * 60 * 60 * 1000) + this._milliseconds;
                     default: throw new Error('Unknown unit ' + units);
                 }
             }

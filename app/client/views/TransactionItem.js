@@ -11,8 +11,9 @@ module.exports = Backbone.View.extend({
 	className: 'row entryRow',
 	template: template, 
 
-	initialize: function(model) {
+	initialize: function(model,parent) {
 		this.model = model;
+		this.parent = parent;
 		_.bindAll(this, 'delete');
 	},
 
@@ -31,7 +32,10 @@ module.exports = Backbone.View.extend({
 			var el = this.$el;
 			this.model.destroy({
 				success: function() {
+
+					this.parent.showBalanceLoader();
 					TransactionBalance.fetch();
+					
 					el.addClass('deleted');
 					el.find('.delete button').hide();
 				},
