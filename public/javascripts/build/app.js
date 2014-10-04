@@ -14428,7 +14428,6 @@ module.exports = Backbone.View.extend({
 		this.updateCurrentPeriod();
 		this.showBalanceLoader();
 		this.showTransactionsLoader();
-		this.setMoreEntriesVisibility();
 		
 		return this;
 	},
