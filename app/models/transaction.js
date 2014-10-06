@@ -8,6 +8,7 @@ var transactionSchema = mongoose.Schema({
 	dateEntry       : { type:Date, default:Date.now }, 
 	dateAdded       : { type:Date, default:Date.now }, 
 	positive		: { type:Boolean, default:false }, 
+	correction		: { type:Boolean, default:false }, 
 
 	category        : { type: ObjectId, ref: 'Category' },
 	user 	      	: { type: ObjectId, ref: 'User' }

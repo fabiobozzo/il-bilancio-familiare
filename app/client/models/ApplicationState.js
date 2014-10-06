@@ -5,8 +5,7 @@ var ApplicationState = Backbone.Model.extend({
 	defaults: {
 		id: 1,
 		currentView: 'transazioni', 
-		currentPeriod: moment().toDate(), 
-		positiveEntry: false
+		currentPeriod: moment().toDate()
 	},
 	localStorage: new Backbone.LocalStorage('application-state'),
 });

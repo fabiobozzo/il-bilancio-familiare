@@ -40,7 +40,8 @@ module.exports = Backbone.View.extend({
 		'click .new-transaction button': 'showAddEntryForm',
 		'click .more-entries': 'renderNextPage',
 		'click .filters .type button': 'filter',
-		'click .period-chooser': 'showPeriodChooser'
+		'click .period-chooser': 'showPeriodChooser',
+		'click .balance .ask-for-initial-balance': 'goToSetInitialBalance'
 	},
 
 	render: function() {
@@ -112,6 +113,9 @@ module.exports = Backbone.View.extend({
 	}, 
 
 	updateBalance: function(model) {
+		if ( model.get('hasInitial')==false ) {
+			this.$el.find('.balance .ask-for-initial-balance').show();	
+		}
 		this.$el.find('.balance .balance-value').text(model.get('balance'));
 	}, 
 
@@ -150,6 +154,10 @@ module.exports = Backbone.View.extend({
 
 	isPositiveEntrySelected: function() {
 		return this.$el.find('.new-transaction button.selected').hasClass('add-positive-entry');
+	},
+
+	goToSetInitialBalance: function() {
+		// TODO send event to menu
 	},
 
 	filter: function(event) {

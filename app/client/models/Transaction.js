@@ -6,7 +6,8 @@ module.exports = Backbone.Model.extend({
 		description: '',	
 		amount: 0,
 		dateEntry: new Date(),
-		positive: false
+		positive: false,
+		correction: false
 	},
 	urlRoot: '/api/transactions'
 });

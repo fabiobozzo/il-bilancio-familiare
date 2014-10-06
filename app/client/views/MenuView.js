@@ -18,8 +18,9 @@ module.exports = Backbone.View.extend({
 
 	changePage: function(event) {
 		event.preventDefault();
-		var viewName = $(event.target).attr('data-view');
-		ApplicationState.save({currentView:viewName});
+		var viewName = $(event.currentTarget).attr('data-view');
+		ApplicationState.set('currentView',viewName);
+		ApplicationState.save();
 	},
 
 	slideUpMenu: function(event) {

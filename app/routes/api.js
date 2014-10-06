@@ -1,5 +1,6 @@
 var express = require('express');
 var moment = require('moment');
+var async = require('async');
 
 var Transaction = require('../models/transaction');
 var Category = require('../models/category');
@@ -18,7 +19,7 @@ module.exports = function(app) {
 			var month = req.query.m || parseInt((new Date()).getMonth())+1;
 			var year = req.query.y || parseInt((new Date()).getFullYear());
 			
-			var search = { user:req.user._id };
+			var search = { user:req.user._id, correction:false };
 			var options = { sort: {dateEntry: -1}, skip: (page-1) * limit, limit: limit+1 };
 
 			switch (filter) {
@@ -64,29 +65,40 @@ module.exports = function(app) {
 
 	router.route('/transactions/balance')
 		.get(function(req,res) {
-			Transaction.aggregate(
-				[
-					{ $match: { user:req.user._id } },
-					{ "$group": {
-						"_id": null,
-						"total": {
-							"$sum": {
-								"$cond": [
-									"$positive",
-									"$amount",
-									{ "$subtract": [ 0, "$amount" ] }
-								]
-							}
-						}
-					}}
-				],
-				function(err,result) {
-					if (err) {
-						return res.json({error:err.message});
-					}
-					res.json({ balance: (result.length>0) ? result[0].total : 0 });
+			async.parallel({
+				balance: function(callback) {
+					Transaction.aggregate(
+						[
+							{ $match: { user:req.user._id } },
+							{ "$group": {
+								"_id": null,
+								"total": {
+									"$sum": {
+										"$cond": [
+											"$positive",
+											"$amount",
+											{ "$subtract": [ 0, "$amount" ] }
+										]
+									}
+								}
+							}}
+						], callback
+					);
+				}, 
+				hasInitial: function(callback) {
+					Transaction.findOne( {correction:true}, function(err,transaction) {
+						callback(err, (transaction!=null) );
+					});
 				}
-			);
+			}, function(err,results) {
+				if (err) {
+					return res.json({error:err.message});
+				}
+				res.json({ 
+					balance: (results.balance.length>0) ? results.balance[0].total : 0, 
+					hasInitial: results.hasInitial
+				});
+			});
 		});
 
 	router.route('/transactions/:id')

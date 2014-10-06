@@ -8,7 +8,13 @@ var MenuView = require('./views/MenuView');
 var ContainerView = require('./views/ContainerView');
 var ApplicationState = require('./models/ApplicationState');
 
-ApplicationState.fetch();
+$(function() {
 
-new MenuView();
-new ContainerView();
+	ApplicationState.fetch();
+
+	new MenuView();
+	new ContainerView();
+
+	$('[rel=tooltip]').tooltip();
+
+});

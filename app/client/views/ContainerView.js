@@ -3,6 +3,7 @@ var ApplicationState = require('../models/ApplicationState');
 
 var views = {};
 views['transazioni'] = require('./TransactionView');
+views['impostazioni'] = require('./SettingsView');
  
 module.exports = Backbone.View.extend({
 

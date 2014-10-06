@@ -9,12 +9,17 @@ var MenuView = require('./views/MenuView');
 var ContainerView = require('./views/ContainerView');
 var ApplicationState = require('./models/ApplicationState');
 
-ApplicationState.fetch();
+$(function() {
 
-new MenuView();
-new ContainerView();
+	ApplicationState.fetch();
 
-},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":7,"./views/ContainerView":18,"./views/MenuView":19,"backbone":26,"backbone.localstorage":25}],2:[function(require,module,exports){
+	new MenuView();
+	new ContainerView();
+
+	$('[rel=tooltip]').tooltip();
+
+});
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":7,"./views/ContainerView":19,"./views/MenuView":20,"backbone":28,"backbone.localstorage":27}],2:[function(require,module,exports){
 /*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -13760,7 +13765,7 @@ module.exports = Backbone.Collection.extend({
 	model: Category,
 	url: '/api/categories'
 });
-},{"../models/Category":8,"backbone":26}],6:[function(require,module,exports){
+},{"../models/Category":8,"backbone":28}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction');
 var ApplicationState = require('../models/ApplicationState');
@@ -13823,7 +13828,7 @@ var TransactionCollection = Backbone.Collection.extend({
 
 module.exports = new TransactionCollection();
 console.log("new TransactionCollection");
-},{"../models/ApplicationState":7,"../models/Transaction":9,"backbone":26}],7:[function(require,module,exports){
+},{"../models/ApplicationState":7,"../models/Transaction":9,"backbone":28}],7:[function(require,module,exports){
 var Backbone = require('backbone');
 var moment = require('moment');
 
@@ -13831,15 +13836,14 @@ var ApplicationState = Backbone.Model.extend({
 	defaults: {
 		id: 1,
 		currentView: 'transazioni', 
-		currentPeriod: moment().toDate(), 
-		positiveEntry: false
+		currentPeriod: moment().toDate()
 	},
 	localStorage: new Backbone.LocalStorage('application-state'),
 });
 
 module.exports = new ApplicationState();
 console.log("new ApplicationState");
-},{"backbone":26,"moment":27}],8:[function(require,module,exports){
+},{"backbone":28,"moment":29}],8:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13852,7 +13856,7 @@ module.exports = Backbone.Model.extend({
 		selected: false
 	}
 });
-},{"backbone":26}],9:[function(require,module,exports){
+},{"backbone":28}],9:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13861,23 +13865,25 @@ module.exports = Backbone.Model.extend({
 		description: '',	
 		amount: 0,
 		dateEntry: new Date(),
-		positive: false
+		positive: false,
+		correction: false
 	},
 	urlRoot: '/api/transactions'
 });
-},{"backbone":26}],10:[function(require,module,exports){
+},{"backbone":28}],10:[function(require,module,exports){
 var Backbone = require('backbone');
  
 var TransactionBalance = Backbone.Model.extend({
 	defaults: {
 		id: null,
-		balance: 0
+		balance: 0, 
+		hasInitial: true 
 	},
 	url: '/api/transactions/balance'
 });
 
 module.exports = new TransactionBalance();
-},{"backbone":26}],11:[function(require,module,exports){
+},{"backbone":28}],11:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13894,12 +13900,21 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group">\n			<label>Categoria</label>\n			<ul class="category-items"></ul>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-2 form-group">\n			<label for="entryAmount">Importo (€) <span class="entryAmountKind"></span></label>\n			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />\n		</div>\n		<div class="col-md-6 form-group">\n			<label for="entryDescription">Note</label>\n			<input type="text" name="description" class="form-control" id="entryDescription" placeholder="Descrizione opzionale" />\n		</div>\n		<div class="col-md-2 form-group">\n			<label for="entryDate">Data</label>\n			<div class="input-group">\n				<input type="date" name="dateEntry" class="form-control entryDate" id="entryDate" placeholder="gg/mm/aaaa" />\n				<span class="input-group-addon" data-toggle="booty-datepicker">     \n					<span class="glyphicon glyphicon-calendar"></span>\n				</span>\n			</div>\n		</div>\n		<div class="col-md-2 text-right">\n			<label>&nbsp;</label>\n			<div class="input-group">\n				<a href="#" class="hide-add-entry">Annulla</a> \n				<button type="button" class="btn btn-primary add-entry">Conferma</button>\n			</div>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-12" id="pickadate-container"></div>\n	</div>\n</form>';
+__p+='<div class="row">\n	<div class="col col-sm-6 initial-balance">\n		<div class="settings-block">\n			<h2>Saldo Iniziale</h2>\n			<div class="form-group set-balance">\n				<label>€</label>\n				<input type="number" name="balance" value="" placeholder="0.00" />\n				<button class="btn btn-primary">OK</button>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6 credits">\n		<div class="settings-block">\n			Fabio Bozzo © Copyright 2014\n		</div>\n	</div>\n</div>';
 }
 return __p;
 };
 
 },{}],13:[function(require,module,exports){
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group">\n			<label>Categoria</label>\n			<ul class="category-items"></ul>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-2 form-group">\n			<label for="entryAmount">Importo (€) <span class="entryAmountKind"></span></label>\n			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />\n		</div>\n		<div class="col-md-6 form-group">\n			<label for="entryDescription">Note</label>\n			<input type="text" name="description" class="form-control" id="entryDescription" placeholder="Descrizione opzionale" />\n		</div>\n		<div class="col-md-2 form-group">\n			<label for="entryDate">Data</label>\n			<div class="input-group">\n				<input type="date" name="dateEntry" class="form-control entryDate" id="entryDate" placeholder="gg/mm/aaaa" />\n				<span class="input-group-addon" data-toggle="booty-datepicker">     \n					<span class="glyphicon glyphicon-calendar"></span>\n				</span>\n			</div>\n		</div>\n		<div class="col-md-2 text-right">\n			<label>&nbsp;</label>\n			<div class="input-group">\n				<a href="#" class="hide-add-entry">Annulla</a> \n				<button type="button" class="btn btn-primary add-entry">Conferma</button>\n			</div>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-12" id="pickadate-container"></div>\n	</div>\n</form>';
+}
+return __p;
+};
+
+},{}],14:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13920,7 +13935,7 @@ __p+='<div class="col-xs-6 col-sm-3 amount '+
 return __p;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13959,16 +13974,16 @@ __p+='\n			</select>\n		</div>\n		<div class="col-md-2 text-right">\n			<!-- <la
 return __p;
 };
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance alert alert-success text-center">\n		SALDO: € <span class="balance-value">0.00</span>\n	</div>\n\n	<div class="filters text-center">\n		<div class="btn-group type">\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button>\n			<button type="button" class="btn btn-default" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs hidden-sm">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs hidden-sm">Uscite</span>\n			</button>\n		</div>\n		<button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
+__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance alert alert-success text-center">\n		SALDO: € <span class="balance-value">0.00</span>\n		<span \n			class="ask-for-initial-balance pull-right glyphicon glyphicon-question-sign"\n			rel="tooltip"\n			data-toggle="tooltip" \n			data-placement="bottom" \n			title="Clicca qui per impostare un saldo iniziale"\n		></span>\n	</div>\n\n	<div class="filters text-center">\n		<div class="btn-group type">\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button>\n			<button type="button" class="btn btn-default" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs hidden-sm">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs hidden-sm">Uscite</span>\n			</button>\n		</div>\n		<button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
 }
 return __p;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13979,7 +13994,7 @@ __p+='<div class="transactions-date-header">\n	'+
 return __p;
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var Backbone = require('backbone');
 var template = require('../templates/categoryItem.html');
 
@@ -14020,12 +14035,13 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/categoryItem.html":11,"backbone":26}],18:[function(require,module,exports){
+},{"../templates/categoryItem.html":11,"backbone":28}],19:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
 var views = {};
 views['transazioni'] = require('./TransactionView');
+views['impostazioni'] = require('./SettingsView');
  
 module.exports = Backbone.View.extend({
 
@@ -14062,7 +14078,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":7,"./TransactionView":23,"backbone":26}],19:[function(require,module,exports){
+},{"../models/ApplicationState":7,"./SettingsView":21,"./TransactionView":25,"backbone":28}],20:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
  
@@ -14083,8 +14099,9 @@ module.exports = Backbone.View.extend({
 
 	changePage: function(event) {
 		event.preventDefault();
-		var viewName = $(event.target).attr('data-view');
-		ApplicationState.save({currentView:viewName});
+		var viewName = $(event.currentTarget).attr('data-view');
+		ApplicationState.set('currentView',viewName);
+		ApplicationState.save();
 	},
 
 	slideUpMenu: function(event) {
@@ -14098,7 +14115,73 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":7,"backbone":26}],20:[function(require,module,exports){
+},{"../models/ApplicationState":7,"backbone":28}],21:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('underscore');
+
+var template = require('../templates/settings.html');
+var Transaction = require('../models/Transaction');
+var ApplicationState = require('../models/ApplicationState');
+var TransactionBalance = require('../models/TransactionBalance');
+
+module.exports = Backbone.View.extend({
+
+	className: 'settingsView',
+
+	initialize: function() {
+		
+		_.bindAll(this, 'balanceSetSuccess');
+		_.bindAll(this, 'balanceSetError');
+	},
+
+	events: {
+		'click .set-balance button': 'setInitialBalance'
+	},
+
+	render: function() {
+		this.$el.html( template() );
+		return this;
+	},
+
+	setInitialBalance: function() {
+		var balance = this.$el.find('.set-balance input[name=balance]').val();
+		if (isNaN(balance)) {
+			alert('Inserire un saldo iniziale valido.');
+			return;
+		}
+		var entryData = {};
+		entryData.correction = true;
+		entryData.description = 'INITIALBALANCE';
+		entryData.amount = parseFloat(balance) - parseFloat(TransactionBalance.get('balance'));
+		entryData.positive = entryData.amount > 0;
+		entryData.dateEntry = new Date();
+
+		if ( entryData.amount!=0 ) {
+			var newEntry = new Transaction();
+			newEntry.save( entryData, {
+				wait:true,
+				success: this.balanceSetSuccess,
+				error: this.balanceSetError
+			});
+		}
+	},
+
+	balanceSetSuccess: function() {
+		this.$el.find('.set-balance').html('Grazie. Il saldo è stato inizializzato');
+	},
+
+	balanceSetError: function() {
+		alert('Errore inizializzazione saldo.');
+	},
+
+	close: function() {
+		this.remove();
+		this.unbind();
+		this.stopListening();
+	}
+
+});
+},{"../models/ApplicationState":7,"../models/Transaction":9,"../models/TransactionBalance":10,"../templates/settings.html":12,"backbone":28,"underscore":30}],22:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14245,7 +14328,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":24,"../collections/Categories":5,"../models/Transaction":9,"../templates/transactionEditor.html":12,"../views/CategoryItemView":17,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":26,"moment":27,"underscore":28}],21:[function(require,module,exports){
+},{"../../config/settings":26,"../collections/Categories":5,"../models/Transaction":9,"../templates/transactionEditor.html":13,"../views/CategoryItemView":18,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":28,"moment":29,"underscore":30}],23:[function(require,module,exports){
 var moment = require('moment');
 var _ = require('underscore');
 var Backbone = require('backbone');
@@ -14301,7 +14384,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/TransactionBalance":10,"../templates/transactionItem.html":13,"backbone":26,"moment":27,"underscore":28}],22:[function(require,module,exports){
+},{"../models/TransactionBalance":10,"../templates/transactionItem.html":14,"backbone":28,"moment":29,"underscore":30}],24:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14363,7 +14446,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":24,"../models/ApplicationState":7,"../models/Transaction":9,"../templates/transactionPeriod.html":14,"backbone":26,"moment":27,"underscore":28}],23:[function(require,module,exports){
+},{"../../config/settings":26,"../models/ApplicationState":7,"../models/Transaction":9,"../templates/transactionPeriod.html":15,"backbone":28,"moment":29,"underscore":30}],25:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
@@ -14478,6 +14561,9 @@ module.exports = Backbone.View.extend({
 	}, 
 
 	updateBalance: function(model) {
+		if ( model.get('hasInitial')==false ) {
+			this.$el.find('.balance .ask-for-initial-balance').show();	
+		}
 		this.$el.find('.balance .balance-value').text(model.get('balance'));
 	}, 
 
@@ -14543,7 +14629,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":24,"../collections/Transactions":6,"../models/ApplicationState":7,"../models/TransactionBalance":10,"../templates/transactions.html":15,"../templates/transactionsHeader.html":16,"./TransactionEditor":20,"./TransactionItem":21,"./TransactionPeriod":22,"backbone":26,"moment":27,"underscore":28}],24:[function(require,module,exports){
+},{"../../config/settings":26,"../collections/Transactions":6,"../models/ApplicationState":7,"../models/TransactionBalance":10,"../templates/transactions.html":16,"../templates/transactionsHeader.html":17,"./TransactionEditor":22,"./TransactionItem":23,"./TransactionPeriod":24,"backbone":28,"moment":29,"underscore":30}],26:[function(require,module,exports){
 exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
@@ -14553,7 +14639,7 @@ exports.futureYears = 2;
 
 exports.TRANSACTIONS_PER_PAGE = 3;
 exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
  * Version 1.1.13
@@ -14808,7 +14894,7 @@ Backbone.sync = function(method, model, options) {
 return Backbone.LocalStorage;
 }));
 
-},{"backbone":26}],26:[function(require,module,exports){
+},{"backbone":28}],28:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -16418,7 +16504,7 @@ return Backbone.LocalStorage;
 
 }));
 
-},{"underscore":28}],27:[function(require,module,exports){
+},{"underscore":30}],29:[function(require,module,exports){
 (function (global){
 //! moment.js
 //! version : 2.8.3
@@ -19278,7 +19364,7 @@ return Backbone.LocalStorage;
 }).call(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
