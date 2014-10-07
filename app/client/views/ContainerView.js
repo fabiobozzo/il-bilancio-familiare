@@ -22,7 +22,7 @@ module.exports = Backbone.View.extend({
 
 		var innerHtml = '';
 		if ( views.hasOwnProperty(ApplicationState.get('currentView')) ) {
-			this.innerView = new views[ApplicationState.get('currentView')];
+			this.innerView = new views[ApplicationState.get('currentView')]();
 			innerHtml = this.innerView.render().el;
 		}
 

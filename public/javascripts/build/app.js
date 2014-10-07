@@ -19,7 +19,7 @@ $(function() {
 	$('[rel=tooltip]').tooltip();
 
 });
-},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":7,"./views/ContainerView":19,"./views/MenuView":20,"backbone":28,"backbone.localstorage":27}],2:[function(require,module,exports){
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":7,"./views/ContainerView":20,"./views/MenuView":21,"backbone":29,"backbone.localstorage":28}],2:[function(require,module,exports){
 /*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -13759,13 +13759,13 @@ Picker.extend( 'pickadate', DatePicker )
 
 },{"./../../jquery/dist/jquery.js":3,"./picker.js":4}],5:[function(require,module,exports){
 var Backbone 	= require('backbone');
-var Category = require('../models/Category')
+var Category = require('../models/Category');
  
 module.exports = Backbone.Collection.extend({
 	model: Category,
 	url: '/api/categories'
 });
-},{"../models/Category":8,"backbone":28}],6:[function(require,module,exports){
+},{"../models/Category":8,"backbone":29}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction');
 var ApplicationState = require('../models/ApplicationState');
@@ -13828,7 +13828,7 @@ var TransactionCollection = Backbone.Collection.extend({
 
 module.exports = new TransactionCollection();
 console.log("new TransactionCollection");
-},{"../models/ApplicationState":7,"../models/Transaction":9,"backbone":28}],7:[function(require,module,exports){
+},{"../models/ApplicationState":7,"../models/Transaction":9,"backbone":29}],7:[function(require,module,exports){
 var Backbone = require('backbone');
 var moment = require('moment');
 
@@ -13843,7 +13843,7 @@ var ApplicationState = Backbone.Model.extend({
 
 module.exports = new ApplicationState();
 console.log("new ApplicationState");
-},{"backbone":28,"moment":29}],8:[function(require,module,exports){
+},{"backbone":29,"moment":30}],8:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13856,7 +13856,7 @@ module.exports = Backbone.Model.extend({
 		selected: false
 	}
 });
-},{"backbone":28}],9:[function(require,module,exports){
+},{"backbone":29}],9:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13870,7 +13870,7 @@ module.exports = Backbone.Model.extend({
 	},
 	urlRoot: '/api/transactions'
 });
-},{"backbone":28}],10:[function(require,module,exports){
+},{"backbone":29}],10:[function(require,module,exports){
 var Backbone = require('backbone');
  
 var TransactionBalance = Backbone.Model.extend({
@@ -13883,7 +13883,7 @@ var TransactionBalance = Backbone.Model.extend({
 });
 
 module.exports = new TransactionBalance();
-},{"backbone":28}],11:[function(require,module,exports){
+},{"backbone":29}],11:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13900,7 +13900,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="row">\n	<div class="col col-sm-6 initial-balance">\n		<div class="settings-block">\n			<h2>Saldo Iniziale</h2>\n			<div class="form-group set-balance">\n				<label>€</label>\n				<input type="number" name="balance" value="" placeholder="0.00" />\n				<button class="btn btn-primary">OK</button>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6 credits">\n		<div class="settings-block">\n			Fabio Bozzo © Copyright 2014\n		</div>\n	</div>\n</div>';
+__p+='<div class="row">\n	<div class="col col-sm-6 initial-balance">\n		<div class="settings-block">\n			<h2>Saldo Iniziale</h2>\n			<div class="form-group set-balance">\n				<p>\n					Questo valore verrà impostato come saldo corrente, generando un movimento \n					di rettifica nel bilancio.\n				</p>\n				<br />\n				<label>€</label>\n				<input type="number" name="balance" value="" placeholder="0.00" />\n				<button class="btn btn-primary">OK</button>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6 credits">\n		<div class="settings-block">\n			Fabio Bozzo © Copyright 2014\n		</div>\n	</div>\n</div>';
 }
 return __p;
 };
@@ -13978,7 +13978,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance alert alert-success text-center">\n		SALDO: € <span class="balance-value">0.00</span>\n		<span \n			class="ask-for-initial-balance pull-right glyphicon glyphicon-question-sign"\n			rel="tooltip"\n			data-toggle="tooltip" \n			data-placement="bottom" \n			title="Clicca qui per impostare un saldo iniziale"\n		></span>\n	</div>\n\n	<div class="filters text-center">\n		<div class="btn-group type">\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button>\n			<button type="button" class="btn btn-default" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs hidden-sm">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs hidden-sm">Uscite</span>\n			</button>\n		</div>\n		<button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
+__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance alert alert-success text-center">\n		SALDO: € <span class="balance-value">0.00</span>\n		<span \n			class="ask-for-initial-balance pulse pull-right glyphicon glyphicon-question-sign"\n			rel="tooltip"\n			data-toggle="tooltip" \n			data-placement="bottom" \n			title="Clicca qui per impostare un saldo iniziale"\n		></span>\n	</div>\n\n	<div class="filters text-center">\n		<div class="btn-group type">\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button>\n			<button type="button" class="btn btn-default" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs hidden-sm">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs hidden-sm">Uscite</span>\n			</button>\n		</div>\n		<button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button>\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
 }
 return __p;
 };
@@ -13995,6 +13995,11 @@ return __p;
 };
 
 },{}],18:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('underscore');
+module.exports = _.extend({}, Backbone.Events);
+
+},{"backbone":29,"underscore":31}],19:[function(require,module,exports){
 var Backbone = require('backbone');
 var template = require('../templates/categoryItem.html');
 
@@ -14035,7 +14040,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/categoryItem.html":11,"backbone":28}],19:[function(require,module,exports){
+},{"../templates/categoryItem.html":11,"backbone":29}],20:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
@@ -14060,7 +14065,7 @@ module.exports = Backbone.View.extend({
 
 		var innerHtml = '';
 		if ( views.hasOwnProperty(ApplicationState.get('currentView')) ) {
-			this.innerView = new views[ApplicationState.get('currentView')];
+			this.innerView = new views[ApplicationState.get('currentView')]();
 			innerHtml = this.innerView.render().el;
 		}
 
@@ -14078,30 +14083,43 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":7,"./SettingsView":21,"./TransactionView":25,"backbone":28}],20:[function(require,module,exports){
+},{"../models/ApplicationState":7,"./SettingsView":22,"./TransactionView":26,"backbone":29}],21:[function(require,module,exports){
 var Backbone = require('backbone');
+var _ = require('underscore');
+
 var ApplicationState = require('../models/ApplicationState');
+var Vent = require('../utils/EventAggregator');
  
 module.exports = Backbone.View.extend({
 
 	el: '#menuView', 
 
+	initialize: function() {
+		this.listenTo( Vent, 'menu:setbalance', this.showSettingsViewToSetBalance );
+		_.bindAll(this, 'showSettingsViewToSetBalance');
+	},
+
 	events: {
-		'click li': 'toggleActiveClass',
 		'click .menuLink': 'changePage',
 		'click .navbar-collapse ul li a': 'slideUpMenu'
 	},
 
-	toggleActiveClass: function(event) {
-		$('#menuView li').removeClass('active');
-		$(event.target).parents('li').addClass('active');
-	},
-
 	changePage: function(event) {
 		event.preventDefault();
+
 		var viewName = $(event.currentTarget).attr('data-view');
 		ApplicationState.set('currentView',viewName);
 		ApplicationState.save();
+
+		$('#menuView li').removeClass('active');
+		$(event.currentTarget).parents('li').addClass('active');
+	},
+
+	showSettingsViewToSetBalance: function() {
+		this.$el.find('a.menuLink[data-view=impostazioni]').trigger('click');
+		setTimeout(function() {
+			$('.set-balance input[name=balance]').focus();
+		}, 500);
 	},
 
 	slideUpMenu: function(event) {
@@ -14115,7 +14133,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":7,"backbone":28}],21:[function(require,module,exports){
+},{"../models/ApplicationState":7,"../utils/EventAggregator":18,"backbone":29,"underscore":31}],22:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14156,7 +14174,7 @@ module.exports = Backbone.View.extend({
 		entryData.positive = entryData.amount > 0;
 		entryData.dateEntry = new Date();
 
-		if ( entryData.amount!=0 ) {
+		if ( entryData.amount!==0 ) {
 			var newEntry = new Transaction();
 			newEntry.save( entryData, {
 				wait:true,
@@ -14181,7 +14199,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":7,"../models/Transaction":9,"../models/TransactionBalance":10,"../templates/settings.html":12,"backbone":28,"underscore":30}],22:[function(require,module,exports){
+},{"../models/ApplicationState":7,"../models/Transaction":9,"../models/TransactionBalance":10,"../templates/settings.html":12,"backbone":29,"underscore":31}],23:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14328,7 +14346,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":26,"../collections/Categories":5,"../models/Transaction":9,"../templates/transactionEditor.html":13,"../views/CategoryItemView":18,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":28,"moment":29,"underscore":30}],23:[function(require,module,exports){
+},{"../../config/settings":27,"../collections/Categories":5,"../models/Transaction":9,"../templates/transactionEditor.html":13,"../views/CategoryItemView":19,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":29,"moment":30,"underscore":31}],24:[function(require,module,exports){
 var moment = require('moment');
 var _ = require('underscore');
 var Backbone = require('backbone');
@@ -14384,7 +14402,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/TransactionBalance":10,"../templates/transactionItem.html":14,"backbone":28,"moment":29,"underscore":30}],24:[function(require,module,exports){
+},{"../models/TransactionBalance":10,"../templates/transactionItem.html":14,"backbone":29,"moment":30,"underscore":31}],25:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14446,7 +14464,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":26,"../models/ApplicationState":7,"../models/Transaction":9,"../templates/transactionPeriod.html":15,"backbone":28,"moment":29,"underscore":30}],25:[function(require,module,exports){
+},{"../../config/settings":27,"../models/ApplicationState":7,"../models/Transaction":9,"../templates/transactionPeriod.html":15,"backbone":29,"moment":30,"underscore":31}],26:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
@@ -14460,6 +14478,7 @@ var TransactionEditorView = require('./TransactionEditor');
 var TransactionPeriodView = require('./TransactionPeriod');
 var Settings = require('../../config/settings');
 var ApplicationState = require('../models/ApplicationState');
+var Vent = require('../utils/EventAggregator');
 
 module.exports = Backbone.View.extend({
 
@@ -14489,7 +14508,8 @@ module.exports = Backbone.View.extend({
 		'click .new-transaction button': 'showAddEntryForm',
 		'click .more-entries': 'renderNextPage',
 		'click .filters .type button': 'filter',
-		'click .period-chooser': 'showPeriodChooser'
+		'click .period-chooser': 'showPeriodChooser',
+		'click .balance .ask-for-initial-balance': 'goToSetInitialBalance'
 	},
 
 	render: function() {
@@ -14561,7 +14581,7 @@ module.exports = Backbone.View.extend({
 	}, 
 
 	updateBalance: function(model) {
-		if ( model.get('hasInitial')==false ) {
+		if ( model.get('hasInitial')===false ) {
 			this.$el.find('.balance .ask-for-initial-balance').show();	
 		}
 		this.$el.find('.balance .balance-value').text(model.get('balance'));
@@ -14604,6 +14624,10 @@ module.exports = Backbone.View.extend({
 		return this.$el.find('.new-transaction button.selected').hasClass('add-positive-entry');
 	},
 
+	goToSetInitialBalance: function() {
+		Vent.trigger('menu:setbalance');
+	},
+
 	filter: function(event) {
 		
 		var button = $(event.currentTarget);
@@ -14629,7 +14653,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":26,"../collections/Transactions":6,"../models/ApplicationState":7,"../models/TransactionBalance":10,"../templates/transactions.html":16,"../templates/transactionsHeader.html":17,"./TransactionEditor":22,"./TransactionItem":23,"./TransactionPeriod":24,"backbone":28,"moment":29,"underscore":30}],26:[function(require,module,exports){
+},{"../../config/settings":27,"../collections/Transactions":6,"../models/ApplicationState":7,"../models/TransactionBalance":10,"../templates/transactions.html":16,"../templates/transactionsHeader.html":17,"../utils/EventAggregator":18,"./TransactionEditor":23,"./TransactionItem":24,"./TransactionPeriod":25,"backbone":29,"moment":30,"underscore":31}],27:[function(require,module,exports){
 exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
@@ -14639,7 +14663,7 @@ exports.futureYears = 2;
 
 exports.TRANSACTIONS_PER_PAGE = 3;
 exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
  * Version 1.1.13
@@ -14894,7 +14918,7 @@ Backbone.sync = function(method, model, options) {
 return Backbone.LocalStorage;
 }));
 
-},{"backbone":28}],28:[function(require,module,exports){
+},{"backbone":29}],29:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -16504,7 +16528,7 @@ return Backbone.LocalStorage;
 
 }));
 
-},{"underscore":30}],29:[function(require,module,exports){
+},{"underscore":31}],30:[function(require,module,exports){
 (function (global){
 //! moment.js
 //! version : 2.8.3
@@ -19364,7 +19388,7 @@ return Backbone.LocalStorage;
 }).call(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors

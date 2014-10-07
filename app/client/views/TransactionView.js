@@ -11,6 +11,7 @@ var TransactionEditorView = require('./TransactionEditor');
 var TransactionPeriodView = require('./TransactionPeriod');
 var Settings = require('../../config/settings');
 var ApplicationState = require('../models/ApplicationState');
+var Vent = require('../utils/EventAggregator');
 
 module.exports = Backbone.View.extend({
 
@@ -113,7 +114,7 @@ module.exports = Backbone.View.extend({
 	}, 
 
 	updateBalance: function(model) {
-		if ( model.get('hasInitial')==false ) {
+		if ( model.get('hasInitial')===false ) {
 			this.$el.find('.balance .ask-for-initial-balance').show();	
 		}
 		this.$el.find('.balance .balance-value').text(model.get('balance'));
@@ -157,7 +158,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	goToSetInitialBalance: function() {
-		// TODO send event to menu
+		Vent.trigger('menu:setbalance');
 	},
 
 	filter: function(event) {
