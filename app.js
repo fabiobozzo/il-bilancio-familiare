@@ -16,6 +16,8 @@ var authRoutes      = require('./app/routes/auth');
 var appRoutes       = require('./app/routes/app');
 var apiRoutes       = require('./app/routes/api');
 
+var moment	        = require('moment');
+
 var mongoose        = require('mongoose');
 var User            = require('./app/models/user');
 var seeder 			= require('./app/config/seeder');
@@ -52,3 +54,4 @@ apiRoutes(app);
 
 app.listen(port);
 console.log('App listening on port: ' + port);
+console.log(moment('2014-09-01','YYYY-MM-DD').toDate());
