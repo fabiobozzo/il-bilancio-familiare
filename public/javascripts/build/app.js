@@ -14379,10 +14379,11 @@ module.exports = Backbone.View.extend({
 	delete: function() {
 		if (confirm("Confermi di voler eliminare questa transazione?")) {
 			var el = this.$el;
+			var parentView = this.parent;
 			this.model.destroy({
 				success: function() {
 
-					this.parent.showBalanceLoader();
+					parentView.showBalanceLoader();
 					TransactionBalance.fetch();
 					
 					el.addClass('deleted');

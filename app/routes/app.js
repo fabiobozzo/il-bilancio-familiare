@@ -10,7 +10,6 @@ module.exports = function(app) {
 		} else {
 			res.render('index', { 
 				title: 'Benvenuti!', 
-				testdate: moment('2014-09-01','YYYY-MM-DD').toDate(),
 				message: req.flash('signinMessage') 
 			});	
 		}
