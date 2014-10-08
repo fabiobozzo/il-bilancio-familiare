@@ -9,7 +9,7 @@ module.exports = Backbone.View.extend({
 
 	initialize: function(model) {
 		this.model = model;
-		this.listenTo( this.model, 'change', this.render );
+		this.listenTo( this.model, 'change', this.update );
 	},
 
 	events: {
@@ -23,10 +23,14 @@ module.exports = Backbone.View.extend({
 		});
 	},
 
-	render: function() {
-		this.$el.html( this.template(this.model.toJSON()) );
+	update: function() {
 		this.$el.removeClass('selected');
 		if (this.model.get('selected')) this.$el.addClass('selected');
+	},
+
+	render: function() {
+		this.$el.html( this.template(this.model.toJSON()) );
+		this.update();
 		return this;
 	},
 
