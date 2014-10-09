@@ -263,13 +263,31 @@ body {
 	@media(max-width:@screen-xs-max) {
 		section {
 			padding: 75px 0;
-		}
-		section.first {
-			padding-top: 75px;
+			h2 {
+				font-size: 1.5em;
+			}
+			.first {
+				padding-top: 75px;
+			}
 		}
 		header {
 			.container {
 				padding-top: 60px;
+			}
+			.intro-text {
+				.name {
+					font-size: 1.5em;
+					font-weight: 700;
+				}
+				.skills {
+					font-size: 1em;
+				}
+			}
+		}
+		p {
+			font-size: 16px;
+			&.small {
+				font-size: 14px;
 			}
 		}
 	}
