@@ -84,9 +84,17 @@ module.exports = Backbone.View.extend({
 
 		this.displayDay = '';
 		this.clearEntryRows();
-		this.collection.each(function(item) {
-			this.renderRow(item);
-		}, this);
+
+		if ( this.collection.length === 0 ) {
+
+			this.$el.find('.entry-list').html('<hr /><br />Non ci sono movimenti nel mese selezionato.');
+
+		} else {
+			this.collection.each(function(item) {
+				this.renderRow(item);
+			}, this);	
+		}
+		
 		this.setMoreEntriesVisibility();
 
 		this.showBalanceLoader();

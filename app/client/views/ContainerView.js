@@ -4,6 +4,8 @@ var ApplicationState = require('../models/ApplicationState');
 var views = {};
 views['transazioni'] = require('./TransactionView');
 views['impostazioni'] = require('./SettingsView');
+views['statistiche'] = require('./ReportView');
+views['obiettivi'] = require('./GoalsView');
  
 module.exports = Backbone.View.extend({
 

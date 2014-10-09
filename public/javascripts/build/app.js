@@ -19,7 +19,7 @@ $(function() {
 	$('[rel=tooltip]').tooltip();
 
 });
-},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":7,"./views/ContainerView":20,"./views/MenuView":21,"backbone":29,"backbone.localstorage":28}],2:[function(require,module,exports){
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":7,"./views/ContainerView":20,"./views/MenuView":22,"backbone":31,"backbone.localstorage":30}],2:[function(require,module,exports){
 /*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -13765,7 +13765,7 @@ module.exports = Backbone.Collection.extend({
 	model: Category,
 	url: '/api/categories'
 });
-},{"../models/Category":8,"backbone":29}],6:[function(require,module,exports){
+},{"../models/Category":8,"backbone":31}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction');
 var ApplicationState = require('../models/ApplicationState');
@@ -13828,7 +13828,7 @@ var TransactionCollection = Backbone.Collection.extend({
 
 module.exports = new TransactionCollection();
 console.log("new TransactionCollection");
-},{"../models/ApplicationState":7,"../models/Transaction":9,"backbone":29}],7:[function(require,module,exports){
+},{"../models/ApplicationState":7,"../models/Transaction":9,"backbone":31}],7:[function(require,module,exports){
 var Backbone = require('backbone');
 var moment = require('moment');
 
@@ -13843,7 +13843,7 @@ var ApplicationState = Backbone.Model.extend({
 
 module.exports = new ApplicationState();
 console.log("new ApplicationState");
-},{"backbone":29,"moment":30}],8:[function(require,module,exports){
+},{"backbone":31,"moment":32}],8:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13856,7 +13856,7 @@ module.exports = Backbone.Model.extend({
 		selected: false
 	}
 });
-},{"backbone":29}],9:[function(require,module,exports){
+},{"backbone":31}],9:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13870,7 +13870,7 @@ module.exports = Backbone.Model.extend({
 	},
 	urlRoot: '/api/transactions'
 });
-},{"backbone":29}],10:[function(require,module,exports){
+},{"backbone":31}],10:[function(require,module,exports){
 var Backbone = require('backbone');
  
 var TransactionBalance = Backbone.Model.extend({
@@ -13883,7 +13883,7 @@ var TransactionBalance = Backbone.Model.extend({
 });
 
 module.exports = new TransactionBalance();
-},{"backbone":29}],11:[function(require,module,exports){
+},{"backbone":31}],11:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13999,7 +13999,7 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 module.exports = _.extend({}, Backbone.Events);
 
-},{"backbone":29,"underscore":31}],19:[function(require,module,exports){
+},{"backbone":31,"underscore":33}],19:[function(require,module,exports){
 var Backbone = require('backbone');
 var template = require('../templates/categoryItem.html');
 
@@ -14044,13 +14044,15 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/categoryItem.html":11,"backbone":29}],20:[function(require,module,exports){
+},{"../templates/categoryItem.html":11,"backbone":31}],20:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
 var views = {};
 views['transazioni'] = require('./TransactionView');
 views['impostazioni'] = require('./SettingsView');
+views['statistiche'] = require('./ReportView');
+views['obiettivi'] = require('./GoalsView');
  
 module.exports = Backbone.View.extend({
 
@@ -14087,7 +14089,35 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":7,"./SettingsView":22,"./TransactionView":26,"backbone":29}],21:[function(require,module,exports){
+},{"../models/ApplicationState":7,"./GoalsView":21,"./ReportView":23,"./SettingsView":24,"./TransactionView":28,"backbone":31}],21:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('underscore');
+
+module.exports = Backbone.View.extend({
+
+	className: 'goalsView',
+
+	initialize: function() {
+		
+	},
+
+	events: {
+		
+	},
+
+	render: function() {
+		this.$el.html( 'Coming soon...' );
+		return this;
+	},
+
+	close: function() {
+		this.remove();
+		this.unbind();
+		this.stopListening();
+	}
+
+});
+},{"backbone":31,"underscore":33}],22:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14137,7 +14167,35 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":7,"../utils/EventAggregator":18,"backbone":29,"underscore":31}],22:[function(require,module,exports){
+},{"../models/ApplicationState":7,"../utils/EventAggregator":18,"backbone":31,"underscore":33}],23:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('underscore');
+
+module.exports = Backbone.View.extend({
+
+	className: 'reportView',
+
+	initialize: function() {
+		
+	},
+
+	events: {
+		
+	},
+
+	render: function() {
+		this.$el.html( 'Coming soon...' );
+		return this;
+	},
+
+	close: function() {
+		this.remove();
+		this.unbind();
+		this.stopListening();
+	}
+
+});
+},{"backbone":31,"underscore":33}],24:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14203,7 +14261,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":7,"../models/Transaction":9,"../models/TransactionBalance":10,"../templates/settings.html":12,"backbone":29,"underscore":31}],23:[function(require,module,exports){
+},{"../models/ApplicationState":7,"../models/Transaction":9,"../models/TransactionBalance":10,"../templates/settings.html":12,"backbone":31,"underscore":33}],25:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14350,7 +14408,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":27,"../collections/Categories":5,"../models/Transaction":9,"../templates/transactionEditor.html":13,"../views/CategoryItemView":19,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":29,"moment":30,"underscore":31}],24:[function(require,module,exports){
+},{"../../config/settings":29,"../collections/Categories":5,"../models/Transaction":9,"../templates/transactionEditor.html":13,"../views/CategoryItemView":19,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":31,"moment":32,"underscore":33}],26:[function(require,module,exports){
 var moment = require('moment');
 var _ = require('underscore');
 var Backbone = require('backbone');
@@ -14407,7 +14465,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/TransactionBalance":10,"../templates/transactionItem.html":14,"backbone":29,"moment":30,"underscore":31}],25:[function(require,module,exports){
+},{"../models/TransactionBalance":10,"../templates/transactionItem.html":14,"backbone":31,"moment":32,"underscore":33}],27:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14469,7 +14527,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":27,"../models/ApplicationState":7,"../models/Transaction":9,"../templates/transactionPeriod.html":15,"backbone":29,"moment":30,"underscore":31}],26:[function(require,module,exports){
+},{"../../config/settings":29,"../models/ApplicationState":7,"../models/Transaction":9,"../templates/transactionPeriod.html":15,"backbone":31,"moment":32,"underscore":33}],28:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
@@ -14556,9 +14614,17 @@ module.exports = Backbone.View.extend({
 
 		this.displayDay = '';
 		this.clearEntryRows();
-		this.collection.each(function(item) {
-			this.renderRow(item);
-		}, this);
+
+		if ( this.collection.length === 0 ) {
+
+			this.$el.find('.entry-list').html('<hr /><br />Non ci sono movimenti nel mese selezionato.');
+
+		} else {
+			this.collection.each(function(item) {
+				this.renderRow(item);
+			}, this);	
+		}
+		
 		this.setMoreEntriesVisibility();
 
 		this.showBalanceLoader();
@@ -14658,7 +14724,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":27,"../collections/Transactions":6,"../models/ApplicationState":7,"../models/TransactionBalance":10,"../templates/transactions.html":16,"../templates/transactionsHeader.html":17,"../utils/EventAggregator":18,"./TransactionEditor":23,"./TransactionItem":24,"./TransactionPeriod":25,"backbone":29,"moment":30,"underscore":31}],27:[function(require,module,exports){
+},{"../../config/settings":29,"../collections/Transactions":6,"../models/ApplicationState":7,"../models/TransactionBalance":10,"../templates/transactions.html":16,"../templates/transactionsHeader.html":17,"../utils/EventAggregator":18,"./TransactionEditor":25,"./TransactionItem":26,"./TransactionPeriod":27,"backbone":31,"moment":32,"underscore":33}],29:[function(require,module,exports){
 exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
@@ -14668,7 +14734,7 @@ exports.futureYears = 2;
 
 exports.TRANSACTIONS_PER_PAGE = 3;
 exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
  * Version 1.1.13
@@ -14923,7 +14989,7 @@ Backbone.sync = function(method, model, options) {
 return Backbone.LocalStorage;
 }));
 
-},{"backbone":29}],29:[function(require,module,exports){
+},{"backbone":31}],31:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -16533,7 +16599,7 @@ return Backbone.LocalStorage;
 
 }));
 
-},{"underscore":31}],30:[function(require,module,exports){
+},{"underscore":33}],32:[function(require,module,exports){
 (function (global){
 //! moment.js
 //! version : 2.8.3
@@ -19393,7 +19459,7 @@ return Backbone.LocalStorage;
 }).call(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
