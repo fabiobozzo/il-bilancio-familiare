@@ -11,6 +11,13 @@ module.exports = function(grunt) {
 			}
 		},
 
+		cssmin: {
+			minify: {
+				src: ['public/stylesheets/build.css'],
+				dest: 'public/stylesheets/build.css'
+			}
+		},
+
 		browserify: {
 			home: {
 				files: { 'public/javascripts/build/home.js': ['app/client/home.js'] }, 
@@ -40,8 +47,9 @@ module.exports = function(grunt) {
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-less');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-browserify');
 
-	grunt.registerTask('default', ['less','browserify','jshint']);
+	grunt.registerTask('default', ['less','cssmin','browserify','jshint']);
 };
