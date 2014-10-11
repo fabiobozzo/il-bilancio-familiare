@@ -1,7 +1,9 @@
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
+
 	idAttribute: '_id',
+
 	defaults: {
 		id: 0,
 		code: '',	
@@ -9,4 +11,5 @@ module.exports = Backbone.Model.extend({
 		positive: false, 
 		selected: false
 	}
+	
 });

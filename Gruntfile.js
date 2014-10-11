@@ -42,14 +42,32 @@ module.exports = function(grunt) {
 			options: {
 				sub: true
 			}
-		}
+		},
+
+		uglify: {
+			compile: {
+				options: {
+					compress: true,
+					verbose: true
+				},
+				files: [{
+					src: 'public/javascripts/build/home.js',
+					dest: 'public/javascripts/build/home.js'
+				}, {
+					src: 'public/javascripts/build/app.js',
+					dest: 'public/javascripts/build/app.js'
+				}]
+			}
+		},
 
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-browserify');
 
-	grunt.registerTask('default', ['less','cssmin','browserify','jshint']);
+	grunt.registerTask('default', ['less','cssmin','browserify','uglify']);
+	grunt.registerTask('dev', ['less','browserify','jshint']);
 };

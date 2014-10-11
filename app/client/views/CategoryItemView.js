@@ -16,7 +16,8 @@ module.exports = Backbone.View.extend({
 		'click .category-link': 'select'
 	},
 
-	select: function() {
+	select: function(event) {
+		event.preventDefault();
 		var thisId = this.model.get('_id');
 		this.model.collection.each(function(item) {
 			item.set( 'selected', item.get('_id') == thisId );

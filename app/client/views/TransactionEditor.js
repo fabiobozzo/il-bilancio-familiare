@@ -28,6 +28,8 @@ module.exports = Backbone.View.extend({
 
 		_.bindAll(this, 'entryAdded');
 		_.bindAll(this, 'entryAddError');
+		_.bindAll(this, 'addEntry');
+		_.bindAll(this, 'validateEntryData');
 	},
 
 	render: function() {
@@ -57,7 +59,8 @@ module.exports = Backbone.View.extend({
 
 	events: {
 		'click .add-entry' : 'addEntry',
-		'click .hide-add-entry' : 'hide'
+		'click .hide-add-entry' : 'hide',
+		'click .entry-date-icon': 'openDatePicker'
 	},
 
 	hide: function(event) {
@@ -77,31 +80,85 @@ module.exports = Backbone.View.extend({
 		var entryData = {};
 
 		entryData.positive = this.parent.isPositiveEntrySelected();
-		entryData.amount = this.$el.find('input[name=amount]').val();
-		entryData.dateEntry = moment( this.$el.find('input[name=dateEntry]').val(), 'DD-MM-YYYY' ).toDate();
-		entryData.description = this.$el.find('input[name=description]').val();
+		entryData.amount = this.$el.find('input[name=amount]').val().trim();
+		entryData._dateEntry = this.$el.find('input[name=dateEntry]').val().trim();
+		entryData.dateEntry = moment( entryData._dateEntry, 'DD-MM-YYYY', true ).toDate();
+		entryData.description = this.$el.find('input[name=description]').val().trim();
 
 		var selectedCategories = this.categories.where({selected:true});
-		entryData.category = selectedCategories[0].get('_id');
+		entryData.category = selectedCategories.length>0 ? selectedCategories[0].get('_id') : '';
 
-		var newEntry = new Transaction();
+		var validation = this.validateEntryData(entryData);
 
-		newEntry.save( entryData, {
-			wait:true,
-			success: this.entryAdded,
-			error: this.entryAddError
-		});
+		if ( !validation.success ) {
 
-		this.hide();
+			alert(validation.message);
+			if ( validation.domNode ) { 
+				validation.domNode.focus();
+			}
+
+		} else {
+
+			var newEntry = new Transaction();
+			newEntry.save( entryData, {
+				wait:true,
+				success: this.entryAdded,
+				error: this.entryAddError
+			});
+
+			this.disableAddEntryButton();
+		}
+	},
+
+	validateEntryData: function(data) {
+		
+		var result = { success: true };
+		if ( isNaN(data.amount) ) {
+			result.success = false;
+			result.message = 'Inserire un importo numerico';
+			result.domNode = this.$el.find('input[name=amount]');
+			return result;
+		}
+		if ( data.amount <= 0 ) {
+			result.success = false;
+			result.message = 'Inserire un importo numerico positivo (senza segno)';
+			result.domNode = this.$el.find('input[name=amount]');
+			return result;	
+		}
+		if ( data.category === '' ) {
+			result.success = false;
+			result.message = 'Selezionare una categoria';
+			return result;	
+		}
+		if ( data._dateEntry === '' ) {
+			result.success = false;
+			result.message = 'Inserire una data valida';
+			result.domNode = this.$el.find('input[name=dateEntry]');
+			return result;	
+		} 
+		return result;
 	},
 
 	entryAdded: function(model, response) {
 		this.resetForm();
 		this.collection.refetch();
+		this.hide();
+		this.enableAddEntryButton();
 	},
 
 	entryAddError: function(model, response) {
+		this.enableAddEntryButton();
 		alert("Errore salvataggio transazione. Riprovare più tardi!");
+	},
+
+	enableAddEntryButton: function() {
+		var button = this.$el.find('.add-entry');
+		button.removeProp('disabled').removeAttr('disabled').text( button.attr('data-text') );
+	},
+
+	disableAddEntryButton: function() {
+		var button = this.$el.find('.add-entry');
+		button.prop('disabled', 'true').text( 'Attendere...' );
 	},
 
 	renderCategories: function() {
@@ -128,7 +185,13 @@ module.exports = Backbone.View.extend({
 			} else {
 				v.$el.hide();
 			}
+			v.model.set( 'selected', false );
 		});
+	},
+
+	openDatePicker: function(event) {
+		if (event) event.preventDefault();
+		this.$el.find('input[name=dateEntry]').trigger('click');
 	},
 
 	resetForm: function() {

@@ -26,11 +26,13 @@ module.exports = Backbone.View.extend({
 	},
 
 	setInitialBalance: function() {
+
 		var balance = this.$el.find('.set-balance input[name=balance]').val();
-		if (isNaN(balance)) {
+		if ( isNaN(balance) || balance<=0 ) {
 			alert('Inserire un saldo iniziale valido.');
 			return;
 		}
+
 		var entryData = {};
 		entryData.correction = true;
 		entryData.description = 'INITIALBALANCE';
@@ -38,14 +40,12 @@ module.exports = Backbone.View.extend({
 		entryData.positive = entryData.amount > 0;
 		entryData.dateEntry = new Date();
 
-		if ( entryData.amount!==0 ) {
-			var newEntry = new Transaction();
-			newEntry.save( entryData, {
-				wait:true,
-				success: this.balanceSetSuccess,
-				error: this.balanceSetError
-			});
-		}
+		var newEntry = new Transaction();
+		newEntry.save( entryData, {
+			wait:true,
+			success: this.balanceSetSuccess,
+			error: this.balanceSetError
+		});
 	},
 
 	balanceSetSuccess: function() {
