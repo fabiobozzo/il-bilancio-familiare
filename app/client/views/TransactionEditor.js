@@ -52,7 +52,8 @@ module.exports = Backbone.View.extend({
 			hiddenPrefix: 'prefix__',
 			hiddenSuffix: '__suffix',
 			hiddenName: 'pickadate-hidden-field',
-			firstDay: 1
+			firstDay: 1,
+			editable: false
 		});
 
 		this.$datepicker.pickadate('picker').on('open' , function(){console.log('picker opened');});
