@@ -30,6 +30,7 @@ module.exports = Backbone.View.extend({
 		_.bindAll(this, 'entryAddError');
 		_.bindAll(this, 'addEntry');
 		_.bindAll(this, 'validateEntryData');
+		_.bindAll(this, 'openDatePicker');
 	},
 
 	render: function() {
@@ -38,7 +39,7 @@ module.exports = Backbone.View.extend({
 		
 		this.resetForm();
 
-		this.$el.find('.form-group input[name=dateEntry]').pickadate({
+		this.$datepicker = this.$el.find('.form-group input[name=dateEntry]').pickadate({
 			monthsFull: Settings.monthsFull,
 			monthsShort: Settings.monthsShort,
 			weekdaysFull: Settings.weekdaysFull,
@@ -53,6 +54,8 @@ module.exports = Backbone.View.extend({
 			hiddenName: 'pickadate-hidden-field',
 			firstDay: 1
 		});
+
+		this.$datepicker.pickadate('picker').on('open' , function(){console.log('picker opened');});
 
 		return this;
 	},
@@ -190,8 +193,10 @@ module.exports = Backbone.View.extend({
 	},
 
 	openDatePicker: function(event) {
-		if (event) event.preventDefault();
-		this.$el.find('input[name=dateEntry]').trigger('click');
+		
+		var picker = this.$datepicker.pickadate('picker');
+		console.log(picker);
+		picker.open(false);
 	},
 
 	resetForm: function() {
