@@ -41,6 +41,7 @@
     "passport-google-oauth": "*",
     "passport-local": "*",
     "passport-twitter": "*",
+    "sendgrid": "^1.2.1",
     "underscore": "^1.7.0"
   },
   "engines": {

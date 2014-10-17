@@ -12,6 +12,7 @@ var session         = require('express-session');
 
 var passportConfig  = require('./app/config/passport');
 var authentication  = require('./app/middleware/authentication');
+var sendgrid		= require('./app/middleware/sendgrid');
 var authRoutes      = require('./app/routes/auth');
 var appRoutes       = require('./app/routes/app');
 var apiRoutes       = require('./app/routes/api');
@@ -45,6 +46,7 @@ app.use(passport.initialize());
 app.use(passport.session()); 
 app.use(flash()); 
 app.use(authentication());
+app.use(sendgrid());
 
 authRoutes(app, passport); 
 appRoutes(app); 
