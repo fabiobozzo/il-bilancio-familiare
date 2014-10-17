@@ -121,7 +121,7 @@ module.exports = function(app) {
 	router.route('/testmail')
 		.get(function(req, res) {
 			if (req.sendgrid) {
-				sendgrid.send({
+				req.sendgrid.send({
 					to: 'fabio.bozzo@gmail.com',
 					from: 'test@ilbilanciofamiliare.it',
 					subject: 'Test',
