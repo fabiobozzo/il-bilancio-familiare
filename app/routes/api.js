@@ -118,26 +118,6 @@ module.exports = function(app) {
 			});
 		});
 
-	router.route('/testmail')
-		.get(function(req, res) {
-			if (req.sendgrid) {
-				req.sendgrid.send({
-					to: 'fabio.bozzo@gmail.com',
-					from: 'test@ilbilanciofamiliare.it',
-					subject: 'Test',
-					text: 'E-mail da Heroku! Bravo!'
-				}, function(err, json) {
-					if (err) { 
-						res.json(err); 
-						return;
-					}
-					res.json(json);
-				});
-			} else {
-				res.json({error:'Sendgrid not available'});
-			}
-		});
-
 	app.use('/api',router);
 
 };

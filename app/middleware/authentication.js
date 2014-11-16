@@ -1,6 +1,8 @@
 var publicPaths = [
 	'/login',
 	'/logout',
+    '/confirm',
+    '/pending',
 	'/signup',
     '/auth/facebook',
     '/auth/twitter',

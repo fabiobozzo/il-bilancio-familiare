@@ -10,9 +10,10 @@ var cookieParser    = require('cookie-parser');
 var bodyParser      = require('body-parser');
 var session         = require('express-session');
 
-var passportConfig  = require('./app/config/passport');
+var passportMw		= require('./app/middleware/passport');
 var authentication  = require('./app/middleware/authentication');
 var sendgrid		= require('./app/middleware/sendgrid');
+
 var authRoutes      = require('./app/routes/auth');
 var appRoutes       = require('./app/routes/app');
 var apiRoutes       = require('./app/routes/api');
@@ -32,7 +33,7 @@ mongoose.connect(mongoUri, function(err) {
 	});
 }); 
 
-passportConfig(passport,User);
+passportMw(passport,User);
 
 app.set('views', __dirname + '/app/views/');
 app.set('view engine', 'jade'); 
