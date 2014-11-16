@@ -13925,13 +13925,13 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="col-xs-4 col-sm-3 amount '+
+__p+='<div class="col-xs-6 col-sm-3 amount '+
 ((__t=( positive ? 'positive' : 'negative' ))==null?'':__t)+
 ' ">\n	'+
 ((__t=( positive ? '+' : '-' ))==null?'':__t)+
 '\n	'+
-((__t=( amount ))==null?'':__t)+
-' €\n</div>\n<div class="col-xs-4 col-sm-2 category">\n	<img src="/images/categories/'+
+((__t=( amount.toFixed(2) ))==null?'':__t)+
+' €\n</div>\n<div class="col-xs-2 col-sm-2 category">\n	<img src="/images/categories/'+
 ((__t=( category.code ))==null?'':__t)+
 '.png" class="category-img" width="16" height="16" align="absmiddle" />\n	<span class="category-label">'+
 ((__t=( category.title ))==null?'':__t)+
@@ -14016,8 +14016,9 @@ module.exports = Backbone.View.extend({
 	className: 'category-item',
 	template: template, 
 
-	initialize: function(model) {
+	initialize: function(model,parent) {
 		this.model = model;
+		this.parent = parent;
 		this.listenTo( this.model, 'change', this.update );
 	},
 
@@ -14031,6 +14032,7 @@ module.exports = Backbone.View.extend({
 		this.model.collection.each(function(item) {
 			item.set( 'selected', item.get('_id') == thisId );
 		});
+		this.parent.focusAmountInputField();
 	},
 
 	update: function() {
@@ -14303,6 +14305,9 @@ module.exports = Backbone.View.extend({
 		_.bindAll(this, 'addEntry');
 		_.bindAll(this, 'validateEntryData');
 		_.bindAll(this, 'openDatePicker');
+		_.bindAll(this, 'renderCategories');
+		_.bindAll(this, 'focusAmountInputField');
+		
 	},
 
 	render: function() {
@@ -14440,7 +14445,7 @@ module.exports = Backbone.View.extend({
 	renderCategories: function() {
 		this.clearCategorySubviews();
 		this.categories.each(function(item) {
-			var c = new CategoryItemView( item );
+			var c = new CategoryItemView( item, this );
 			this.categorySubviews.push( c );
 			this.$el.find('.category-items').append( c.render().el );	
 		}, this);
@@ -14470,6 +14475,10 @@ module.exports = Backbone.View.extend({
 		var picker = this.$datepicker.pickadate('picker');
 		console.log(picker);
 		picker.open(false);
+	},
+
+	focusAmountInputField: function() {
+ 		this.$el.find('.form-group input[name=amount]').focus();
 	},
 
 	resetForm: function() {
@@ -14732,7 +14741,9 @@ module.exports = Backbone.View.extend({
 		if ( model.get('hasInitial')===false ) {
 			this.$el.find('.balance .ask-for-initial-balance').show();	
 		}
-		this.$el.find('.balance .balance-value').text(model.get('balance'));
+		this.$el.find('.balance .balance-value').text( parseFloat(model.get('balance')).toFixed(2) );
+		this.$el.find('.balance').removeClass('alert-danger').removeClass('alert-success');
+		this.$el.find('.balance').addClass( parseFloat(model.get('balance')) >= 0 ? 'alert-success' : 'alert-danger' );
 	}, 
 
 	showBalanceLoader: function() {

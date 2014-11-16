@@ -125,7 +125,9 @@ module.exports = Backbone.View.extend({
 		if ( model.get('hasInitial')===false ) {
 			this.$el.find('.balance .ask-for-initial-balance').show();	
 		}
-		this.$el.find('.balance .balance-value').text(model.get('balance'));
+		this.$el.find('.balance .balance-value').text( parseFloat(model.get('balance')).toFixed(2) );
+		this.$el.find('.balance').removeClass('alert-danger').removeClass('alert-success');
+		this.$el.find('.balance').addClass( parseFloat(model.get('balance')) >= 0 ? 'alert-success' : 'alert-danger' );
 	}, 
 
 	showBalanceLoader: function() {

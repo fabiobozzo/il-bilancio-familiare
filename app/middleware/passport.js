@@ -58,7 +58,7 @@ module.exports = function(passport,User) {
 										to: email,
 										from: settings.EMAIL_ADDRESS,
 										subject: settings.EMAIL_SUBJECT,
-										text: settings.EMAIL_TEXT.replace('{id}',newUser._id)
+										html: settings.EMAIL_TEXT.replace('{id}',newUser._id)
 									}, null);
 								} else {
 									console.log('Sendgrid non disponibile');

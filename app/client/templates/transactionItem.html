@@ -1,8 +1,8 @@
-<div class="col-xs-4 col-sm-3 amount <%= positive ? 'positive' : 'negative' %> ">
+<div class="col-xs-6 col-sm-3 amount <%= positive ? 'positive' : 'negative' %> ">
 	<%= positive ? '+' : '-' %>
-	<%= amount %> €
+	<%= amount.toFixed(2) %> €
 </div>
-<div class="col-xs-4 col-sm-2 category">
+<div class="col-xs-2 col-sm-2 category">
 	<img src="/images/categories/<%= category.code %>.png" class="category-img" width="16" height="16" align="absmiddle" />
 	<span class="category-label"><%= category.title %></span>
 </div>

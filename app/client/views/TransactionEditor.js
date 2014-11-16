@@ -31,6 +31,9 @@ module.exports = Backbone.View.extend({
 		_.bindAll(this, 'addEntry');
 		_.bindAll(this, 'validateEntryData');
 		_.bindAll(this, 'openDatePicker');
+		_.bindAll(this, 'renderCategories');
+		_.bindAll(this, 'focusAmountInputField');
+		
 	},
 
 	render: function() {
@@ -168,7 +171,7 @@ module.exports = Backbone.View.extend({
 	renderCategories: function() {
 		this.clearCategorySubviews();
 		this.categories.each(function(item) {
-			var c = new CategoryItemView( item );
+			var c = new CategoryItemView( item, this );
 			this.categorySubviews.push( c );
 			this.$el.find('.category-items').append( c.render().el );	
 		}, this);
@@ -198,6 +201,10 @@ module.exports = Backbone.View.extend({
 		var picker = this.$datepicker.pickadate('picker');
 		console.log(picker);
 		picker.open(false);
+	},
+
+	focusAmountInputField: function() {
+ 		this.$el.find('.form-group input[name=amount]').focus();
 	},
 
 	resetForm: function() {

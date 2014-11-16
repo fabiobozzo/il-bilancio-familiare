@@ -7,8 +7,9 @@ module.exports = Backbone.View.extend({
 	className: 'category-item',
 	template: template, 
 
-	initialize: function(model) {
+	initialize: function(model,parent) {
 		this.model = model;
+		this.parent = parent;
 		this.listenTo( this.model, 'change', this.update );
 	},
 
@@ -22,6 +23,7 @@ module.exports = Backbone.View.extend({
 		this.model.collection.each(function(item) {
 			item.set( 'selected', item.get('_id') == thisId );
 		});
+		this.parent.focusAmountInputField();
 	},
 
 	update: function() {
