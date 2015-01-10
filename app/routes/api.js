@@ -4,6 +4,7 @@ var async = require('async');
 
 var Transaction = require('../models/transaction');
 var Category = require('../models/category');
+var User = require('../models/user');
 var Settings = require('../config/settings');
 
 module.exports = function(app) {
@@ -19,7 +20,7 @@ module.exports = function(app) {
 			var month = req.query.m || parseInt((new Date()).getMonth())+1;
 			var year = req.query.y || parseInt((new Date()).getFullYear());
 			
-			var search = { user:req.user._id, correction:false };
+			var search = { user:req.user._id };
 			var options = { sort: {dateEntry: -1}, skip: (page-1) * limit, limit: limit+1 };
 
 			switch (filter) {
@@ -116,6 +117,73 @@ module.exports = function(app) {
 				}
 				res.json(categories);
 			});
+		});
+
+	router.route('/password')
+		.post(function(req, res) {
+			
+			var pw = req.body.password || '';
+
+			if ( pw.length==0 ) {
+				return res.json({error:'La password non può essere vuota.'});
+			}
+
+			User.findOne({ _id: req.user._id }, function(err, user) {
+				if (err) {
+					return res.json({error:err.message});
+				}
+				if ( !user.local ) {
+					user.local = {};
+				}
+				user.local.password = user.generateHash(pw);
+				user.save(function(err) {
+					if (err) {
+						return res.json({error:err.message});
+					}
+					res.json({success:true});
+				})
+			});
+			
+		});
+
+	router.route('/report/categories')
+		.get(function(req,res) {
+
+			var positive = req.query.positive === 'true' || false;
+
+			Transaction.aggregate(
+				[
+					{ $match: { user:req.user._id, positive: positive } },
+					{ $group: {_id:"$category", total:{$sum:"$amount"}}},
+					{ $project: {_id:false, category:"$_id", total:1}}
+
+				], function(err, results) {
+					if (err) return res.json({error:err.message});
+
+					var ret = [];
+
+					var globalTotal = 0.0;
+					results.forEach(function(i) {
+						globalTotal += i.total;
+					});
+
+					async.each( results, function(doc, callback) {
+						Transaction.populate( doc, { path:'category', select:'title _id' }, function(err, populated) {
+							ret.push({
+								_id: populated.category._id,
+								name: populated.category.title,
+								y: populated.total * 100 / globalTotal
+							});
+							callback(err);
+						});
+					}, function(err) {
+						if (err) return res.json({error:err.message});
+						res.json(ret);
+					});
+					
+				}
+			);
+
 		});
 
 	app.use('/api',router);

@@ -17,11 +17,12 @@ module.exports = Backbone.View.extend({
 	},
 
 	events: {
-		'click .set-balance button': 'setInitialBalance'
+		'click .set-balance button': 'setInitialBalance',
+		'click .change-password button': 'changePassword'
 	},
 
 	render: function() {
-		this.$el.html( template() );
+		this.$el.html( template({username:window.username||''}) );
 		return this;
 	},
 
@@ -46,6 +47,32 @@ module.exports = Backbone.View.extend({
 			success: this.balanceSetSuccess,
 			error: this.balanceSetError
 		});
+	},
+
+	changePassword: function() {
+
+		var pw = $.trim( this.$el.find('.change-password input[name=password]').val() || '' );
+		var confirmPw = $.trim( this.$el.find('.change-password input[name=confirm]').val() || '' );
+
+		if ( pw!=confirmPw ) {
+			alert('Le password non corrispondono');
+		} else {
+			$.ajax({
+				type: 'POST',
+				url: '/api/password',
+				data: { password: pw },
+				success: function(data){
+					alert( data.success ? 'Password re-impostata.' : 'Errore.' );
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert('Errore. Si prega di riprovare più tardi');
+				}
+			});
+		}
+
+		this.$el.find('.change-password input[name=password]').val('').focus();
+		this.$el.find('.change-password input[name=confirm]').val('');
+
 	},
 
 	balanceSetSuccess: function() {

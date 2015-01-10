@@ -14,6 +14,35 @@
 			</div>
 		</div>
 	</div>
+	<div class="col col-sm-6 change-password">
+		<div class="settings-block">
+			Nome utente: <strong><%= username %></strong>
+		</div>
+		<div class="settings-block">
+			<h2>Cambia password</h2>
+			<div class="form-group">
+				<label>Password:</label>
+				<input type="password" name="password" value="" />
+				<br />
+				<label>Conferma:</label>
+				<input type="password" name="confirm" value="" />
+				<br />
+				<button class="btn btn-primary">OK</button>
+			</div>
+		</div>
+	</div>
+	<div class="col col-sm-6 change-password">
+		<div class="settings-block">
+			<h2>Esportazione DB</h2>
+			<div class="form-group set-balance">
+				<p>
+					Scarica tutti i dati relativi alle transazioni nel formato che preferisci.
+				</p>
+				<a href="/export/csv" target="_blank" role="button" class="btn btn-primary">CSV</a> 
+				<a href="/export/json" target="_blank" role="button" class="btn btn-primary">JSON</a>
+			</div>
+		</div>
+	</div>
 	<div class="col col-sm-6 credits">
 		<div class="settings-block">
 			Fabio Bozzo © Copyright 2014

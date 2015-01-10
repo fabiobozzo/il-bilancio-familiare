@@ -5,7 +5,7 @@ exports.weekdaysShort = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
 exports.pastYears = 3;
 exports.futureYears = 2;
 
-exports.TRANSACTIONS_PER_PAGE = 3;
+exports.TRANSACTIONS_PER_PAGE = 10;
 exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';
 exports.EMAIL_ADDRESS = 'info@ilbilanciofamiliare.it';
 exports.EMAIL_SUBJECT = 'Conferma registrazione';
