@@ -2,14 +2,29 @@
 	<div class="row">
 		<div class="col-sm-4 form-group">
 			<label>Mese</label>
-			<select name="month" class="month" class="transactions-period-month">
+			<% if (canDisableMonth) { %>
+				<input 
+					type="checkbox" 
+					name="enableMonth" 
+					class="enable-month" 
+					<% if (monthEnabled) { %> checked="checked" <% } %>
+					value="on" 
+				/>
+			<% } %>
+			<select 
+				name="month" 
+				class="month" 
+				class="transactions-period-month" 
+				<% if ( canDisableMonth && (!monthEnabled) ) { %> disabled <% } %>
+				>
+
 				<% 
 					var im = 0; 
 					_.each(settings.monthsFull, function(m) { 
 				%> 
 					<option <%= currentMonth == im ? 'selected=\'selected\'' : '' %> value="<%= im %>"><%= m %></option>
 				<% 
-						im++;
+					im++;
 					}); 
 				%>
 			</select>
@@ -29,7 +44,9 @@
 		<div class="col-md-2 text-right">
 			<!-- <label>&nbsp;</label> -->
 			<div class="input-group">
-				<a href="#" class="hide-transactions-period">Annulla</a> &nbsp;
+				<% if (showCancelButton) { %>
+					<a href="#" class="hide-transactions-period">Annulla</a> &nbsp;
+				<% } %>
 				<button type="button" class="btn btn-primary confirm-transactions-period">Conferma</button>
 			</div>
 		</div>

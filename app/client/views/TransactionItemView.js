@@ -1,4 +1,5 @@
 var moment = require('moment');
+var numeral = require('numeral');
 var _ = require('underscore');
 var Backbone = require('backbone');
 
@@ -22,7 +23,10 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function() {
-		var data = _.extend( this.model.toJSON(), {moment:moment} );
+		var data = _.extend( this.model.toJSON(), {
+			moment:moment, 
+			numeral:numeral
+		});
 		this.$el.html( this.template(data) );
 		return this;
 	},

@@ -36,7 +36,7 @@ module.exports = Backbone.View.extend({
 
 		var entryData = {};
 		entryData.correction = true;
-		entryData.description = 'INITIALBALANCE';
+		entryData.description = 'SALDO INIZIALE';
 		entryData.amount = parseFloat(balance) - parseFloat(TransactionBalance.get('balance'));
 		entryData.positive = entryData.amount > 0;
 		entryData.dateEntry = new Date();

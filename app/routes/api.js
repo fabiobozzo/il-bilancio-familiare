@@ -149,11 +149,27 @@ module.exports = function(app) {
 	router.route('/report/categories')
 		.get(function(req,res) {
 
-			var positive = req.query.positive === 'true' || false;
+			var positive = req.query.p === 'true' || false;
+			var month = req.query.m || false;
+			var year = req.query.y || parseInt((new Date()).getFullYear());
+
+			var search = { user:req.user._id, positive:positive };
+
+			if (month) {
+				search.dateEntry = { 
+					$gte: moment([year, month - 1]).toDate(), 
+					$lte: moment([year, month - 1]).endOf('month').toDate()
+				};
+			} else {
+				search.dateEntry = { 
+					$gte: moment([year, 0]).toDate(), 
+					$lte: moment([year, 11]).endOf('month').toDate()
+				};
+			}
 
 			Transaction.aggregate(
 				[
-					{ $match: { user:req.user._id, positive: positive } },
+					{ $match: search },
 					{ $group: {_id:"$category", total:{$sum:"$amount"}}},
 					{ $project: {_id:false, category:"$_id", total:1}}
 
@@ -184,6 +200,17 @@ module.exports = function(app) {
 				}
 			);
 
+		});
+
+	router.route('/report/periods')
+		.get(function(req,res) {
+
+			var total = req.query.total === 'true' || false;
+			var month = req.query.m || false;
+			var year = req.query.y || parseInt((new Date()).getFullYear());
+
+			res.json([]);
+			
 		});
 
 	app.use('/api',router);

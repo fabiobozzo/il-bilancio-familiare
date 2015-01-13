@@ -37,6 +37,7 @@
     "mongoose": "^3.8.14",
     "morgan": "*",
     "node-underscorify": "0.0.12",
+    "numeral": "^1.5.3",
     "passport": "*",
     "passport-facebook": "*",
     "passport-google-oauth": "*",

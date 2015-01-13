@@ -4,6 +4,27 @@ var bootstrap = require("./bower_components/bootstrap/dist/js/bootstrap.js");
 var Backbone = require('backbone');
 Backbone.$ = $;
 Backbone.LocalStorage = require("backbone.localstorage");
+var numeral = require('numeral');
+
+numeral.language('it', {
+	delimiters: {
+		thousands: '.',
+		decimal: ','
+	},
+	abbreviations: {
+		thousand: 'k',
+		million: 'm',
+		billion: 'b',
+		trillion: 't'
+	},
+	ordinal : function (number) {
+		return number;
+	},
+	currency: {
+		symbol: '€'
+	}
+});
+numeral.language('it');
 
 var MenuView = require('./views/MenuView');
 var ContainerView = require('./views/ContainerView');
@@ -19,7 +40,7 @@ $(function() {
 	$('[rel=tooltip]').tooltip();
 
 });
-},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":8,"./views/ContainerView":23,"./views/MenuView":25,"backbone":34,"backbone.localstorage":33}],2:[function(require,module,exports){
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":9,"./views/ContainerView":25,"./views/MenuView":27,"backbone":36,"backbone.localstorage":35,"numeral":40}],2:[function(require,module,exports){
 /*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -13765,7 +13786,7 @@ module.exports = Backbone.Collection.extend({
 	model: Category,
 	url: '/api/categories'
 });
-},{"../models/Category":9,"backbone":34}],6:[function(require,module,exports){
+},{"../models/Category":10,"backbone":36}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction');
 var ApplicationState = require('../models/ApplicationState');
@@ -13828,17 +13849,91 @@ var TransactionCollection = Backbone.Collection.extend({
 
 module.exports = new TransactionCollection();
 console.log("new TransactionCollection");
-},{"../models/ApplicationState":8,"../models/Transaction":10,"backbone":34}],7:[function(require,module,exports){
+},{"../models/ApplicationState":9,"../models/Transaction":11,"backbone":36}],7:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Category = require('../../models/report/Category');
+var ApplicationState = require('../../models/ApplicationState');
  
 module.exports = Backbone.Collection.extend({
 	
 	model: Category,
+
 	url: '/api/report/categories',
 
+	initialize: function(options) {
+
+		this.positive = options.positive || false;
+
+		this.updateCurrentPeriod();
+		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+	},
+
+	updateCurrentPeriod: function() {
+		this.month = parseInt(ApplicationState.get('currentPeriod').getMonth()) +1;
+		this.year = parseInt(ApplicationState.get('currentPeriod').getFullYear());
+	},
+
+	refetch: function() {
+
+		var data = {
+			p: this.positive,
+			y: this.year
+		};
+
+		if (ApplicationState.get('periodMonthEnabled')) {
+			data.m = this.month;
+		}
+
+		this.fetch({
+			reset:true,
+			data: data
+		});
+	}
+
 });
-},{"../../models/report/Category":12,"backbone":34}],8:[function(require,module,exports){
+},{"../../models/ApplicationState":9,"../../models/report/Category":13,"backbone":36}],8:[function(require,module,exports){
+var Backbone 	= require('backbone');
+var Period = require('../../models/report/Period');
+var ApplicationState = require('../../models/ApplicationState');
+ 
+module.exports = Backbone.Collection.extend({
+	
+	model: Period,
+
+	url: '/api/report/periods',
+
+	initialize: function(options) {
+
+		this.total = options.total || false;
+
+		this.updateCurrentPeriod();
+		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+	},
+
+	updateCurrentPeriod: function() {
+		this.month = parseInt(ApplicationState.get('currentPeriod').getMonth()) +1;
+		this.year = parseInt(ApplicationState.get('currentPeriod').getFullYear());
+	},
+
+	refetch: function() {
+
+		var data = {
+			p: this.positive,
+			y: this.year
+		};
+
+		if (ApplicationState.get('periodMonthEnabled')) {
+			data.m = this.month;
+		}
+
+		this.fetch({
+			reset:true,
+			data: data
+		});
+	}
+
+});
+},{"../../models/ApplicationState":9,"../../models/report/Period":14,"backbone":36}],9:[function(require,module,exports){
 var Backbone = require('backbone');
 var moment = require('moment');
 
@@ -13846,14 +13941,15 @@ var ApplicationState = Backbone.Model.extend({
 	defaults: {
 		id: 1,
 		currentView: 'transazioni', 
-		currentPeriod: moment().toDate()
+		currentPeriod: moment().toDate(),
+		periodMonthEnabled: true
 	},
 	localStorage: new Backbone.LocalStorage('application-state'),
 });
 
 module.exports = new ApplicationState();
 console.log("new ApplicationState");
-},{"backbone":34,"moment":37}],9:[function(require,module,exports){
+},{"backbone":36,"moment":39}],10:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13869,7 +13965,7 @@ module.exports = Backbone.Model.extend({
 	}
 	
 });
-},{"backbone":34}],10:[function(require,module,exports){
+},{"backbone":36}],11:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13887,7 +13983,7 @@ module.exports = Backbone.Model.extend({
 	urlRoot: '/api/transactions'
 
 });
-},{"backbone":34}],11:[function(require,module,exports){
+},{"backbone":36}],12:[function(require,module,exports){
 var Backbone = require('backbone');
  
 var TransactionBalance = Backbone.Model.extend({
@@ -13900,7 +13996,7 @@ var TransactionBalance = Backbone.Model.extend({
 });
 
 module.exports = new TransactionBalance();
-},{"backbone":34}],12:[function(require,module,exports){
+},{"backbone":36}],13:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13913,7 +14009,20 @@ module.exports = Backbone.Model.extend({
 	}
 
 });
-},{"backbone":34}],13:[function(require,module,exports){
+},{"backbone":36}],14:[function(require,module,exports){
+var Backbone = require('backbone');
+ 
+module.exports = Backbone.Model.extend({
+	
+	idAttribute: 'name',
+	
+	defaults: {
+		name: '',	
+		data: []
+	}
+
+});
+},{"backbone":36}],15:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -13926,31 +14035,11 @@ __p+='<a href="#" class="category-link">\n	<img src="/images/categories/'+
 return __p;
 };
 
-},{}],14:[function(require,module,exports){
-module.exports = function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="row">\n	<div id="piePositive" class="col-md-6"></div>\n	<div id="pieNegative" class="col-md-6"></div>\n</div>';
-}
-return __p;
-};
-
-},{}],15:[function(require,module,exports){
-module.exports = function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="row">\n	<div class="col col-sm-6 initial-balance">\n		<div class="settings-block">\n			<h2>Saldo Iniziale</h2>\n			<div class="form-group set-balance">\n				<p>\n					Questo valore verrà impostato come saldo corrente, generando un movimento \n					di rettifica nel bilancio.\n				</p>\n				<br />\n				<label>€</label>\n				<input type="number" name="balance" value="" placeholder="0.00" />\n				<button class="btn btn-primary">OK</button>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6 change-password">\n		<div class="settings-block">\n			Nome utente: <strong>'+
-((__t=( username ))==null?'':__t)+
-'</strong>\n		</div>\n		<div class="settings-block">\n			<h2>Cambia password</h2>\n			<div class="form-group">\n				<label>Password:</label>\n				<input type="password" name="password" value="" />\n				<br />\n				<label>Conferma:</label>\n				<input type="password" name="confirm" value="" />\n				<br />\n				<button class="btn btn-primary">OK</button>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6 change-password">\n		<div class="settings-block">\n			<h2>Esportazione DB</h2>\n			<div class="form-group set-balance">\n				<p>\n					Scarica tutti i dati relativi alle transazioni nel formato che preferisci.\n				</p>\n				<a href="/export/csv" target="_blank" role="button" class="btn btn-primary">CSV</a> \n				<a href="/export/json" target="_blank" role="button" class="btn btn-primary">JSON</a>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6 credits">\n		<div class="settings-block">\n			Fabio Bozzo © Copyright 2014\n		</div>\n	</div>\n</div>';
-}
-return __p;
-};
-
 },{}],16:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group">\n			<label>Categoria</label>\n			<ul class="category-items"></ul>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-2 form-group">\n			<label for="entryAmount">Importo (€) <span class="entryAmountKind"></span></label>\n			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />\n		</div>\n		<div class="col-md-6 form-group">\n			<label for="entryDescription">Note</label>\n			<input type="text" name="description" class="form-control" id="entryDescription" placeholder="Descrizione opzionale" />\n		</div>\n		<div class="col-md-2 form-group">\n			<label for="entryDate">Data</label>\n			<div class="input-group">\n				<input type="date" name="dateEntry" class="form-control entryDate" id="entryDate" placeholder="gg/mm/aaaa" />\n				<span class="input-group-addon entry-date-icon" data-toggle="booty-datepicker">     \n					<span class="glyphicon glyphicon-calendar"></span>\n				</span>\n			</div>\n		</div>\n		<div class="col-md-2 text-right">\n			<label>&nbsp;</label>\n			<div class="input-group">\n				<a href="#" class="hide-add-entry">Annulla</a> \n				<button type="button" class="btn btn-primary add-entry" data-text="Conferma">Conferma</button>\n			</div>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-12" id="pickadate-container"></div>\n	</div>\n</form>';
+__p+='<div class="row">\n	<div class="col-xs-12 text-center">\n		<div class="period-chooser"></div>\n	</div>\n</div>\n<div class="row">\n	<div id="piePositive" class="col-md-6"></div>\n	<div id="pieNegative" class="col-md-6"></div>\n	<div id="lineComparison" class="col-md-6"></div>\n	<div id="lineTotal" class="col-md-6"></div>\n</div>';
 }
 return __p;
 };
@@ -13959,19 +14048,9 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="col-xs-6 col-sm-3 amount '+
-((__t=( positive ? 'positive' : 'negative' ))==null?'':__t)+
-' ">\n	'+
-((__t=( positive ? '+' : '-' ))==null?'':__t)+
-'\n	'+
-((__t=( amount.toFixed(2) ))==null?'':__t)+
-' €\n</div>\n<div class="col-xs-2 col-sm-2 category">\n	<img src="/images/categories/'+
-((__t=( category.code ))==null?'':__t)+
-'.png" class="category-img" width="16" height="16" align="absmiddle" />\n	<span class="category-label">'+
-((__t=( category.title ))==null?'':__t)+
-'</span>\n</div>\n<div class="hidden-xs col-sm-6 description">\n	'+
-((__t=( description ))==null?'':__t)+
-'\n</div>\n<div class="col-xs-4 col-sm-1 text-right delete">\n	<button type="button" class="btn btn-default">\n		<span class="glyphicon glyphicon-remove"></span>\n	</button>\n</div>\n';
+__p+='<div class="row">\n	<div class="col col-sm-6 initial-balance">\n		<div class="settings-block">\n			<h2>Saldo Iniziale</h2>\n			<div class="form-group set-balance">\n				<p>\n					Questo valore verrà impostato come saldo corrente, generando un movimento \n					di rettifica nel bilancio.\n				</p>\n				<br />\n				<label>€</label>\n				<input type="number" name="balance" value="" placeholder="0.00" />\n				<button class="btn btn-primary">OK</button>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6 change-password">\n		<div class="settings-block">\n			Nome utente: <strong>'+
+((__t=( username ))==null?'':__t)+
+'</strong>\n		</div>\n		<div class="settings-block">\n			<h2>Cambia password</h2>\n			<div class="form-group">\n				<label>Password:</label>\n				<input type="password" name="password" value="" />\n				<br />\n				<label>Conferma:</label>\n				<input type="password" name="confirm" value="" />\n				<br />\n				<button class="btn btn-primary">OK</button>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6">\n		<div class="settings-block">\n			<h2>Esportazione DB</h2>\n			<div class="form-group">\n				<p>\n					Scarica tutti i dati relativi alle transazioni nel formato che preferisci.\n				</p>\n				<a href="/export/csv" target="_blank" role="button" class="btn btn-primary">CSV</a> \n				<a href="/export/json" target="_blank" role="button" class="btn btn-primary">JSON</a>\n			</div>\n		</div>\n	</div>\n	<div class="col col-sm-6 credits">\n		<div class="settings-block">\n			Fabio Bozzo © Copyright 2014\n		</div>\n	</div>\n</div>';
 }
 return __p;
 };
@@ -13980,7 +14059,61 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<form role="form">\n	<div class="row">\n		<div class="col-sm-4 form-group">\n			<label>Mese</label>\n			<select name="month" class="month" class="transactions-period-month">\n				';
+__p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group">\n			<label>Categoria</label>\n			<ul class="category-items"></ul>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-2 form-group">\n			<label for="entryAmount">Importo (€) <span class="entryAmountKind"></span></label>\n			<input type="number" name="amount" class="form-control" id="entryAmount" placeholder="0.00" />\n		</div>\n		<div class="col-md-6 form-group">\n			<label for="entryDescription">Note</label>\n			<input type="text" name="description" class="form-control" id="entryDescription" placeholder="Descrizione opzionale" />\n		</div>\n		<div class="col-md-2 form-group">\n			<label for="entryDate">Data</label>\n			<div class="input-group">\n				<input type="date" name="dateEntry" class="form-control entryDate" id="entryDate" placeholder="gg/mm/aaaa" />\n				<span class="input-group-addon entry-date-icon" data-toggle="booty-datepicker">     \n					<span class="glyphicon glyphicon-calendar"></span>\n				</span>\n			</div>\n		</div>\n		<div class="col-md-2 text-right">\n			<label>&nbsp;</label>\n			<div class="input-group">\n				<a href="#" class="hide-add-entry">Annulla</a> \n				<button type="button" class="btn btn-primary add-entry" data-text="Conferma">Conferma</button>\n			</div>\n		</div>\n	</div>\n	<div class="row">\n		<div class="col-md-12" id="pickadate-container"></div>\n	</div>\n</form>';
+}
+return __p;
+};
+
+},{}],19:[function(require,module,exports){
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div class="col-xs-6 col-sm-3 amount '+
+((__t=( positive ? 'positive' : 'negative' ))==null?'':__t)+
+' ">\n	'+
+((__t=( positive ? '+' : '-' ))==null?'':__t)+
+'\n	'+
+((__t=( numeral(amount).format('0,0.00') ))==null?'':__t)+
+' €\n</div>\n<div class="col-xs-2 col-sm-2 category">\n	';
+ if (category) { 
+__p+='\n		<img src="/images/categories/'+
+((__t=( category.code ))==null?'':__t)+
+'.png" class="category-img" width="16" height="16" align="absmiddle" />\n		<span class="category-label">'+
+((__t=( category.title ))==null?'':__t)+
+'</span>\n	';
+ } 
+__p+='\n</div>\n<div class="hidden-xs col-sm-6 description">\n	';
+ if (correction) { 
+__p+='<strong>';
+ } 
+__p+='\n	'+
+((__t=( description ))==null?'':__t)+
+'\n	';
+ if (correction) { 
+__p+='</strong>';
+ } 
+__p+='\n</div>\n<div class="col-xs-4 col-sm-1 text-right delete">\n	<button type="button" class="btn btn-default">\n		<span class="glyphicon glyphicon-remove"></span>\n	</button>\n</div>\n';
+}
+return __p;
+};
+
+},{}],20:[function(require,module,exports){
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<form role="form">\n	<div class="row">\n		<div class="col-sm-4 form-group">\n			<label>Mese</label>\n			';
+ if (canDisableMonth) { 
+__p+='\n				<input \n					type="checkbox" \n					name="enableMonth" \n					class="enable-month" \n					';
+ if (monthEnabled) { 
+__p+=' checked="checked" ';
+ } 
+__p+='\n					value="on" \n				/>\n			';
+ } 
+__p+='\n			<select \n				name="month" \n				class="month" \n				class="transactions-period-month" \n				';
+ if ( canDisableMonth && (!monthEnabled) ) { 
+__p+=' disabled ';
+ } 
+__p+='\n				>\n\n				';
  
 					var im = 0; 
 					_.each(settings.monthsFull, function(m) { 
@@ -13993,7 +14126,7 @@ __p+=' \n					<option '+
 ((__t=( m ))==null?'':__t)+
 '</option>\n				';
  
-						im++;
+					im++;
 					}); 
 				
 __p+='\n			</select>\n		</div>\n		<div class="col-sm-4 form-group">\n			<label>Anno</label>\n			<select name="year" class="year" class="transactions-period-year">\n				';
@@ -14010,12 +14143,16 @@ __p+=' \n					<option '+
 ((__t=( y ))==null?'':__t)+
 '</option>\n				';
  } 
-__p+='\n			</select>\n		</div>\n		<div class="col-md-2 text-right">\n			<!-- <label>&nbsp;</label> -->\n			<div class="input-group">\n				<a href="#" class="hide-transactions-period">Annulla</a> &nbsp;\n				<button type="button" class="btn btn-primary confirm-transactions-period">Conferma</button>\n			</div>\n		</div>\n	</div>\n</form>';
+__p+='\n			</select>\n		</div>\n		<div class="col-md-2 text-right">\n			<!-- <label>&nbsp;</label> -->\n			<div class="input-group">\n				';
+ if (showCancelButton) { 
+__p+='\n					<a href="#" class="hide-transactions-period">Annulla</a> &nbsp;\n				';
+ } 
+__p+='\n				<button type="button" class="btn btn-primary confirm-transactions-period">Conferma</button>\n			</div>\n		</div>\n	</div>\n</form>';
 }
 return __p;
 };
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14024,7 +14161,7 @@ __p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!--
 return __p;
 };
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14035,12 +14172,12 @@ __p+='<div class="transactions-date-header">\n	'+
 return __p;
 };
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 module.exports = _.extend({}, Backbone.Events);
 
-},{"backbone":34,"underscore":38}],22:[function(require,module,exports){
+},{"backbone":36,"underscore":41}],24:[function(require,module,exports){
 var Backbone = require('backbone');
 var template = require('../templates/categoryItem.html');
 
@@ -14088,7 +14225,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/categoryItem.html":13,"backbone":34}],23:[function(require,module,exports){
+},{"../templates/categoryItem.html":15,"backbone":36}],25:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
@@ -14133,7 +14270,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":8,"./GoalsView":24,"./ReportView":26,"./SettingsView":27,"./TransactionView":31,"backbone":34}],24:[function(require,module,exports){
+},{"../models/ApplicationState":9,"./GoalsView":26,"./ReportView":28,"./SettingsView":29,"./TransactionView":33,"backbone":36}],26:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14161,7 +14298,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"backbone":34,"underscore":38}],25:[function(require,module,exports){
+},{"backbone":36,"underscore":41}],27:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14211,13 +14348,17 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":8,"../utils/EventAggregator":21,"backbone":34,"underscore":38}],26:[function(require,module,exports){
+},{"../models/ApplicationState":9,"../utils/EventAggregator":23,"backbone":36,"underscore":41}],28:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var HighCharts = require('highcharts-browserify');
 
 var template = require('../templates/report.html');
 var CategoryCollection = require('../collections/report/Categories');
+var PeriodCollection = require('../collections/report/Periods');
+var TransactionPeriodView = require('./TransactionPeriodView');
+var ApplicationState = require('../models/ApplicationState');
+var Settings = require('../../config/settings');
 
 module.exports = Backbone.View.extend({
 
@@ -14225,49 +14366,120 @@ module.exports = Backbone.View.extend({
 
 	initialize: function() {
 
-		this.charts = [];
+		this.charts = {};
 
-		this.collectionPiePositive = new CategoryCollection();
-		this.collectionPieNegative = new CategoryCollection();
+		this.collectionPiePositive = new CategoryCollection({positive:true});
+		this.collectionPieNegative = new CategoryCollection({positive:false});
+		this.collectionLineComparison = new PeriodCollection({total:false});
+		this.collectionLineTotal = new PeriodCollection({total:true});
 		
 		this.listenTo( this.collectionPiePositive, 'reset', this.renderPositivePieChart );
 		this.listenTo( this.collectionPieNegative, 'reset', this.renderNegativePieChart );
+		this.listenTo( this.collectionLineComparison, 'reset', this.renderComparisonLineChart );
+		this.listenTo( this.collectionLineTotal, 'reset', this.renderTotalLineChart );
 		
-		this.collectionPiePositive.fetch({ reset:true, data:{positive:true} });
-		this.collectionPieNegative.fetch({ reset:true, data:{positive:false} });
+		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+		this.listenTo( ApplicationState, 'change:periodMonthEnabled', this.updateCurrentPeriod );	
+		
+		this.collectionPiePositive.refetch();
+		this.collectionPieNegative.refetch();
 	},
 
-	events: {
-		
+	updateCurrentPeriod: function() {
+		this.collectionPiePositive.refetch();
+		this.collectionPieNegative.refetch();
+		this.collectionLineTotal.refetch();
+		this.collectionLineComparison.refetch();
 	},
 
 	render: function() {
+
 		this.$el.html( template() );
+
+		this.periodChooserView = new TransactionPeriodView({
+			closeOnConfirm: false,
+			showCancelButton: false,
+			canDisableMonth: true
+		});
+		this.$el.find('.period-chooser').html( this.periodChooserView.render().el );
+
 		return this;
 	},
 
 	renderPositivePieChart: function() {
-		this.charts.push( this.getPieChart(
-			'Entrate',
-			'piePositive',
-			[{
-				type: 'pie',
-				name: 'Categoria',
-				data: this.collectionPiePositive.toJSON()
-			}]
-		));
+
+		var chartName = 'piePositive';
+		this.destroyChart(chartName);
+
+		if ( this.collectionPiePositive.length >0 ) {
+			this.charts[chartName] = this.getPieChart(
+				'Entrate',
+				chartName,
+				[{
+					type: 'pie',
+					name: 'Categoria',
+					data: this.collectionPiePositive.toJSON()
+				}]
+			);
+		} else {
+			this.$el.find('#'+chartName).html('Nessuna transazione positiva in questo periodo.');
+		}
+		
 	},
 
 	renderNegativePieChart: function() {
-		this.charts.push( this.getPieChart(
-			'Uscite',
-			'pieNegative',
-			[{
-				type: 'pie',
-				name: 'Categoria',
-				data: this.collectionPieNegative.toJSON()
-			}]
-		));
+
+		var chartName = 'pieNegative';
+		this.destroyChart(chartName);
+
+		if ( this.collectionPieNegative.length >0 ) {
+			this.charts[chartName] = this.getPieChart(
+				'Uscite',
+				chartName,
+				[{
+					type: 'pie',
+					name: 'Categoria',
+					data: this.collectionPieNegative.toJSON()
+				}]
+			);
+		} else {
+			this.$el.find('#'+chartName).html('Nessuna transazione negativa in questo periodo.');
+		}
+
+	},
+
+	renderComparisonLineChart: function() {
+		
+		var chartName = 'lineComparison';
+		this.destroyChart(chartName);
+
+		if ( this.collectionLineComparison.length >0 ) {
+			this.charts[chartName] = this.getPieChart(
+				'Saldo',
+				chartName,
+				this.getTemporalXAxis(),
+				this.collectionLineComparison.toJSON()
+			);
+		} else {
+			this.$el.find('#'+chartName).html('Nessuna transazione negativa in questo periodo.');
+		}
+	},
+
+	renderTotalLineChart: function() {
+
+	},
+
+	getTemporalXAxis: function() {
+		var axis = [];
+		if (ApplicationState.get('periodMonthEnabled')) {
+			var daysInMonth = new Date( this.collectionLineComparison.year, this.collectionLineComparison.month, 0).getDate();
+			for ( var i = 1; i <= daysInMonth; i++ ) {
+				axis.push(i);
+			}
+		} else {
+			axis = Settings.monthsShort;
+		}
+		return axis;
 	},
 
 	getPieChart: function(title, container, series) {
@@ -14305,22 +14517,81 @@ module.exports = Backbone.View.extend({
 		return chart;
 	},
 
-	destroyCharts: function() {
-		this.charts.forEach(function(c) {
-			c.destroy();
+	getLineChart: function(title, container, xAxis, series) {
+		var chart = new Highcharts.Chart({
+			chart: {
+				renderTo: container, 
+				plotBackgroundColor: null,
+				plotBorderWidth: null,
+				plotShadow: false
+			},
+			title: {
+				text: title,
+				x: -20 
+			},
+			xAxis: {
+				//categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+				categories: [xAxis]
+			},
+			yAxis: {
+				title: {
+					text: 'Importo (€)'
+				},
+				plotLines: [{
+					value: 0,
+					width: 1,
+					color: '#808080'
+				}]
+			},
+			tooltip: {
+				valueSuffix: '€'
+			},
+			legend: {
+				layout: 'vertical',
+				align: 'right',
+				verticalAlign: 'middle',
+				borderWidth: 0
+			},
+			// series: [{
+			// 	name: 'Tokyo',
+			// 	data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+			// }, {
+			// 	name: 'New York',
+			// 	data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
+			// }, {
+			// 	name: 'Berlin',
+			// 	data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
+			// }, {
+			// 	name: 'London',
+			// 	data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+			// }]
+			series: series
 		});
-		this.charts = [];
+	},
+
+	destroyChart: function(chartName) {
+		if (this.charts.hasOwnProperty(chartName)) {
+			if (this.charts[chartName].destroy) this.charts[chartName].destroy();
+			delete this.charts[chartName];
+		}
+	},
+
+	destroyAllCharts: function() {
+		for (var c in this.charts) {
+			if (c.destroy) c.destroy();
+		}
+		this.charts = {};
 	},
 
 	close: function() {
-		this.destroyCharts();
+		this.destroyAllCharts();
 		this.remove();
 		this.unbind();
 		this.stopListening();
 	}
 
 });
-},{"../collections/report/Categories":7,"../templates/report.html":14,"backbone":34,"highcharts-browserify":35,"underscore":38}],27:[function(require,module,exports){
+},{"../../config/settings":34,"../collections/report/Categories":7,"../collections/report/Periods":8,"../models/ApplicationState":9,"../templates/report.html":16,"./TransactionPeriodView":32,"backbone":36,"highcharts-browserify":37,"underscore":41}],29:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14359,7 +14630,7 @@ module.exports = Backbone.View.extend({
 
 		var entryData = {};
 		entryData.correction = true;
-		entryData.description = 'INITIALBALANCE';
+		entryData.description = 'SALDO INIZIALE';
 		entryData.amount = parseFloat(balance) - parseFloat(TransactionBalance.get('balance'));
 		entryData.positive = entryData.amount > 0;
 		entryData.dateEntry = new Date();
@@ -14413,7 +14684,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":8,"../models/Transaction":10,"../models/TransactionBalance":11,"../templates/settings.html":15,"backbone":34,"underscore":38}],28:[function(require,module,exports){
+},{"../models/ApplicationState":9,"../models/Transaction":11,"../models/TransactionBalance":12,"../templates/settings.html":17,"backbone":36,"underscore":41}],30:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14636,8 +14907,9 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":32,"../collections/Categories":5,"../models/Transaction":10,"../templates/transactionEditor.html":16,"../views/CategoryItemView":22,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":34,"moment":37,"underscore":38}],29:[function(require,module,exports){
+},{"../../config/settings":34,"../collections/Categories":5,"../models/Transaction":11,"../templates/transactionEditor.html":18,"../views/CategoryItemView":24,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":36,"moment":39,"underscore":41}],31:[function(require,module,exports){
 var moment = require('moment');
+var numeral = require('numeral');
 var _ = require('underscore');
 var Backbone = require('backbone');
 
@@ -14661,7 +14933,10 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function() {
-		var data = _.extend( this.model.toJSON(), {moment:moment} );
+		var data = _.extend( this.model.toJSON(), {
+			moment:moment, 
+			numeral:numeral
+		});
 		this.$el.html( this.template(data) );
 		return this;
 	},
@@ -14693,13 +14968,12 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/TransactionBalance":11,"../templates/transactionItem.html":17,"backbone":34,"moment":37,"underscore":38}],30:[function(require,module,exports){
+},{"../models/TransactionBalance":12,"../templates/transactionItem.html":19,"backbone":36,"moment":39,"numeral":40,"underscore":41}],32:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
 
 var template = require('../templates/transactionPeriod.html');
-var Transaction = require('../models/Transaction');
 var Settings = require('../../config/settings');
 var ApplicationState = require('../models/ApplicationState');
 
@@ -14709,9 +14983,9 @@ module.exports = Backbone.View.extend({
 	template: template, 
 
 	initialize: function(options) {
-
-		this.collection = options.collection;
-		this.parent = options.parent;
+		this.closeOnConfirm = options.closeOnConfirm;
+		this.showCancelButton = options.showCancelButton;
+		this.canDisableMonth = options.canDisableMonth;
 	},
 
 	render: function() {
@@ -14720,24 +14994,47 @@ module.exports = Backbone.View.extend({
 			settings:Settings, 
 			currentMonth: parseInt(ApplicationState.get('currentPeriod').getMonth()),
 			currentYear: parseInt(ApplicationState.get('currentPeriod').getFullYear()), 
+			showCancelButton: this.showCancelButton,
+			canDisableMonth: this.canDisableMonth,
+			monthEnabled: ApplicationState.get('periodMonthEnabled'),
 			_:_
 		};
-		this.$el.html( this.template(templateData) );		
+		this.$el.html( this.template(templateData) );
 
 		return this;
 	},
 
 	events: {
 		'click .hide-transactions-period' : 'hide',
-		'click .confirm-transactions-period' : 'confirm'
+		'click .confirm-transactions-period' : 'confirm',
+		'click .enable-month': 'updateMonthEnabled'
 	},
 
 	confirm: function(event) {
+
+		console.log('confirm');
+
 		var year = this.$el.find('select.year').val();
 		var month = parseInt(this.$el.find('select.month').val()) +1;
+		
 		ApplicationState.set('currentPeriod', moment(year+'-'+month+'-01','YYYY-MM-DD').toDate() );
-		this.hide();
+
+		if ( this.closeOnConfirm ) {
+			this.hide();	
+		}
+		
 	},
+
+	updateMonthEnabled: function() {
+
+		ApplicationState.set('periodMonthEnabled', this.$el.find('.enable-month').is(':checked'));
+		
+		if ( ApplicationState.get('periodMonthEnabled') ) {
+			this.$el.find('select.month').removeAttr('disabled');
+		} else {
+			this.$el.find('select.month').prop('disabled',true);
+		}
+	}, 
 
 	hide: function(event) {
 		if (event) event.preventDefault();
@@ -14755,18 +15052,19 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":32,"../models/ApplicationState":8,"../models/Transaction":10,"../templates/transactionPeriod.html":18,"backbone":34,"moment":37,"underscore":38}],31:[function(require,module,exports){
+},{"../../config/settings":34,"../models/ApplicationState":9,"../templates/transactionPeriod.html":20,"backbone":36,"moment":39,"underscore":41}],33:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
+var numeral = require('numeral');
 
 var template = require('../templates/transactions.html');
 var templateGroupHeader = require('../templates/transactionsHeader.html');
 var TransactionBalance = require('../models/TransactionBalance');
 var TransactionCollection = require('../collections/Transactions');
-var TransactionItemView = require('./TransactionItem');
-var TransactionEditorView = require('./TransactionEditor');
-var TransactionPeriodView = require('./TransactionPeriod');
+var TransactionItemView = require('./TransactionItemView');
+var TransactionEditorView = require('./TransactionEditorView');
+var TransactionPeriodView = require('./TransactionPeriodView');
 var Settings = require('../../config/settings');
 var ApplicationState = require('../models/ApplicationState');
 var Vent = require('../utils/EventAggregator');
@@ -14814,8 +15112,9 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.new-transaction').after( this.editorView.render().el );
 
 		this.periodChooserView = new TransactionPeriodView({
-			collection: this.collection, 
-			parent: this
+			closeOnConfirm: true,
+			showCancelButton: true,
+			canDisableMonth: false
 		});
 		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
 
@@ -14883,7 +15182,9 @@ module.exports = Backbone.View.extend({
 		if ( model.get('hasInitial')===false ) {
 			this.$el.find('.balance .ask-for-initial-balance').show();	
 		}
-		this.$el.find('.balance .balance-value').text( parseFloat(model.get('balance')).toFixed(2) );
+
+		this.$el.find('.balance .balance-value').text( numeral(model.get('balance')).format('0,0.00') );
+
 		this.$el.find('.balance').removeClass('alert-danger').removeClass('alert-success');
 		this.$el.find('.balance').addClass( parseFloat(model.get('balance')) >= 0 ? 'alert-success' : 'alert-danger' );
 	}, 
@@ -14954,7 +15255,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":32,"../collections/Transactions":6,"../models/ApplicationState":8,"../models/TransactionBalance":11,"../templates/transactions.html":19,"../templates/transactionsHeader.html":20,"../utils/EventAggregator":21,"./TransactionEditor":28,"./TransactionItem":29,"./TransactionPeriod":30,"backbone":34,"moment":37,"underscore":38}],32:[function(require,module,exports){
+},{"../../config/settings":34,"../collections/Transactions":6,"../models/ApplicationState":9,"../models/TransactionBalance":12,"../templates/transactions.html":21,"../templates/transactionsHeader.html":22,"../utils/EventAggregator":23,"./TransactionEditorView":30,"./TransactionItemView":31,"./TransactionPeriodView":32,"backbone":36,"moment":39,"numeral":40,"underscore":41}],34:[function(require,module,exports){
 exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
@@ -14967,7 +15268,7 @@ exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';
 exports.EMAIL_ADDRESS = 'info@ilbilanciofamiliare.it';
 exports.EMAIL_SUBJECT = 'Conferma registrazione';
 exports.EMAIL_TEXT = 'Il tuo account è stato creato. Per attivarlo clicca su <a href=\'http://www.ilbilanciofamiliare.it/confirm?id={id}\'>questo link</a>. Grazie!';
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
  * Version 1.1.13
@@ -15222,7 +15523,7 @@ Backbone.sync = function(method, model, options) {
 return Backbone.LocalStorage;
 }));
 
-},{"backbone":34}],34:[function(require,module,exports){
+},{"backbone":36}],36:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -16832,7 +17133,7 @@ return Backbone.LocalStorage;
 
 }));
 
-},{"underscore":38}],35:[function(require,module,exports){
+},{"underscore":41}],37:[function(require,module,exports){
 var $ = require('jquery');/*
  Highcharts JS v4.0.4 (2014-09-02)
 
@@ -17142,7 +17443,7 @@ function(b){b.setVisible(a,!1)});if(g)d.isDirtyBox=!0;b!==!1&&d.redraw();I(c,f)}
 c<=f.max){h=b[i+1];c=d===u?0:d+1;for(d=b[i+1]?L(t(0,U((e.clientX+(h?h.wrappedClientX||h.clientX:g))/2)),g):g;c>=0&&c<=d;)j[c++]=e}this.tooltipPoints=j}},show:function(){this.setVisible(!0)},hide:function(){this.setVisible(!1)},select:function(a){this.selected=a=a===u?!this.selected:a;if(this.checkbox)this.checkbox.checked=a;I(this,a?"select":"unselect")},drawTracker:T.drawTrackerGraph});r(K,{Axis:na,Chart:Ya,Color:ya,Point:Fa,Tick:Ta,Renderer:Za,Series:O,SVGElement:S,SVGRenderer:ta,arrayMin:Oa,arrayMax:Ca,
 charts:W,dateFormat:cb,format:Ja,pathAnim:vb,getOptions:function(){return E},hasBidiBug:Ob,isTouchDevice:Ib,numberFormat:Ba,seriesTypes:H,setOptions:function(a){E=w(!0,E,a);Bb();return E},addEvent:N,removeEvent:X,createElement:$,discardElement:Qa,css:B,each:q,extend:r,map:Va,merge:w,pick:p,splat:ra,extendClass:ma,pInt:y,wrap:Na,svg:ba,canvas:ga,vml:!ba&&!ga,product:"Highcharts",version:"4.0.4"})})();
 module.exports = window.Highcharts; module.exports.$ = $;
-},{"jquery":36}],36:[function(require,module,exports){
+},{"jquery":38}],38:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v1.11.2
  * http://jquery.com/
@@ -27490,7 +27791,7 @@ return jQuery;
 
 }));
 
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (global){
 //! moment.js
 //! version : 2.8.3
@@ -30350,7 +30651,688 @@ return jQuery;
 }).call(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
+/*!
+ * numeral.js
+ * version : 1.5.3
+ * author : Adam Draper
+ * license : MIT
+ * http://adamwdraper.github.com/Numeral-js/
+ */
+
+(function () {
+
+    /************************************
+        Constants
+    ************************************/
+
+    var numeral,
+        VERSION = '1.5.3',
+        // internal storage for language config files
+        languages = {},
+        currentLanguage = 'en',
+        zeroFormat = null,
+        defaultFormat = '0,0',
+        // check for nodeJS
+        hasModule = (typeof module !== 'undefined' && module.exports);
+
+
+    /************************************
+        Constructors
+    ************************************/
+
+
+    // Numeral prototype object
+    function Numeral (number) {
+        this._value = number;
+    }
+
+    /**
+     * Implementation of toFixed() that treats floats more like decimals
+     *
+     * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
+     * problems for accounting- and finance-related software.
+     */
+    function toFixed (value, precision, roundingFunction, optionals) {
+        var power = Math.pow(10, precision),
+            optionalsRegExp,
+            output;
+            
+        //roundingFunction = (roundingFunction !== undefined ? roundingFunction : Math.round);
+        // Multiply up by precision, round accurately, then divide and use native toFixed():
+        output = (roundingFunction(value * power) / power).toFixed(precision);
+
+        if (optionals) {
+            optionalsRegExp = new RegExp('0{1,' + optionals + '}$');
+            output = output.replace(optionalsRegExp, '');
+        }
+
+        return output;
+    }
+
+    /************************************
+        Formatting
+    ************************************/
+
+    // determine what type of formatting we need to do
+    function formatNumeral (n, format, roundingFunction) {
+        var output;
+
+        // figure out what kind of format we are dealing with
+        if (format.indexOf('$') > -1) { // currency!!!!!
+            output = formatCurrency(n, format, roundingFunction);
+        } else if (format.indexOf('%') > -1) { // percentage
+            output = formatPercentage(n, format, roundingFunction);
+        } else if (format.indexOf(':') > -1) { // time
+            output = formatTime(n, format);
+        } else { // plain ol' numbers or bytes
+            output = formatNumber(n._value, format, roundingFunction);
+        }
+
+        // return string
+        return output;
+    }
+
+    // revert to number
+    function unformatNumeral (n, string) {
+        var stringOriginal = string,
+            thousandRegExp,
+            millionRegExp,
+            billionRegExp,
+            trillionRegExp,
+            suffixes = ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            bytesMultiplier = false,
+            power;
+
+        if (string.indexOf(':') > -1) {
+            n._value = unformatTime(string);
+        } else {
+            if (string === zeroFormat) {
+                n._value = 0;
+            } else {
+                if (languages[currentLanguage].delimiters.decimal !== '.') {
+                    string = string.replace(/\./g,'').replace(languages[currentLanguage].delimiters.decimal, '.');
+                }
+
+                // see if abbreviations are there so that we can multiply to the correct number
+                thousandRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.thousand + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+                millionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.million + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+                billionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.billion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+                trillionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.trillion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+
+                // see if bytes are there so that we can multiply to the correct number
+                for (power = 0; power <= suffixes.length; power++) {
+                    bytesMultiplier = (string.indexOf(suffixes[power]) > -1) ? Math.pow(1024, power + 1) : false;
+
+                    if (bytesMultiplier) {
+                        break;
+                    }
+                }
+
+                // do some math to create our number
+                n._value = ((bytesMultiplier) ? bytesMultiplier : 1) * ((stringOriginal.match(thousandRegExp)) ? Math.pow(10, 3) : 1) * ((stringOriginal.match(millionRegExp)) ? Math.pow(10, 6) : 1) * ((stringOriginal.match(billionRegExp)) ? Math.pow(10, 9) : 1) * ((stringOriginal.match(trillionRegExp)) ? Math.pow(10, 12) : 1) * ((string.indexOf('%') > -1) ? 0.01 : 1) * (((string.split('-').length + Math.min(string.split('(').length-1, string.split(')').length-1)) % 2)? 1: -1) * Number(string.replace(/[^0-9\.]+/g, ''));
+
+                // round if we are talking about bytes
+                n._value = (bytesMultiplier) ? Math.ceil(n._value) : n._value;
+            }
+        }
+        return n._value;
+    }
+
+    function formatCurrency (n, format, roundingFunction) {
+        var symbolIndex = format.indexOf('$'),
+            openParenIndex = format.indexOf('('),
+            minusSignIndex = format.indexOf('-'),
+            space = '',
+            spliceIndex,
+            output;
+
+        // check for space before or after currency
+        if (format.indexOf(' $') > -1) {
+            space = ' ';
+            format = format.replace(' $', '');
+        } else if (format.indexOf('$ ') > -1) {
+            space = ' ';
+            format = format.replace('$ ', '');
+        } else {
+            format = format.replace('$', '');
+        }
+
+        // format the number
+        output = formatNumber(n._value, format, roundingFunction);
+
+        // position the symbol
+        if (symbolIndex <= 1) {
+            if (output.indexOf('(') > -1 || output.indexOf('-') > -1) {
+                output = output.split('');
+                spliceIndex = 1;
+                if (symbolIndex < openParenIndex || symbolIndex < minusSignIndex){
+                    // the symbol appears before the "(" or "-"
+                    spliceIndex = 0;
+                }
+                output.splice(spliceIndex, 0, languages[currentLanguage].currency.symbol + space);
+                output = output.join('');
+            } else {
+                output = languages[currentLanguage].currency.symbol + space + output;
+            }
+        } else {
+            if (output.indexOf(')') > -1) {
+                output = output.split('');
+                output.splice(-1, 0, space + languages[currentLanguage].currency.symbol);
+                output = output.join('');
+            } else {
+                output = output + space + languages[currentLanguage].currency.symbol;
+            }
+        }
+
+        return output;
+    }
+
+    function formatPercentage (n, format, roundingFunction) {
+        var space = '',
+            output,
+            value = n._value * 100;
+
+        // check for space before %
+        if (format.indexOf(' %') > -1) {
+            space = ' ';
+            format = format.replace(' %', '');
+        } else {
+            format = format.replace('%', '');
+        }
+
+        output = formatNumber(value, format, roundingFunction);
+        
+        if (output.indexOf(')') > -1 ) {
+            output = output.split('');
+            output.splice(-1, 0, space + '%');
+            output = output.join('');
+        } else {
+            output = output + space + '%';
+        }
+
+        return output;
+    }
+
+    function formatTime (n) {
+        var hours = Math.floor(n._value/60/60),
+            minutes = Math.floor((n._value - (hours * 60 * 60))/60),
+            seconds = Math.round(n._value - (hours * 60 * 60) - (minutes * 60));
+        return hours + ':' + ((minutes < 10) ? '0' + minutes : minutes) + ':' + ((seconds < 10) ? '0' + seconds : seconds);
+    }
+
+    function unformatTime (string) {
+        var timeArray = string.split(':'),
+            seconds = 0;
+        // turn hours and minutes into seconds and add them all up
+        if (timeArray.length === 3) {
+            // hours
+            seconds = seconds + (Number(timeArray[0]) * 60 * 60);
+            // minutes
+            seconds = seconds + (Number(timeArray[1]) * 60);
+            // seconds
+            seconds = seconds + Number(timeArray[2]);
+        } else if (timeArray.length === 2) {
+            // minutes
+            seconds = seconds + (Number(timeArray[0]) * 60);
+            // seconds
+            seconds = seconds + Number(timeArray[1]);
+        }
+        return Number(seconds);
+    }
+
+    function formatNumber (value, format, roundingFunction) {
+        var negP = false,
+            signed = false,
+            optDec = false,
+            abbr = '',
+            abbrK = false, // force abbreviation to thousands
+            abbrM = false, // force abbreviation to millions
+            abbrB = false, // force abbreviation to billions
+            abbrT = false, // force abbreviation to trillions
+            abbrForce = false, // force abbreviation
+            bytes = '',
+            ord = '',
+            abs = Math.abs(value),
+            suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            min,
+            max,
+            power,
+            w,
+            precision,
+            thousands,
+            d = '',
+            neg = false;
+
+        // check if number is zero and a custom zero format has been set
+        if (value === 0 && zeroFormat !== null) {
+            return zeroFormat;
+        } else {
+            // see if we should use parentheses for negative number or if we should prefix with a sign
+            // if both are present we default to parentheses
+            if (format.indexOf('(') > -1) {
+                negP = true;
+                format = format.slice(1, -1);
+            } else if (format.indexOf('+') > -1) {
+                signed = true;
+                format = format.replace(/\+/g, '');
+            }
+
+            // see if abbreviation is wanted
+            if (format.indexOf('a') > -1) {
+                // check if abbreviation is specified
+                abbrK = format.indexOf('aK') >= 0;
+                abbrM = format.indexOf('aM') >= 0;
+                abbrB = format.indexOf('aB') >= 0;
+                abbrT = format.indexOf('aT') >= 0;
+                abbrForce = abbrK || abbrM || abbrB || abbrT;
+
+                // check for space before abbreviation
+                if (format.indexOf(' a') > -1) {
+                    abbr = ' ';
+                    format = format.replace(' a', '');
+                } else {
+                    format = format.replace('a', '');
+                }
+
+                if (abs >= Math.pow(10, 12) && !abbrForce || abbrT) {
+                    // trillion
+                    abbr = abbr + languages[currentLanguage].abbreviations.trillion;
+                    value = value / Math.pow(10, 12);
+                } else if (abs < Math.pow(10, 12) && abs >= Math.pow(10, 9) && !abbrForce || abbrB) {
+                    // billion
+                    abbr = abbr + languages[currentLanguage].abbreviations.billion;
+                    value = value / Math.pow(10, 9);
+                } else if (abs < Math.pow(10, 9) && abs >= Math.pow(10, 6) && !abbrForce || abbrM) {
+                    // million
+                    abbr = abbr + languages[currentLanguage].abbreviations.million;
+                    value = value / Math.pow(10, 6);
+                } else if (abs < Math.pow(10, 6) && abs >= Math.pow(10, 3) && !abbrForce || abbrK) {
+                    // thousand
+                    abbr = abbr + languages[currentLanguage].abbreviations.thousand;
+                    value = value / Math.pow(10, 3);
+                }
+            }
+
+            // see if we are formatting bytes
+            if (format.indexOf('b') > -1) {
+                // check for space before
+                if (format.indexOf(' b') > -1) {
+                    bytes = ' ';
+                    format = format.replace(' b', '');
+                } else {
+                    format = format.replace('b', '');
+                }
+
+                for (power = 0; power <= suffixes.length; power++) {
+                    min = Math.pow(1024, power);
+                    max = Math.pow(1024, power+1);
+
+                    if (value >= min && value < max) {
+                        bytes = bytes + suffixes[power];
+                        if (min > 0) {
+                            value = value / min;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // see if ordinal is wanted
+            if (format.indexOf('o') > -1) {
+                // check for space before
+                if (format.indexOf(' o') > -1) {
+                    ord = ' ';
+                    format = format.replace(' o', '');
+                } else {
+                    format = format.replace('o', '');
+                }
+
+                ord = ord + languages[currentLanguage].ordinal(value);
+            }
+
+            if (format.indexOf('[.]') > -1) {
+                optDec = true;
+                format = format.replace('[.]', '.');
+            }
+
+            w = value.toString().split('.')[0];
+            precision = format.split('.')[1];
+            thousands = format.indexOf(',');
+
+            if (precision) {
+                if (precision.indexOf('[') > -1) {
+                    precision = precision.replace(']', '');
+                    precision = precision.split('[');
+                    d = toFixed(value, (precision[0].length + precision[1].length), roundingFunction, precision[1].length);
+                } else {
+                    d = toFixed(value, precision.length, roundingFunction);
+                }
+
+                w = d.split('.')[0];
+
+                if (d.split('.')[1].length) {
+                    d = languages[currentLanguage].delimiters.decimal + d.split('.')[1];
+                } else {
+                    d = '';
+                }
+
+                if (optDec && Number(d.slice(1)) === 0) {
+                    d = '';
+                }
+            } else {
+                w = toFixed(value, null, roundingFunction);
+            }
+
+            // format number
+            if (w.indexOf('-') > -1) {
+                w = w.slice(1);
+                neg = true;
+            }
+
+            if (thousands > -1) {
+                w = w.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + languages[currentLanguage].delimiters.thousands);
+            }
+
+            if (format.indexOf('.') === 0) {
+                w = '';
+            }
+
+            return ((negP && neg) ? '(' : '') + ((!negP && neg) ? '-' : '') + ((!neg && signed) ? '+' : '') + w + d + ((ord) ? ord : '') + ((abbr) ? abbr : '') + ((bytes) ? bytes : '') + ((negP && neg) ? ')' : '');
+        }
+    }
+
+    /************************************
+        Top Level Functions
+    ************************************/
+
+    numeral = function (input) {
+        if (numeral.isNumeral(input)) {
+            input = input.value();
+        } else if (input === 0 || typeof input === 'undefined') {
+            input = 0;
+        } else if (!Number(input)) {
+            input = numeral.fn.unformat(input);
+        }
+
+        return new Numeral(Number(input));
+    };
+
+    // version number
+    numeral.version = VERSION;
+
+    // compare numeral object
+    numeral.isNumeral = function (obj) {
+        return obj instanceof Numeral;
+    };
+
+    // This function will load languages and then set the global language.  If
+    // no arguments are passed in, it will simply return the current global
+    // language key.
+    numeral.language = function (key, values) {
+        if (!key) {
+            return currentLanguage;
+        }
+
+        if (key && !values) {
+            if(!languages[key]) {
+                throw new Error('Unknown language : ' + key);
+            }
+            currentLanguage = key;
+        }
+
+        if (values || !languages[key]) {
+            loadLanguage(key, values);
+        }
+
+        return numeral;
+    };
+    
+    // This function provides access to the loaded language data.  If
+    // no arguments are passed in, it will simply return the current
+    // global language object.
+    numeral.languageData = function (key) {
+        if (!key) {
+            return languages[currentLanguage];
+        }
+        
+        if (!languages[key]) {
+            throw new Error('Unknown language : ' + key);
+        }
+        
+        return languages[key];
+    };
+
+    numeral.language('en', {
+        delimiters: {
+            thousands: ',',
+            decimal: '.'
+        },
+        abbreviations: {
+            thousand: 'k',
+            million: 'm',
+            billion: 'b',
+            trillion: 't'
+        },
+        ordinal: function (number) {
+            var b = number % 10;
+            return (~~ (number % 100 / 10) === 1) ? 'th' :
+                (b === 1) ? 'st' :
+                (b === 2) ? 'nd' :
+                (b === 3) ? 'rd' : 'th';
+        },
+        currency: {
+            symbol: '$'
+        }
+    });
+
+    numeral.zeroFormat = function (format) {
+        zeroFormat = typeof(format) === 'string' ? format : null;
+    };
+
+    numeral.defaultFormat = function (format) {
+        defaultFormat = typeof(format) === 'string' ? format : '0.0';
+    };
+
+    /************************************
+        Helpers
+    ************************************/
+
+    function loadLanguage(key, values) {
+        languages[key] = values;
+    }
+
+    /************************************
+        Floating-point helpers
+    ************************************/
+
+    // The floating-point helper functions and implementation
+    // borrows heavily from sinful.js: http://guipn.github.io/sinful.js/
+
+    /**
+     * Array.prototype.reduce for browsers that don't support it
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce#Compatibility
+     */
+    if ('function' !== typeof Array.prototype.reduce) {
+        Array.prototype.reduce = function (callback, opt_initialValue) {
+            'use strict';
+            
+            if (null === this || 'undefined' === typeof this) {
+                // At the moment all modern browsers, that support strict mode, have
+                // native implementation of Array.prototype.reduce. For instance, IE8
+                // does not support strict mode, so this check is actually useless.
+                throw new TypeError('Array.prototype.reduce called on null or undefined');
+            }
+            
+            if ('function' !== typeof callback) {
+                throw new TypeError(callback + ' is not a function');
+            }
+
+            var index,
+                value,
+                length = this.length >>> 0,
+                isValueSet = false;
+
+            if (1 < arguments.length) {
+                value = opt_initialValue;
+                isValueSet = true;
+            }
+
+            for (index = 0; length > index; ++index) {
+                if (this.hasOwnProperty(index)) {
+                    if (isValueSet) {
+                        value = callback(value, this[index], index, this);
+                    } else {
+                        value = this[index];
+                        isValueSet = true;
+                    }
+                }
+            }
+
+            if (!isValueSet) {
+                throw new TypeError('Reduce of empty array with no initial value');
+            }
+
+            return value;
+        };
+    }
+
+    
+    /**
+     * Computes the multiplier necessary to make x >= 1,
+     * effectively eliminating miscalculations caused by
+     * finite precision.
+     */
+    function multiplier(x) {
+        var parts = x.toString().split('.');
+        if (parts.length < 2) {
+            return 1;
+        }
+        return Math.pow(10, parts[1].length);
+    }
+
+    /**
+     * Given a variable number of arguments, returns the maximum
+     * multiplier that must be used to normalize an operation involving
+     * all of them.
+     */
+    function correctionFactor() {
+        var args = Array.prototype.slice.call(arguments);
+        return args.reduce(function (prev, next) {
+            var mp = multiplier(prev),
+                mn = multiplier(next);
+        return mp > mn ? mp : mn;
+        }, -Infinity);
+    }        
+
+
+    /************************************
+        Numeral Prototype
+    ************************************/
+
+
+    numeral.fn = Numeral.prototype = {
+
+        clone : function () {
+            return numeral(this);
+        },
+
+        format : function (inputString, roundingFunction) {
+            return formatNumeral(this, 
+                  inputString ? inputString : defaultFormat, 
+                  (roundingFunction !== undefined) ? roundingFunction : Math.round
+              );
+        },
+
+        unformat : function (inputString) {
+            if (Object.prototype.toString.call(inputString) === '[object Number]') { 
+                return inputString; 
+            }
+            return unformatNumeral(this, inputString ? inputString : defaultFormat);
+        },
+
+        value : function () {
+            return this._value;
+        },
+
+        valueOf : function () {
+            return this._value;
+        },
+
+        set : function (value) {
+            this._value = Number(value);
+            return this;
+        },
+
+        add : function (value) {
+            var corrFactor = correctionFactor.call(null, this._value, value);
+            function cback(accum, curr, currI, O) {
+                return accum + corrFactor * curr;
+            }
+            this._value = [this._value, value].reduce(cback, 0) / corrFactor;
+            return this;
+        },
+
+        subtract : function (value) {
+            var corrFactor = correctionFactor.call(null, this._value, value);
+            function cback(accum, curr, currI, O) {
+                return accum - corrFactor * curr;
+            }
+            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;            
+            return this;
+        },
+
+        multiply : function (value) {
+            function cback(accum, curr, currI, O) {
+                var corrFactor = correctionFactor(accum, curr);
+                return (accum * corrFactor) * (curr * corrFactor) /
+                    (corrFactor * corrFactor);
+            }
+            this._value = [this._value, value].reduce(cback, 1);
+            return this;
+        },
+
+        divide : function (value) {
+            function cback(accum, curr, currI, O) {
+                var corrFactor = correctionFactor(accum, curr);
+                return (accum * corrFactor) / (curr * corrFactor);
+            }
+            this._value = [this._value, value].reduce(cback);            
+            return this;
+        },
+
+        difference : function (value) {
+            return Math.abs(numeral(this._value).subtract(value).value());
+        }
+
+    };
+
+    /************************************
+        Exposing Numeral
+    ************************************/
+
+    // CommonJS module is defined
+    if (hasModule) {
+        module.exports = numeral;
+    }
+
+    /*global ender:false */
+    if (typeof ender === 'undefined') {
+        // here, `this` means `window` in the browser, or `global` on the server
+        // add `numeral` as a global object via a string identifier,
+        // for Closure Compiler 'advanced' mode
+        this['numeral'] = numeral;
+    }
+
+    /*global define:false */
+    if (typeof define === 'function' && define.amd) {
+        define([], function () {
+            return numeral;
+        });
+    }
+}).call(this);
+
+},{}],41:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors

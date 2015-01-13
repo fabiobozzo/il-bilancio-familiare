@@ -1,16 +1,16 @@
 var Backbone 	= require('backbone');
-var Category = require('../../models/report/Category');
+var Period = require('../../models/report/Period');
 var ApplicationState = require('../../models/ApplicationState');
  
 module.exports = Backbone.Collection.extend({
 	
-	model: Category,
+	model: Period,
 
-	url: '/api/report/categories',
+	url: '/api/report/periods',
 
 	initialize: function(options) {
 
-		this.positive = options.positive || false;
+		this.total = options.total || false;
 
 		this.updateCurrentPeriod();
 		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	

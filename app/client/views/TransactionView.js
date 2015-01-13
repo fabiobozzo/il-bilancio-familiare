@@ -1,14 +1,15 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
+var numeral = require('numeral');
 
 var template = require('../templates/transactions.html');
 var templateGroupHeader = require('../templates/transactionsHeader.html');
 var TransactionBalance = require('../models/TransactionBalance');
 var TransactionCollection = require('../collections/Transactions');
-var TransactionItemView = require('./TransactionItem');
-var TransactionEditorView = require('./TransactionEditor');
-var TransactionPeriodView = require('./TransactionPeriod');
+var TransactionItemView = require('./TransactionItemView');
+var TransactionEditorView = require('./TransactionEditorView');
+var TransactionPeriodView = require('./TransactionPeriodView');
 var Settings = require('../../config/settings');
 var ApplicationState = require('../models/ApplicationState');
 var Vent = require('../utils/EventAggregator');
@@ -56,8 +57,9 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.new-transaction').after( this.editorView.render().el );
 
 		this.periodChooserView = new TransactionPeriodView({
-			collection: this.collection, 
-			parent: this
+			closeOnConfirm: true,
+			showCancelButton: true,
+			canDisableMonth: false
 		});
 		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
 
@@ -125,7 +127,9 @@ module.exports = Backbone.View.extend({
 		if ( model.get('hasInitial')===false ) {
 			this.$el.find('.balance .ask-for-initial-balance').show();	
 		}
-		this.$el.find('.balance .balance-value').text( parseFloat(model.get('balance')).toFixed(2) );
+
+		this.$el.find('.balance .balance-value').text( numeral(model.get('balance')).format('0,0.00') );
+
 		this.$el.find('.balance').removeClass('alert-danger').removeClass('alert-success');
 		this.$el.find('.balance').addClass( parseFloat(model.get('balance')) >= 0 ? 'alert-success' : 'alert-danger' );
 	}, 
