@@ -34,7 +34,7 @@ module.exports = function(app) {
 
 	router.route('/transactions/balance')
 		.get(function(req,res) {
-			TransactionService.getBalance( req.user._id, function(result) {
+			TransactionService.getBalance( { uid:req.user._id }, function(result) {
 				res.json(result);
 			});
 		});
@@ -105,17 +105,30 @@ module.exports = function(app) {
 			var month = req.query.m || false;
 			var year = req.query.y || parseInt((new Date()).getFullYear());
 
-			ReportService.getAmountByPeriod(
-				{
-					uid: req.user._id,
-					total: total, 
-					year: year,
-					month: month
-				}, 
-				function( result ) {
-					res.json(result);
-				}
-			);
+			if (total) {
+				ReportService.getAmountByPeriod(
+					{
+						uid: req.user._id,
+						year: year,
+						month: month
+					}, 
+					function( result ) {
+						res.json(result);
+					}
+				);
+			} else { 
+				ReportService.getBalanceByPeriod(
+					{
+						uid: req.user._id,
+						total: total, 
+						year: year,
+						month: month
+					}, 
+					function( result ) {
+						res.json(result);
+					}
+				);
+			}
 			
 		});
 

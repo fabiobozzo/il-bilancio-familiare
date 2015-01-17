@@ -1,4 +1,5 @@
 var Transaction = require('../models/transaction');
+var TransactionService = require('../services/TransactionService');
 var Settings = require('../config/settings');
 
 var moment = require('moment');
@@ -29,8 +30,8 @@ exports.getAmountByPeriod = function( params, callback ) {
 	var search = { user:params.uid };
 	search.dateEntry = getDateRangeForPeriod( params.year, params.month );
 
-	var grouper = getGrouperForPeriod( params.year, params.month, params.total );
-	var projection = getProjectionForPeriod( params.year, params.month, params.total );
+	var grouper = getGrouperForPeriod( params.year, params.month, false );
+	var projection = getProjectionForPeriod( params.year, params.month, false );
 
 	Transaction.aggregate(
 		[
@@ -40,9 +41,36 @@ exports.getAmountByPeriod = function( params, callback ) {
 		], 
 		function(err, results) {
 			if (err) return callback({error:err.message});
-			callback(getPeriodDataFromAggregationResult( results, params.year, params.month, params.total ));
+			callback(getComparisonSeriesFromAggregationResult( results, params.year, params.month ));
 		}
 	);
+
+};
+
+exports.getBalanceByPeriod = function( params, callback ) {
+
+	var search = { user:params.uid };
+	search.dateEntry = getDateRangeForPeriod( params.year, params.month );
+
+	TransactionService.getBalance( { uid:params.uid, atDate:search.dateEntry.$gte }, function( balanceResult ) {
+		
+		var initialBalance = balanceResult.balance;
+		var grouper = getGrouperForPeriod( params.year, params.month, true );
+		var projection = getProjectionForPeriod( params.year, params.month, true );
+		
+		Transaction.aggregate(
+			[
+				{ $match: search },
+				{ $group: grouper },
+				{ $project: projection }
+			], 
+			function(err, results) {
+				if (err) return callback({error:err.message});
+				callback(getBalanceSeriesFromAggregationResult( results, params.year, params.month, initialBalance ));
+			}
+		);
+
+	});
 
 };
 
@@ -143,41 +171,47 @@ var getProjectionForPeriod = function( year, month, total ) {
 	return projection;
 };
 
-var getPeriodDataFromAggregationResult = function( result, year, month, total) {
+var getComparisonSeriesFromAggregationResult = function( result, year, month ) {
 
-	var data = [];
 	var dataIn = [];
 	var dataOut = [];
-	var ret;
 
 	var periodCount = month ? new Date(year, month, 0).getDate() : 12;
 
 	for ( var i = 0; i < periodCount; i++ ) {
-		data[i] = 0;
 		dataIn[i] = 0;
 		dataOut[i] = 0;
 		result.forEach(function(ar) {
 			if ( parseInt(moment(ar.utcDate).format( month ? 'D' : 'M' )) === (i+1) ) {
-				if (total) {
-					data[i] = ar.total;
-				} else {
-					dataIn[i] = ar.totalIn;
-					dataOut[i] = ar.totalOut;	
-				}
+				dataIn[i] = ar.totalIn;
+				dataOut[i] = ar.totalOut;	
 			}
 		});
 	}
 
-	if (total) {
-		ret = [{ name: 'Saldo', data:data }];
-	} else {
-		ret = [
-			{ name: 'Entrate', color:'#00AA00', data:dataIn },
-			{ name: 'Uscite', color:'#FF0000', data:dataOut },
-		];
+	return [
+		{ name: 'Entrate', color:'#00AA00', data:dataIn },
+		{ name: 'Uscite', color:'#FF0000', data:dataOut },
+	];
+};
+
+var getBalanceSeriesFromAggregationResult = function( result, year, month, initialBalance ) {
+
+	var data = [];
+	var balance = initialBalance;
+	
+	var periodCount = month ? new Date(year, month, 0).getDate() : 12;
+
+	for ( var i = 0; i < periodCount; i++ ) {
+		result.forEach(function(ar) {
+			if ( parseInt(moment(ar.utcDate).format( month ? 'D' : 'M' )) === (i+1) ) {
+				balance += ar.total;
+			}
+		});
+		data[i] = balance;
 	}
 
-	console.log(ret);
-
-	return ret;
+	return [
+		{ name: 'Saldo', data:data }
+	];
 };

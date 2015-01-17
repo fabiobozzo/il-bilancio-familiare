@@ -58,12 +58,18 @@ exports.deleteTransaction = function( id, callback ) {
 	});
 };
 
-exports.getBalance = function( uid, callback ) {
+exports.getBalance = function( params, callback ) {
+
+	var matcher = { user:params.uid };
+	if ( params.atDate ) {
+		matcher.dateEntry = { $lt: params.atDate };
+	}
+
 	async.parallel({
 		balance: function(cb) {
 			Transaction.aggregate(
 				[
-					{ $match: { user:uid } },
+					{ $match: matcher },
 					{ "$group": {
 						"_id": null,
 						"total": {
@@ -85,9 +91,8 @@ exports.getBalance = function( uid, callback ) {
 			});
 		}
 	}, function(err,results) {
-		if (err) {
-			callback({error:err.message});
-		}
+		if (err) callback({error:err.message});
+		
 		callback({ 
 			balance: (results.balance.length>0) ? results.balance[0].total : 0, 
 			hasInitial: results.hasInitial

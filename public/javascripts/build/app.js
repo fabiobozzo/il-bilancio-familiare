@@ -14039,7 +14039,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="row">\n	<div class="col-xs-12 text-center">\n		<div class="period-chooser"></div>\n	</div>\n</div>\n<div class="row">\n	<div id="piePositive" class="col-xs-12 col-md-6"></div>\n	<div id="pieNegative" class="col-xs-12 col-md-6"></div>\n	<div id="lineComparison" class="col-xs-12 col-md-6"></div>\n	<div id="lineTotal" class="col-xs-12 col-md-6"></div>\n</div>';
+__p+='<div class="row">\n	<div class="col-xs-12 text-center">\n		<div class="period-chooser"></div>\n	</div>\n</div>\n<div class="row">\n	<div id="piePositive" class="col-xs-12 col-md-6"></div>\n	<div id="pieNegative" class="col-xs-12 col-md-6"></div>\n	<div id="lineComparison" class="col-xs-12"></div>\n	<div id="lineTotal" class="col-xs-12"></div>\n</div>';
 }
 return __p;
 };
@@ -14532,7 +14532,7 @@ module.exports = Backbone.View.extend({
 		return chart;
 	},
 
-	getLineChart: function(title, container, xAxis, series) {
+	getLineChart: function( title, container, xAxis, series ) {
 		var chart = new Highcharts.Chart({
 			chart: {
 				renderTo: container, 
@@ -14552,8 +14552,8 @@ module.exports = Backbone.View.extend({
 			yAxis: {
 				title: {
 					text: 'Importo (€)'
-				},
-				min:0
+				}
+				// ,min:0
 			},
 			tooltip: {
 				valueSuffix: '€',

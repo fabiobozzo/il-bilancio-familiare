@@ -181,7 +181,7 @@ module.exports = Backbone.View.extend({
 		return chart;
 	},
 
-	getLineChart: function(title, container, xAxis, series) {
+	getLineChart: function( title, container, xAxis, series ) {
 		var chart = new Highcharts.Chart({
 			chart: {
 				renderTo: container, 
@@ -201,8 +201,8 @@ module.exports = Backbone.View.extend({
 			yAxis: {
 				title: {
 					text: 'Importo (€)'
-				},
-				min:0
+				}
+				// ,min:0
 			},
 			tooltip: {
 				valueSuffix: '€',
