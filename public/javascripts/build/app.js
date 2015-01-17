@@ -13918,7 +13918,7 @@ module.exports = Backbone.Collection.extend({
 	refetch: function() {
 
 		var data = {
-			p: this.positive,
+			t: this.total,
 			y: this.year
 		};
 
@@ -14039,7 +14039,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="row">\n	<div class="col-xs-12 text-center">\n		<div class="period-chooser"></div>\n	</div>\n</div>\n<div class="row">\n	<div id="piePositive" class="col-md-6"></div>\n	<div id="pieNegative" class="col-md-6"></div>\n	<div id="lineComparison" class="col-md-6"></div>\n	<div id="lineTotal" class="col-md-6"></div>\n</div>';
+__p+='<div class="row">\n	<div class="col-xs-12 text-center">\n		<div class="period-chooser"></div>\n	</div>\n</div>\n<div class="row">\n	<div id="piePositive" class="col-xs-12 col-md-6"></div>\n	<div id="pieNegative" class="col-xs-12 col-md-6"></div>\n	<div id="lineComparison" class="col-xs-12 col-md-6"></div>\n	<div id="lineTotal" class="col-xs-12 col-md-6"></div>\n</div>';
 }
 return __p;
 };
@@ -14383,6 +14383,8 @@ module.exports = Backbone.View.extend({
 		
 		this.collectionPiePositive.refetch();
 		this.collectionPieNegative.refetch();
+		this.collectionLineTotal.refetch();
+		this.collectionLineComparison.refetch();
 	},
 
 	updateCurrentPeriod: function() {
@@ -14454,27 +14456,40 @@ module.exports = Backbone.View.extend({
 		this.destroyChart(chartName);
 
 		if ( this.collectionLineComparison.length >0 ) {
-			this.charts[chartName] = this.getPieChart(
-				'Saldo',
+			this.charts[chartName] = this.getLineChart(
+				'Entrate / Uscite',
 				chartName,
-				this.getTemporalXAxis(),
+				this.getTemporalXAxis( this.collectionLineComparison ),
 				this.collectionLineComparison.toJSON()
 			);
 		} else {
-			this.$el.find('#'+chartName).html('Nessuna transazione negativa in questo periodo.');
+			this.$el.find('#'+chartName).html('Nessuna transazione in questo periodo.');
 		}
 	},
 
 	renderTotalLineChart: function() {
 
+		var chartName = 'lineTotal';
+		this.destroyChart(chartName);
+
+		if ( this.collectionLineTotal.length >0 ) {
+			this.charts[chartName] = this.getLineChart(
+				'Saldo',
+				chartName,
+				this.getTemporalXAxis( this.collectionLineTotal ),
+				this.collectionLineTotal.toJSON()
+			);
+		} else {
+			this.$el.find('#'+chartName).html('Nessuna transazione in questo periodo.');
+		}
 	},
 
-	getTemporalXAxis: function() {
+	getTemporalXAxis: function( collection ) {
 		var axis = [];
 		if (ApplicationState.get('periodMonthEnabled')) {
-			var daysInMonth = new Date( this.collectionLineComparison.year, this.collectionLineComparison.month, 0).getDate();
+			var daysInMonth = new Date( collection.year, collection.month, 0).getDate();
 			for ( var i = 1; i <= daysInMonth; i++ ) {
-				axis.push(i);
+				axis.push( i );
 			}
 		} else {
 			axis = Settings.monthsShort;
@@ -14526,47 +14541,29 @@ module.exports = Backbone.View.extend({
 				plotShadow: false
 			},
 			title: {
-				text: title,
-				x: -20 
+				text: title
+			},
+			credits: {
+				enabled: false
 			},
 			xAxis: {
-				//categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-				categories: [xAxis]
+				categories: xAxis
 			},
 			yAxis: {
 				title: {
 					text: 'Importo (€)'
 				},
-				plotLines: [{
-					value: 0,
-					width: 1,
-					color: '#808080'
-				}]
+				min:0
 			},
 			tooltip: {
-				valueSuffix: '€'
+				valueSuffix: '€',
+				headerFormat: '',
+				// headerFormat: 'MESE {point.key}<br/>',
+				pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>'
 			},
-			legend: {
-				layout: 'vertical',
-				align: 'right',
-				verticalAlign: 'middle',
-				borderWidth: 0
-			},
-			// series: [{
-			// 	name: 'Tokyo',
-			// 	data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
-			// }, {
-			// 	name: 'New York',
-			// 	data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
-			// }, {
-			// 	name: 'Berlin',
-			// 	data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
-			// }, {
-			// 	name: 'London',
-			// 	data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-			// }]
 			series: series
 		});
+		return chart;
 	},
 
 	destroyChart: function(chartName) {

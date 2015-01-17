@@ -1,4 +1,4 @@
-var User = require('../models/user');
+var UserService = require('../services/UserService');
 
 module.exports = function(app,passport) {
 
@@ -50,21 +50,15 @@ module.exports = function(app,passport) {
     });
 
 	app.get('/confirm', function(req,res) {
+
 		if (req.query.id) {
-			console.log("Searching "+req.query.id);
-			User.findOne({ '_id' :  req.query.id }, function(err, user) {
-				if (err) throw err;
-				if (user) {
-					console.log(user);
-					user.active = true;
-					user.save(function(err) {
-						if (err) throw err;
-						res.render('confirm', {
-							title: 'Conferma registrazione'
-						}); 
-					});
-				}
+		
+			UserService.confirmUser( req.query.id, function() {
+				res.render('confirm', {
+					title: 'Conferma registrazione'
+				}); 
 			});
+
 		} else {
 			res.redirect('/#signin');	
 		}

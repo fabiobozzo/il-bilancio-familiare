@@ -24,7 +24,7 @@ module.exports = Backbone.Collection.extend({
 	refetch: function() {
 
 		var data = {
-			p: this.positive,
+			t: this.total,
 			y: this.year
 		};
 
