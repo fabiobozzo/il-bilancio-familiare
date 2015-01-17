@@ -1,6 +1,8 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
 
+var template = require('../templates/goals.html');
+
 module.exports = Backbone.View.extend({
 
 	className: 'goalsView',
@@ -14,7 +16,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function() {
-		this.$el.html( 'Coming soon...' );
+		this.$el.html( template() );
 		return this;
 	},
 

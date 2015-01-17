@@ -105,7 +105,7 @@ module.exports = function(app) {
 			var month = req.query.m || false;
 			var year = req.query.y || parseInt((new Date()).getFullYear());
 
-			if (total) {
+			if (!total) {
 				ReportService.getAmountByPeriod(
 					{
 						uid: req.user._id,

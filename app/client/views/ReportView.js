@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
 var HighCharts = require('highcharts-browserify');
+var numeral = require('numeral');
 
 var template = require('../templates/report.html');
 var CategoryCollection = require('../collections/report/Categories');
@@ -109,7 +110,8 @@ module.exports = Backbone.View.extend({
 				'Entrate / Uscite',
 				chartName,
 				this.getTemporalXAxis( this.collectionLineComparison ),
-				this.collectionLineComparison.toJSON()
+				this.collectionLineComparison.toJSON(),
+				true
 			);
 		} else {
 			this.$el.find('#'+chartName).html('Nessuna transazione in questo periodo.');
@@ -146,7 +148,7 @@ module.exports = Backbone.View.extend({
 		return axis;
 	},
 
-	getPieChart: function(title, container, series) {
+	getPieChart: function( title, container, series ) {
 		var chart = new Highcharts.Chart({
 			chart: {
 				renderTo: container, 
@@ -181,7 +183,7 @@ module.exports = Backbone.View.extend({
 		return chart;
 	},
 
-	getLineChart: function( title, container, xAxis, series ) {
+	getLineChart: function( title, container, xAxis, series, onlyPositive ) {
 		var chart = new Highcharts.Chart({
 			chart: {
 				renderTo: container, 
@@ -201,17 +203,23 @@ module.exports = Backbone.View.extend({
 			yAxis: {
 				title: {
 					text: 'Importo (€)'
-				}
-				// ,min:0
+				},
+				min: (onlyPositive) ? 0 : null
 			},
 			tooltip: {
-				valueSuffix: '€',
-				headerFormat: '',
-				// headerFormat: 'MESE {point.key}<br/>',
-				pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>'
+				formatter: function() {
+					return ( xAxis.length>12 ? 'Giorno ' : '' ) +
+						this.x +
+						'<br /><span style="color:{this.series.color}">' +
+						this.series.name + 
+						'</span>: <b>' +
+						numeral(this.y).format('0,0.00') +
+						'€</b><br/>';
+				} 
 			},
 			series: series
 		});
+		
 		return chart;
 	},
 

@@ -40,7 +40,7 @@ $(function() {
 	$('[rel=tooltip]').tooltip();
 
 });
-},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":9,"./views/ContainerView":25,"./views/MenuView":27,"backbone":36,"backbone.localstorage":35,"numeral":40}],2:[function(require,module,exports){
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":9,"./views/ContainerView":26,"./views/MenuView":28,"backbone":37,"backbone.localstorage":36,"numeral":41}],2:[function(require,module,exports){
 /*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -13786,7 +13786,7 @@ module.exports = Backbone.Collection.extend({
 	model: Category,
 	url: '/api/categories'
 });
-},{"../models/Category":10,"backbone":36}],6:[function(require,module,exports){
+},{"../models/Category":10,"backbone":37}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction');
 var ApplicationState = require('../models/ApplicationState');
@@ -13849,7 +13849,7 @@ var TransactionCollection = Backbone.Collection.extend({
 
 module.exports = new TransactionCollection();
 console.log("new TransactionCollection");
-},{"../models/ApplicationState":9,"../models/Transaction":11,"backbone":36}],7:[function(require,module,exports){
+},{"../models/ApplicationState":9,"../models/Transaction":11,"backbone":37}],7:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Category = require('../../models/report/Category');
 var ApplicationState = require('../../models/ApplicationState');
@@ -13891,7 +13891,7 @@ module.exports = Backbone.Collection.extend({
 	}
 
 });
-},{"../../models/ApplicationState":9,"../../models/report/Category":13,"backbone":36}],8:[function(require,module,exports){
+},{"../../models/ApplicationState":9,"../../models/report/Category":13,"backbone":37}],8:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Period = require('../../models/report/Period');
 var ApplicationState = require('../../models/ApplicationState');
@@ -13933,7 +13933,7 @@ module.exports = Backbone.Collection.extend({
 	}
 
 });
-},{"../../models/ApplicationState":9,"../../models/report/Period":14,"backbone":36}],9:[function(require,module,exports){
+},{"../../models/ApplicationState":9,"../../models/report/Period":14,"backbone":37}],9:[function(require,module,exports){
 var Backbone = require('backbone');
 var moment = require('moment');
 
@@ -13949,7 +13949,7 @@ var ApplicationState = Backbone.Model.extend({
 
 module.exports = new ApplicationState();
 console.log("new ApplicationState");
-},{"backbone":36,"moment":39}],10:[function(require,module,exports){
+},{"backbone":37,"moment":40}],10:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13965,7 +13965,7 @@ module.exports = Backbone.Model.extend({
 	}
 	
 });
-},{"backbone":36}],11:[function(require,module,exports){
+},{"backbone":37}],11:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13983,7 +13983,7 @@ module.exports = Backbone.Model.extend({
 	urlRoot: '/api/transactions'
 
 });
-},{"backbone":36}],12:[function(require,module,exports){
+},{"backbone":37}],12:[function(require,module,exports){
 var Backbone = require('backbone');
  
 var TransactionBalance = Backbone.Model.extend({
@@ -13996,7 +13996,7 @@ var TransactionBalance = Backbone.Model.extend({
 });
 
 module.exports = new TransactionBalance();
-},{"backbone":36}],13:[function(require,module,exports){
+},{"backbone":37}],13:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -14009,7 +14009,7 @@ module.exports = Backbone.Model.extend({
 	}
 
 });
-},{"backbone":36}],14:[function(require,module,exports){
+},{"backbone":37}],14:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -14022,7 +14022,7 @@ module.exports = Backbone.Model.extend({
 	}
 
 });
-},{"backbone":36}],15:[function(require,module,exports){
+},{"backbone":37}],15:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14039,12 +14039,21 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="row">\n	<div class="col-xs-12 text-center">\n		<div class="period-chooser"></div>\n	</div>\n</div>\n<div class="row">\n	<div id="piePositive" class="col-xs-12 col-md-6"></div>\n	<div id="pieNegative" class="col-xs-12 col-md-6"></div>\n	<div id="lineComparison" class="col-xs-12"></div>\n	<div id="lineTotal" class="col-xs-12"></div>\n</div>';
+__p+='<h1>In costruzione...</h1>';
 }
 return __p;
 };
 
 },{}],17:[function(require,module,exports){
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div class="row">\n	<div class="col-xs-12 text-center">\n		<div class="period-chooser"></div>\n	</div>\n</div>\n<div class="row chartContainer">\n	<div id="piePositive" class="chart col-xs-12 col-md-6"></div>\n	<div id="pieNegative" class="chart col-xs-12 col-md-6"></div>\n	<div id="lineComparison" class="chart col-xs-12"></div>\n	<div id="lineTotal" class="chart col-xs-12"></div>\n</div>';
+}
+return __p;
+};
+
+},{}],18:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14055,7 +14064,7 @@ __p+='<div class="row">\n	<div class="col col-sm-6 initial-balance">\n		<div cla
 return __p;
 };
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14064,7 +14073,7 @@ __p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group
 return __p;
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14097,7 +14106,7 @@ __p+='\n</div>\n<div class="col-xs-4 col-sm-1 text-right delete">\n	<button type
 return __p;
 };
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14143,7 +14152,7 @@ __p+=' \n					<option '+
 ((__t=( y ))==null?'':__t)+
 '</option>\n				';
  } 
-__p+='\n			</select>\n		</div>\n		<div class="col-md-2 text-right">\n			<!-- <label>&nbsp;</label> -->\n			<div class="input-group">\n				';
+__p+='\n			</select>\n		</div>\n		<div class="col-md-2">\n			<!-- <label>&nbsp;</label> -->\n			<div class="input-group text-center">\n				';
  if (showCancelButton) { 
 __p+='\n					<a href="#" class="hide-transactions-period">Annulla</a> &nbsp;\n				';
  } 
@@ -14152,7 +14161,7 @@ __p+='\n				<button type="button" class="btn btn-primary confirm-transactions-pe
 return __p;
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14161,7 +14170,7 @@ __p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!--
 return __p;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14172,12 +14181,12 @@ __p+='<div class="transactions-date-header">\n	'+
 return __p;
 };
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 module.exports = _.extend({}, Backbone.Events);
 
-},{"backbone":36,"underscore":41}],24:[function(require,module,exports){
+},{"backbone":37,"underscore":42}],25:[function(require,module,exports){
 var Backbone = require('backbone');
 var template = require('../templates/categoryItem.html');
 
@@ -14225,7 +14234,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/categoryItem.html":15,"backbone":36}],25:[function(require,module,exports){
+},{"../templates/categoryItem.html":15,"backbone":37}],26:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
@@ -14270,9 +14279,11 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":9,"./GoalsView":26,"./ReportView":28,"./SettingsView":29,"./TransactionView":33,"backbone":36}],26:[function(require,module,exports){
+},{"../models/ApplicationState":9,"./GoalsView":27,"./ReportView":29,"./SettingsView":30,"./TransactionView":34,"backbone":37}],27:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
+
+var template = require('../templates/goals.html');
 
 module.exports = Backbone.View.extend({
 
@@ -14287,7 +14298,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function() {
-		this.$el.html( 'Coming soon...' );
+		this.$el.html( template() );
 		return this;
 	},
 
@@ -14298,7 +14309,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"backbone":36,"underscore":41}],27:[function(require,module,exports){
+},{"../templates/goals.html":16,"backbone":37,"underscore":42}],28:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14348,10 +14359,11 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":9,"../utils/EventAggregator":23,"backbone":36,"underscore":41}],28:[function(require,module,exports){
+},{"../models/ApplicationState":9,"../utils/EventAggregator":24,"backbone":37,"underscore":42}],29:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var HighCharts = require('highcharts-browserify');
+var numeral = require('numeral');
 
 var template = require('../templates/report.html');
 var CategoryCollection = require('../collections/report/Categories');
@@ -14460,7 +14472,8 @@ module.exports = Backbone.View.extend({
 				'Entrate / Uscite',
 				chartName,
 				this.getTemporalXAxis( this.collectionLineComparison ),
-				this.collectionLineComparison.toJSON()
+				this.collectionLineComparison.toJSON(),
+				true
 			);
 		} else {
 			this.$el.find('#'+chartName).html('Nessuna transazione in questo periodo.');
@@ -14497,7 +14510,7 @@ module.exports = Backbone.View.extend({
 		return axis;
 	},
 
-	getPieChart: function(title, container, series) {
+	getPieChart: function( title, container, series ) {
 		var chart = new Highcharts.Chart({
 			chart: {
 				renderTo: container, 
@@ -14532,7 +14545,7 @@ module.exports = Backbone.View.extend({
 		return chart;
 	},
 
-	getLineChart: function( title, container, xAxis, series ) {
+	getLineChart: function( title, container, xAxis, series, onlyPositive ) {
 		var chart = new Highcharts.Chart({
 			chart: {
 				renderTo: container, 
@@ -14552,17 +14565,23 @@ module.exports = Backbone.View.extend({
 			yAxis: {
 				title: {
 					text: 'Importo (€)'
-				}
-				// ,min:0
+				},
+				min: (onlyPositive) ? 0 : null
 			},
 			tooltip: {
-				valueSuffix: '€',
-				headerFormat: '',
-				// headerFormat: 'MESE {point.key}<br/>',
-				pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>'
+				formatter: function() {
+					return ( xAxis.length>12 ? 'Giorno ' : '' ) +
+						this.x +
+						'<br /><span style="color:{this.series.color}">' +
+						this.series.name + 
+						'</span>: <b>' +
+						numeral(this.y).format('0,0.00') +
+						'€</b><br/>';
+				} 
 			},
 			series: series
 		});
+		
 		return chart;
 	},
 
@@ -14588,7 +14607,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":34,"../collections/report/Categories":7,"../collections/report/Periods":8,"../models/ApplicationState":9,"../templates/report.html":16,"./TransactionPeriodView":32,"backbone":36,"highcharts-browserify":37,"underscore":41}],29:[function(require,module,exports){
+},{"../../config/settings":35,"../collections/report/Categories":7,"../collections/report/Periods":8,"../models/ApplicationState":9,"../templates/report.html":17,"./TransactionPeriodView":33,"backbone":37,"highcharts-browserify":38,"numeral":41,"underscore":42}],30:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14681,7 +14700,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":9,"../models/Transaction":11,"../models/TransactionBalance":12,"../templates/settings.html":17,"backbone":36,"underscore":41}],30:[function(require,module,exports){
+},{"../models/ApplicationState":9,"../models/Transaction":11,"../models/TransactionBalance":12,"../templates/settings.html":18,"backbone":37,"underscore":42}],31:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -14904,7 +14923,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":34,"../collections/Categories":5,"../models/Transaction":11,"../templates/transactionEditor.html":18,"../views/CategoryItemView":24,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":36,"moment":39,"underscore":41}],31:[function(require,module,exports){
+},{"../../config/settings":35,"../collections/Categories":5,"../models/Transaction":11,"../templates/transactionEditor.html":19,"../views/CategoryItemView":25,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":37,"moment":40,"underscore":42}],32:[function(require,module,exports){
 var moment = require('moment');
 var numeral = require('numeral');
 var _ = require('underscore');
@@ -14965,7 +14984,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/TransactionBalance":12,"../templates/transactionItem.html":19,"backbone":36,"moment":39,"numeral":40,"underscore":41}],32:[function(require,module,exports){
+},{"../models/TransactionBalance":12,"../templates/transactionItem.html":20,"backbone":37,"moment":40,"numeral":41,"underscore":42}],33:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -15049,7 +15068,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":34,"../models/ApplicationState":9,"../templates/transactionPeriod.html":20,"backbone":36,"moment":39,"underscore":41}],33:[function(require,module,exports){
+},{"../../config/settings":35,"../models/ApplicationState":9,"../templates/transactionPeriod.html":21,"backbone":37,"moment":40,"underscore":42}],34:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
@@ -15252,7 +15271,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":34,"../collections/Transactions":6,"../models/ApplicationState":9,"../models/TransactionBalance":12,"../templates/transactions.html":21,"../templates/transactionsHeader.html":22,"../utils/EventAggregator":23,"./TransactionEditorView":30,"./TransactionItemView":31,"./TransactionPeriodView":32,"backbone":36,"moment":39,"numeral":40,"underscore":41}],34:[function(require,module,exports){
+},{"../../config/settings":35,"../collections/Transactions":6,"../models/ApplicationState":9,"../models/TransactionBalance":12,"../templates/transactions.html":22,"../templates/transactionsHeader.html":23,"../utils/EventAggregator":24,"./TransactionEditorView":31,"./TransactionItemView":32,"./TransactionPeriodView":33,"backbone":37,"moment":40,"numeral":41,"underscore":42}],35:[function(require,module,exports){
 exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
@@ -15265,7 +15284,7 @@ exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';
 exports.EMAIL_ADDRESS = 'info@ilbilanciofamiliare.it';
 exports.EMAIL_SUBJECT = 'Conferma registrazione';
 exports.EMAIL_TEXT = 'Il tuo account è stato creato. Per attivarlo clicca su <a href=\'http://www.ilbilanciofamiliare.it/confirm?id={id}\'>questo link</a>. Grazie!';
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
  * Version 1.1.13
@@ -15520,7 +15539,7 @@ Backbone.sync = function(method, model, options) {
 return Backbone.LocalStorage;
 }));
 
-},{"backbone":36}],36:[function(require,module,exports){
+},{"backbone":37}],37:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -17130,7 +17149,7 @@ return Backbone.LocalStorage;
 
 }));
 
-},{"underscore":41}],37:[function(require,module,exports){
+},{"underscore":42}],38:[function(require,module,exports){
 var $ = require('jquery');/*
  Highcharts JS v4.0.4 (2014-09-02)
 
@@ -17440,7 +17459,7 @@ function(b){b.setVisible(a,!1)});if(g)d.isDirtyBox=!0;b!==!1&&d.redraw();I(c,f)}
 c<=f.max){h=b[i+1];c=d===u?0:d+1;for(d=b[i+1]?L(t(0,U((e.clientX+(h?h.wrappedClientX||h.clientX:g))/2)),g):g;c>=0&&c<=d;)j[c++]=e}this.tooltipPoints=j}},show:function(){this.setVisible(!0)},hide:function(){this.setVisible(!1)},select:function(a){this.selected=a=a===u?!this.selected:a;if(this.checkbox)this.checkbox.checked=a;I(this,a?"select":"unselect")},drawTracker:T.drawTrackerGraph});r(K,{Axis:na,Chart:Ya,Color:ya,Point:Fa,Tick:Ta,Renderer:Za,Series:O,SVGElement:S,SVGRenderer:ta,arrayMin:Oa,arrayMax:Ca,
 charts:W,dateFormat:cb,format:Ja,pathAnim:vb,getOptions:function(){return E},hasBidiBug:Ob,isTouchDevice:Ib,numberFormat:Ba,seriesTypes:H,setOptions:function(a){E=w(!0,E,a);Bb();return E},addEvent:N,removeEvent:X,createElement:$,discardElement:Qa,css:B,each:q,extend:r,map:Va,merge:w,pick:p,splat:ra,extendClass:ma,pInt:y,wrap:Na,svg:ba,canvas:ga,vml:!ba&&!ga,product:"Highcharts",version:"4.0.4"})})();
 module.exports = window.Highcharts; module.exports.$ = $;
-},{"jquery":38}],38:[function(require,module,exports){
+},{"jquery":39}],39:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v1.11.2
  * http://jquery.com/
@@ -27788,7 +27807,7 @@ return jQuery;
 
 }));
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function (global){
 //! moment.js
 //! version : 2.8.3
@@ -30648,7 +30667,7 @@ return jQuery;
 }).call(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /*!
  * numeral.js
  * version : 1.5.3
@@ -31329,7 +31348,7 @@ return jQuery;
     }
 }).call(this);
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
