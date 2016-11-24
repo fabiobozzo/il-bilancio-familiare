@@ -9,7 +9,7 @@ var TransactionBalance = require('../models/TransactionBalance');
 var TransactionCollection = require('../collections/Transactions');
 var TransactionItemView = require('./TransactionItemView');
 var TransactionEditorView = require('./TransactionEditorView');
-var TransactionPeriodView = require('./TransactionPeriodView');
+var TransactionSearchView = require('./TransactionSearchView');
 var Settings = require('../../config/settings');
 var ApplicationState = require('../models/ApplicationState');
 var Vent = require('../utils/EventAggregator');
@@ -42,7 +42,7 @@ module.exports = Backbone.View.extend({
 		'click .new-transaction button': 'showAddEntryForm',
 		'click .more-entries': 'renderNextPage',
 		'click .filters .type button': 'filter',
-		'click .period-chooser': 'showPeriodChooser',
+		'click .search': 'showSearch',
 		'click .balance .ask-for-initial-balance': 'goToSetInitialBalance'
 	},
 
@@ -56,12 +56,8 @@ module.exports = Backbone.View.extend({
 		});
 		this.$el.find('.new-transaction').after( this.editorView.render().el );
 
-		this.periodChooserView = new TransactionPeriodView({
-			closeOnConfirm: true,
-			showCancelButton: true,
-			canDisableMonth: false
-		});
-		this.$el.find('.controls-container').after( this.periodChooserView.render().el );
+		this.searchView = new TransactionSearchView();
+		this.$el.find('.controls-container').after( this.searchView.render().el );
 
 		this.updateCurrentPeriod();
 		this.showBalanceLoader();
@@ -145,8 +141,8 @@ module.exports = Backbone.View.extend({
 	updateCurrentPeriod: function() {
 		var month = Settings.monthsFull[ ApplicationState.get('currentPeriod').getMonth() ];
 		var year = ApplicationState.get('currentPeriod').getFullYear();
-		this.$el.find('.period-chooser .text').html( month + ' ' + year );
-		this.periodChooserView.hide();
+		this.$el.find('.search .text').html( month + ' ' + year );
+		this.searchView.hide();
 
 		this.showTransactionsLoader();
 		this.collection.refetch();
@@ -158,13 +154,13 @@ module.exports = Backbone.View.extend({
 		this.$el.find('.new-transaction button').removeClass('selected');
 		$(event.currentTarget).addClass('selected');
 		
-		this.periodChooserView.hide();
+		this.searchView.hide();
 		this.editorView.show();	
 	},
 
-	showPeriodChooser: function(event) {
+	showSearch: function(event) {
 		this.editorView.hide();
-		this.periodChooserView.show();		
+		this.searchView.show();		
 	},
 
 	isPositiveEntrySelected: function() {
@@ -192,7 +188,7 @@ module.exports = Backbone.View.extend({
 
 		this.clearEntryRows();
 		this.editorView.close();
-		this.periodChooserView.close();
+		this.searchView.close();
 
 		this.remove();
 		this.unbind();

@@ -10,139 +10,92 @@ html(lang='it')
 		// link(rel='icon', href='../../favicon.ico')
 		title Il Bilancio Familiare | #{title}
 		link(href='//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', rel='stylesheet')
-		link(href='/stylesheets/build.css', rel='stylesheet')
+		link(href='/stylesheets/index.css', rel='stylesheet')
 		//if lt IE 9
 			script(src='https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js')
 			script(src='https://oss.maxcdn.com/respond/1.4.2/respond.min.js')
 	
 	body#index
-		nav.navbar.navbar-default.navbar-fixed-top
-			.container
-				.navbar-header.page-scroll
-					button.navbar-toggle(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
-						span.sr-only 
-						span.icon-bar
-						span.icon-bar
-						span.icon-bar
-					a.navbar-brand(href='#index') 
-						// Benvenuti !
-				#bs-example-navbar-collapse-1.collapse.navbar-collapse
-					ul.nav.navbar-nav.navbar-right
-						li.hidden
-							a(href='#index')
-						li.page-scroll
-							a(href='#about') Informazioni
-						//li.page-scroll
-							a(href='#howitworks') Funzionamento
-						li.page-scroll
-							a(href='#signin') Login
-		header.full-height
-			.container
-				.row
-					.col-lg-12
-						img.img-responsive(src='/images/logo.png', alt='')
-						.intro-text
-							span.name Il Bilancio Familiare
-							hr.lock-primary
-							span.skills
-								| Il miglior gestore delle tue finanze private
-					.col-lg-8.col-lg-offset-2.text-center
-						a.btn.btn-lg.btn-outline(href='#signin')
-							| Prova subito!
 		
-		section#about.full-height
-			.container
-				.row
-					.col-lg-12.text-center
-						h2 Informazioni
-						hr.lock-light
-				.row
-					.col-lg-4.col-lg-offset-2
-						p
-							| Il Bilancio Familiare è un semplice software gestionale che permette di registrare
-							| tutte le spese personali legate alla vita di tutti i giorni. Ogniqualvolta del denaro
-							| uscirà dal tuo portafoglio, potrai annotare informazioni utili relative a quella spesa.
-					.col-lg-4
-						p
-							| Puoi anche registrare le entrate, in questo modo puoi sempre tenere
-							| d'occhio il tuo saldo e individuare possibili situazioni problematiche, 
-							| difficili da scoprire senza uno strumento di expense tracking
-					.col-lg-8.col-lg-offset-2.text-center
-						a(href=projectUrl)
-		
-		section#signin.full-height
-			.container
-				.row
-					.col-lg-12.text-center
-						h2.signin-toggle-area.showing Login
-						h2.signin-toggle-area Registrati
-						hr.lock-primary
-				.row
-					.col-lg-8.col-lg-offset-2
-						.col-xs-12.col-md-5.text-center
-							.social
-								a.btn.btn-primary(href='/auth/facebook')
-									span.fa.fa-facebook
-									| &nbsp;Facebook
-							.social
-								a.btn.btn-info(href='/auth/twitter')
-									span.fa.fa-twitter
-									| &nbsp;Twitter
-							.social
-								a.btn.btn-danger(href='/auth/google')
-									span.fa.fa-google-plus
-									| &nbsp;Google
-						.col-xs-12.col-md-2.divider.text-center
-							span
-							| oppure
-							span
-						
-						.col-xs-12.col-md-5
-
-							.signin-toggle-area.showing
-								form(name='login', action='/login', method='post', role='form')
-									.form-group
-										label(for='signinEmail') E-Mail:
-										input#signinEmail.form-control(type='email', name='email', placeholder='e-mail', required='required', value="")
-									.form-group
-										label(for='signinPassword') Password:
-										input#signinPassword.form-control(type='password', name='password', placeholder='password', required='required', value="")
-									.form-group
-										button.btn.btn-lg.btn-default.pull-right(type='submit') OK
-									.form-group
-										| Se non hai un account 
-										a.toggleSignin(href='#')
-											| registrati subito.
-									if message.length 
-										.alert.alert-danger= message 
-
-							.signin-toggle-area
-								form(name='signup', action='/signup', method='post', role='form')
-									.form-group
-										label(for='signupName') Il tuo nome:
-										input#signupName.form-control(type='text', name='name', placeholder='Mario Rossi', required='required')
-									.form-group
-										label(for='signupEmail') E-Mail:
-										input#signupEmail.form-control(type='email', name='email', placeholder='mario.rossi@gmail.com', required='required')
-									.form-group
-										label(for='signupPassword') Password:
-										input#signupPassword.form-control(type='password', name='password', placeholder='password', required='required')
-									.form-group
-										button.btn.btn-lg.btn-default.pull-right(type='submit') OK
-									.form-group
-										| Se hai già un account 
-										a.toggleSignin(href='#')
-											| entra subito. 
-									if message.length 
-										.alert.alert-danger= message 
-
-		footer.text-center
-			.footer-below
+		.top-content
+			.inner-bg
 				.container
 					.row
-						.col-lg-12
-							| Copyright © Fabio Bozzo 2014 
-		.scroll-top.page-scroll.visible-xs.visble-sm
-			a.btn.btn-primary(href='#index')
-				i.fa.fa-chevron-up
+						.col-sm-8.col-sm-offset-2.text
+							img.logo(src='/images/logo.png', alt='Il bilancio familiare')
+							h1 Il bilancio familiare
+							.description
+								p 
+								| Uno strumento completo e semplice da utilizzare, per
+								| mantenere sempre sotto controllo le tue finanze.
+							.header-border
+							if message.length 
+								.alert.alert-danger= message 
+					.row
+						.col-sm-5
+							.form-box
+								.form-top
+									.form-top-left
+										h3 Login 
+										p Se hai già un account, inserisci le tue credenziali per accedere ora:
+									.form-top-right
+										i.fa.fa-key
+								.form-bottom
+									form.login-form(name='login', action='/login', method='post', role='form')
+										.form-group
+											label.sr-only(for='form-username') Username
+											input#form-username.form-username.form-control(type='email', name='email', placeholder='e-mail', required='required', value="fabio.bozzo@gmail.com")
+										.form-group
+											label.sr-only(for='form-password') Password
+											input#form-password.form-password.form-control(type='password', name='password', placeholder='password', required='required', value="test")
+										button.btn(type='submit') Conferma
+									
+							.social-login
+								h3 ...oppure accedi con:
+								.social-login-buttons
+									.row
+										.col-sm-12.col-md-4
+											a.btn.btn-primary(href='/auth/facebook')
+												span.fa.fa-facebook
+												| &nbsp;Facebook
+										.col-sm-12.col-md-4
+											a.btn.btn-info(href='/auth/twitter')
+												span.fa.fa-twitter
+												| &nbsp;Twitter
+										.col-sm-12.col-md-4
+											a.btn.btn-danger(href='/auth/google')
+												span.fa.fa-google-plus
+												| &nbsp;Google
+						.col-sm-1.middle-border
+						.col-sm-1
+						.col-sm-5
+							.form-box
+								.form-top
+									.form-top-left
+										h3 Registrati
+										p Se non ti sei ancora registrato, compila il modulo sottostante per accedere subito:
+									.form-top-right
+										i.fa.fa-pencil
+								.form-bottom
+									form.registration-form(name='signup', action='/signup', method='post', role='form')
+										.form-group
+											label(for='form-first-name') Il tuo nome completo
+											input#form-first-name.form-first-name.form-control(type='text', name='name', placeholder='Mario Rossi', required='required')
+										.form-group
+											label(for='form-email') E-mail
+											input#form-email.form-email.form-control(type='email', name='email', placeholder='mario.rossi@gmail.com', required='required')
+										.form-group
+											label(for='form-password') Password
+											input#form-password.form-control(type='password', name='password', placeholder='password', required='required')
+										button.btn(type='submit') Conferma
+											
+		footer
+			.container
+				.row
+					.col-sm-8.col-sm-offset-2
+						.footer-border
+						p
+							| Copyright © Fabio Bozzo 2016 
+							// i.fa.fa-smile-o
+		
 		script(src='/javascripts/build/home.js')
