@@ -25,6 +25,7 @@ var seeder 			= require('./app/config/seeder');
 // var mongoUri        = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/bilancio';
 var mongoUri        = process.env.MONGODB_URI || 'mongodb://localhost/bilancio';
 
+console.log('mongoose connecting to: '+mongoUri);
 mongoose.connect(mongoUri, function(err) {
 	if (err) throw err;	
 	console.log('Connected to MongoDB at: ' + mongoUri);
