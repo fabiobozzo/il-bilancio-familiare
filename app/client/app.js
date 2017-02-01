@@ -32,6 +32,7 @@ var ApplicationState = require('./models/ApplicationState');
 $(function() {
 
 	ApplicationState.fetch();
+	ApplicationState.save();
 
 	new MenuView();
 	new ContainerView();

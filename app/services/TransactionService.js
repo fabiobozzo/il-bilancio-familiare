@@ -16,9 +16,19 @@ exports.getTransactions = function( params, callback ) {
 	}
 
 	search.dateEntry = { 
-		$gte: moment([params.year, params.month - 1]), 
-		$lte: moment([params.year, params.month - 1]).endOf('month')
+		$gte: moment(parseInt(params.dateFrom)), 
+		$lte: moment(parseInt(params.dateTo))
 	};
+
+	if (params.description) {
+		search.description = {
+			$regex: new RegExp(params.description, 'i')
+		}
+	}
+
+	if (params.category) {
+		search.category = params.category;
+	}
 
 	Transaction
 		.find( search, null, options)

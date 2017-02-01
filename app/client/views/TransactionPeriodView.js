@@ -21,8 +21,8 @@ module.exports = Backbone.View.extend({
 		
 		var templateData = {
 			settings:Settings, 
-			currentMonth: parseInt(ApplicationState.get('currentPeriod').getMonth()),
-			currentYear: parseInt(ApplicationState.get('currentPeriod').getFullYear()), 
+			currentMonth: parseInt(moment(ApplicationState.get('currentPeriod')).toDate().getMonth()),
+			currentYear: parseInt(moment(ApplicationState.get('currentPeriod')).toDate().getFullYear()), 
 			showCancelButton: this.showCancelButton,
 			canDisableMonth: this.canDisableMonth,
 			monthEnabled: ApplicationState.get('periodMonthEnabled'),
@@ -46,7 +46,7 @@ module.exports = Backbone.View.extend({
 		var year = this.$el.find('select.year').val();
 		var month = parseInt(this.$el.find('select.month').val()) +1;
 		
-		ApplicationState.set('currentPeriod', moment(year+'-'+month+'-01','YYYY-MM-DD').toDate() );
+		ApplicationState.set('currentPeriod', moment(year+'-'+month+'-01','YYYY-MM-DD').valueOf() );
 
 		if ( this.closeOnConfirm ) {
 			this.hide();	

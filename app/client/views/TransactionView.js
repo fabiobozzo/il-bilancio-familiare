@@ -24,7 +24,8 @@ module.exports = Backbone.View.extend({
 		this.listenTo( this.collection, 'reset', this.renderFirstPage );
 		this.listenTo( this.collection, 'add', this.renderRow );
 		this.listenTo( TransactionBalance, 'sync', this.updateBalance );
-		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+		// this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+		this.listenTo( ApplicationState, 'change:currentSearch', this.updateCurrentSearch );	
 
 		this.rowViews = [];
 		this.displayDay = '';
@@ -85,7 +86,7 @@ module.exports = Backbone.View.extend({
 
 		if ( this.collection.length === 0 ) {
 
-			this.$el.find('.entry-list').html('<hr /><br />Non ci sono movimenti nel mese selezionato.');
+			this.$el.find('.entry-list').html('<hr /><br />Non ci sono movimenti nel periodo selezionato.');
 
 		} else {
 			this.collection.each(function(item) {
@@ -139,9 +140,17 @@ module.exports = Backbone.View.extend({
 	},
 
 	updateCurrentPeriod: function() {
-		var month = Settings.monthsFull[ ApplicationState.get('currentPeriod').getMonth() ];
-		var year = ApplicationState.get('currentPeriod').getFullYear();
+		var month = Settings.monthsFull[ moment(ApplicationState.get('currentPeriod')).toDate().getMonth() ];
+		var year = moment(ApplicationState.get('currentPeriod')).toDate().getFullYear();
 		this.$el.find('.search .text').html( month + ' ' + year );
+		this.searchView.hide();
+
+		this.showTransactionsLoader();
+		this.collection.refetch();
+	},
+
+	updateCurrentSearch: function() {
+		
 		this.searchView.hide();
 
 		this.showTransactionsLoader();

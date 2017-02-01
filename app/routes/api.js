@@ -16,8 +16,12 @@ module.exports = function(app) {
 				limit: req.query.limit || Settings.TRANSACTIONS_PER_PAGE,
 				page: req.query.p || 1,
 				filter: req.query.filter || '',
-				month: req.query.m || parseInt((new Date()).getMonth())+1,
-				year: req.query.y || parseInt((new Date()).getFullYear()),
+				// month: req.query.m || parseInt((new Date()).getMonth())+1,
+				// year: req.query.y || parseInt((new Date()).getFullYear()),
+				dateFrom: req.query.df,
+				dateTo: req.query.dt,
+				description: req.query.d, 
+				category: req.query.c, 
 				uid: req.user._id
 			};
 

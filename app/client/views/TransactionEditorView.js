@@ -42,7 +42,11 @@ module.exports = Backbone.View.extend({
 		
 		this.resetForm();
 
-		this.$datepicker = this.$el.find('.form-group input[name=dateEntry]').pickadate({
+		var dateInput = this.$el.find('.form-group input[name=dateEntry]');
+
+		// console.log($.fn.pickadate);
+
+		this.$datepicker = $(dateInput).pickadate({
 			monthsFull: Settings.monthsFull,
 			monthsShort: Settings.monthsShort,
 			weekdaysFull: Settings.weekdaysFull,
@@ -89,8 +93,11 @@ module.exports = Backbone.View.extend({
 		entryData.positive = this.parent.isPositiveEntrySelected();
 		entryData.amount = this.$el.find('input[name=amount]').val().trim();
 		entryData._dateEntry = this.$el.find('input[name=dateEntry]').val().trim();
-		entryData.dateEntry = moment( entryData._dateEntry, 'DD-MM-YYYY', true ).toDate();
+		entryData.dateEntry = moment( entryData._dateEntry, 'DD/MM/YYYY', true ).toDate();
 		entryData.description = this.$el.find('input[name=description]').val().trim();
+
+		console.log(entryData._dateEntry);
+		console.log(entryData.dateEntry);
 
 		var selectedCategories = this.categories.where({selected:true});
 		entryData.category = selectedCategories.length>0 ? selectedCategories[0].get('_id') : '';
@@ -105,6 +112,8 @@ module.exports = Backbone.View.extend({
 			}
 
 		} else {
+
+			console.log(entryData);
 
 			var newEntry = new Transaction();
 			newEntry.save( entryData, {

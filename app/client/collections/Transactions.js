@@ -1,6 +1,7 @@
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction');
 var ApplicationState = require('../models/ApplicationState');
+var moment = require('moment');
  
 var TransactionCollection = Backbone.Collection.extend({
 	
@@ -14,8 +15,10 @@ var TransactionCollection = Backbone.Collection.extend({
 		this.filter = 'all';
 		this.page = 1;
 		this.updateCurrentPeriod();
+		this.updateCurrentSearch();
 
-		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );
+		this.listenTo( ApplicationState, 'change:currentSearch', this.updateCurrentSearch );
 	},
 
 	parse: function(response) {
@@ -31,8 +34,12 @@ var TransactionCollection = Backbone.Collection.extend({
 			data: {
 				filter: this.filter, 
 				p: this.page, 
-				m: this.month, 
-				y: this.year
+				// m: this.month, 
+				// y: this.year
+				df: this.df,
+				dt: this.dt,
+				d: this.d, 
+				c: this.c
 			}
 		});
 	},
@@ -44,16 +51,29 @@ var TransactionCollection = Backbone.Collection.extend({
 			data: {
 				filter: this.filter, 
 				p: this.page, 
-				m: this.month, 
-				y: this.year
+				// m: this.month, 
+				// y: this.year
+				df: this.df,
+				dt: this.dt,
+				d: this.d, 
+				c: this.c
 			}, 
 			success: callback
 		});
 	},
 
 	updateCurrentPeriod: function() {
-		this.month = parseInt(ApplicationState.get('currentPeriod').getMonth()) +1;
-		this.year = parseInt(ApplicationState.get('currentPeriod').getFullYear());
+		var cp = moment(ApplicationState.get('currentPeriod')).toDate();
+		console.log(cp);
+		this.month = parseInt(cp.getMonth()) +1;
+		this.year = parseInt(cp.getFullYear());
+	},
+
+	updateCurrentSearch: function() {
+		this.df = ApplicationState.get('currentSearch').from;
+		this.dt = ApplicationState.get('currentSearch').to;
+		this.d = ApplicationState.get('currentSearch').description;
+		this.c = ApplicationState.get('currentSearch').category;
 	}
 
 });

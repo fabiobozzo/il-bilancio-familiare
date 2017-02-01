@@ -1,6 +1,7 @@
 var Backbone 	= require('backbone');
 var Period = require('../../models/report/Period');
 var ApplicationState = require('../../models/ApplicationState');
+var moment = require('moment');
  
 module.exports = Backbone.Collection.extend({
 	
@@ -17,8 +18,9 @@ module.exports = Backbone.Collection.extend({
 	},
 
 	updateCurrentPeriod: function() {
-		this.month = parseInt(ApplicationState.get('currentPeriod').getMonth()) +1;
-		this.year = parseInt(ApplicationState.get('currentPeriod').getFullYear());
+		var cp = moment(ApplicationState.get('currentPeriod')).toDate();
+		this.month = parseInt(cp.getMonth()) +1;
+		this.year = parseInt(cp.getFullYear());
 	},
 
 	refetch: function() {

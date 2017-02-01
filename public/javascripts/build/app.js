@@ -33,6 +33,7 @@ var ApplicationState = require('./models/ApplicationState');
 $(function() {
 
 	ApplicationState.fetch();
+	ApplicationState.save();
 
 	new MenuView();
 	new ContainerView();
@@ -40,7 +41,7 @@ $(function() {
 	$('[rel=tooltip]').tooltip();
 
 });
-},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":9,"./views/ContainerView":27,"./views/MenuView":29,"backbone":39,"backbone.localstorage":38,"numeral":45}],2:[function(require,module,exports){
+},{"./bower_components/bootstrap/dist/js/bootstrap.js":2,"./bower_components/jquery/dist/jquery.js":3,"./models/ApplicationState":10,"./views/ContainerView":28,"./views/MenuView":30,"backbone":40,"backbone.localstorage":39,"numeral":46}],2:[function(require,module,exports){
 /*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -11350,1084 +11351,7 @@ return jQuery;
 
 },{}],4:[function(require,module,exports){
 /*!
- * pickadate.js v3.5.4, 2014/09/11
- * By Amsul, http://amsul.ca
- * Hosted on http://amsul.github.io/pickadate.js
- * Licensed under MIT
- */
-
-(function ( factory ) {
-
-    // AMD.
-    if ( typeof define == 'function' && define.amd )
-        define( 'picker', ['jquery'], factory )
-
-    // Node.js/browserify.
-    else if ( typeof exports == 'object' )
-        module.exports = factory( require("./../../jquery/dist/jquery.js") )
-
-    // Browser globals.
-    else this.Picker = factory( jQuery )
-
-}(function( $ ) {
-
-var $window = $( window )
-var $document = $( document )
-var $html = $( document.documentElement )
-
-
-/**
- * The picker constructor that creates a blank picker.
- */
-function PickerConstructor( ELEMENT, NAME, COMPONENT, OPTIONS ) {
-
-    // If there’s no element, return the picker constructor.
-    if ( !ELEMENT ) return PickerConstructor
-
-
-    var
-        IS_DEFAULT_THEME = false,
-
-
-        // The state of the picker.
-        STATE = {
-            id: ELEMENT.id || 'P' + Math.abs( ~~(Math.random() * new Date()) )
-        },
-
-
-        // Merge the defaults and options passed.
-        SETTINGS = COMPONENT ? $.extend( true, {}, COMPONENT.defaults, OPTIONS ) : OPTIONS || {},
-
-
-        // Merge the default classes with the settings classes.
-        CLASSES = $.extend( {}, PickerConstructor.klasses(), SETTINGS.klass ),
-
-
-        // The element node wrapper into a jQuery object.
-        $ELEMENT = $( ELEMENT ),
-
-
-        // Pseudo picker constructor.
-        PickerInstance = function() {
-            return this.start()
-        },
-
-
-        // The picker prototype.
-        P = PickerInstance.prototype = {
-
-            constructor: PickerInstance,
-
-            $node: $ELEMENT,
-
-
-            /**
-             * Initialize everything
-             */
-            start: function() {
-
-                // If it’s already started, do nothing.
-                if ( STATE && STATE.start ) return P
-
-
-                // Update the picker states.
-                STATE.methods = {}
-                STATE.start = true
-                STATE.open = false
-                STATE.type = ELEMENT.type
-
-
-                // Confirm focus state, convert into text input to remove UA stylings,
-                // and set as readonly to prevent keyboard popup.
-                ELEMENT.autofocus = ELEMENT == document.activeElement
-                ELEMENT.readOnly = !SETTINGS.editable
-                ELEMENT.id = ELEMENT.id || STATE.id
-                if ( ELEMENT.type != 'text' ) {
-                    ELEMENT.type = 'text'
-                }
-
-
-                // Create a new picker component with the settings.
-                P.component = new COMPONENT(P, SETTINGS)
-
-
-                // Create the picker root with a holder and then prepare it.
-                P.$root = $( PickerConstructor._.node('div', createWrappedComponent(), CLASSES.picker, 'id="' + ELEMENT.id + '_root"') )
-                prepareElementRoot()
-
-
-                // If there’s a format for the hidden input element, create the element.
-                if ( SETTINGS.formatSubmit ) {
-                    prepareElementHidden()
-                }
-
-
-                // Prepare the input element.
-                prepareElement()
-
-
-                // Insert the root as specified in the settings.
-                if ( SETTINGS.container ) $( SETTINGS.container ).append( P.$root )
-                else $ELEMENT.after( P.$root )
-
-
-                // Bind the default component and settings events.
-                P.on({
-                    start: P.component.onStart,
-                    render: P.component.onRender,
-                    stop: P.component.onStop,
-                    open: P.component.onOpen,
-                    close: P.component.onClose,
-                    set: P.component.onSet
-                }).on({
-                    start: SETTINGS.onStart,
-                    render: SETTINGS.onRender,
-                    stop: SETTINGS.onStop,
-                    open: SETTINGS.onOpen,
-                    close: SETTINGS.onClose,
-                    set: SETTINGS.onSet
-                })
-
-
-                // Once we’re all set, check the theme in use.
-                IS_DEFAULT_THEME = isUsingDefaultTheme( P.$root.children()[ 0 ] )
-
-
-                // If the element has autofocus, open the picker.
-                if ( ELEMENT.autofocus ) {
-                    P.open()
-                }
-
-
-                // Trigger queued the “start” and “render” events.
-                return P.trigger( 'start' ).trigger( 'render' )
-            }, //start
-
-
-            /**
-             * Render a new picker
-             */
-            render: function( entireComponent ) {
-
-                // Insert a new component holder in the root or box.
-                if ( entireComponent ) P.$root.html( createWrappedComponent() )
-                else P.$root.find( '.' + CLASSES.box ).html( P.component.nodes( STATE.open ) )
-
-                // Trigger the queued “render” events.
-                return P.trigger( 'render' )
-            }, //render
-
-
-            /**
-             * Destroy everything
-             */
-            stop: function() {
-
-                // If it’s already stopped, do nothing.
-                if ( !STATE.start ) return P
-
-                // Then close the picker.
-                P.close()
-
-                // Remove the hidden field.
-                if ( P._hidden ) {
-                    P._hidden.parentNode.removeChild( P._hidden )
-                }
-
-                // Remove the root.
-                P.$root.remove()
-
-                // Remove the input class, remove the stored data, and unbind
-                // the events (after a tick for IE - see `P.close`).
-                $ELEMENT.removeClass( CLASSES.input ).removeData( NAME )
-                setTimeout( function() {
-                    $ELEMENT.off( '.' + STATE.id )
-                }, 0)
-
-                // Restore the element state
-                ELEMENT.type = STATE.type
-                ELEMENT.readOnly = false
-
-                // Trigger the queued “stop” events.
-                P.trigger( 'stop' )
-
-                // Reset the picker states.
-                STATE.methods = {}
-                STATE.start = false
-
-                return P
-            }, //stop
-
-
-            /**
-             * Open up the picker
-             */
-            open: function( dontGiveFocus ) {
-
-                // If it’s already open, do nothing.
-                if ( STATE.open ) return P
-
-                // Add the “active” class.
-                $ELEMENT.addClass( CLASSES.active )
-                aria( ELEMENT, 'expanded', true )
-
-                // * A Firefox bug, when `html` has `overflow:hidden`, results in
-                //   killing transitions :(. So add the “opened” state on the next tick.
-                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
-                setTimeout( function() {
-
-                    // Add the “opened” class to the picker root.
-                    P.$root.addClass( CLASSES.opened )
-                    aria( P.$root[0], 'hidden', false )
-
-                }, 0 )
-
-                // If we have to give focus, bind the element and doc events.
-                if ( dontGiveFocus !== false ) {
-
-                    // Set it as open.
-                    STATE.open = true
-
-                    // Prevent the page from scrolling.
-                    if ( IS_DEFAULT_THEME ) {
-                        $html.
-                            css( 'overflow', 'hidden' ).
-                            css( 'padding-right', '+=' + getScrollbarWidth() )
-                    }
-
-                    // Pass focus to the element’s jQuery object.
-                    $ELEMENT.trigger( 'focus' )
-
-                    // Bind the document events.
-                    $document.on( 'click.' + STATE.id + ' focusin.' + STATE.id, function( event ) {
-
-                        var target = event.target
-
-                        // If the target of the event is not the element, close the picker picker.
-                        // * Don’t worry about clicks or focusins on the root because those don’t bubble up.
-                        //   Also, for Firefox, a click on an `option` element bubbles up directly
-                        //   to the doc. So make sure the target wasn't the doc.
-                        // * In Firefox stopPropagation() doesn’t prevent right-click events from bubbling,
-                        //   which causes the picker to unexpectedly close when right-clicking it. So make
-                        //   sure the event wasn’t a right-click.
-                        if ( target != ELEMENT && target != document && event.which != 3 ) {
-
-                            // If the target was the holder that covers the screen,
-                            // keep the element focused to maintain tabindex.
-                            P.close( target === P.$root.children()[0] )
-                        }
-
-                    }).on( 'keydown.' + STATE.id, function( event ) {
-
-                        var
-                            // Get the keycode.
-                            keycode = event.keyCode,
-
-                            // Translate that to a selection change.
-                            keycodeToMove = P.component.key[ keycode ],
-
-                            // Grab the target.
-                            target = event.target
-
-
-                        // On escape, close the picker and give focus.
-                        if ( keycode == 27 ) {
-                            P.close( true )
-                        }
-
-
-                        // Check if there is a key movement or “enter” keypress on the element.
-                        else if ( target == ELEMENT && ( keycodeToMove || keycode == 13 ) ) {
-
-                            // Prevent the default action to stop page movement.
-                            event.preventDefault()
-
-                            // Trigger the key movement action.
-                            if ( keycodeToMove ) {
-                                PickerConstructor._.trigger( P.component.key.go, P, [ PickerConstructor._.trigger( keycodeToMove ) ] )
-                            }
-
-                            // On “enter”, if the highlighted item isn’t disabled, set the value and close.
-                            else if ( !P.$root.find( '.' + CLASSES.highlighted ).hasClass( CLASSES.disabled ) ) {
-                                P.set( 'select', P.component.item.highlight ).close()
-                            }
-                        }
-
-
-                        // If the target is within the root and “enter” is pressed,
-                        // prevent the default action and trigger a click on the target instead.
-                        else if ( $.contains( P.$root[0], target ) && keycode == 13 ) {
-                            event.preventDefault()
-                            target.click()
-                        }
-                    })
-                }
-
-                // Trigger the queued “open” events.
-                return P.trigger( 'open' )
-            }, //open
-
-
-            /**
-             * Close the picker
-             */
-            close: function( giveFocus ) {
-
-                // If we need to give focus, do it before changing states.
-                if ( giveFocus ) {
-                    // ....ah yes! It would’ve been incomplete without a crazy workaround for IE :|
-                    // The focus is triggered *after* the close has completed - causing it
-                    // to open again. So unbind and rebind the event at the next tick.
-                    $ELEMENT.off( 'focus.' + STATE.id ).trigger( 'focus' )
-                    setTimeout( function() {
-                        $ELEMENT.on( 'focus.' + STATE.id, focusToOpen )
-                    }, 0 )
-                }
-
-                // Remove the “active” class.
-                $ELEMENT.removeClass( CLASSES.active )
-                aria( ELEMENT, 'expanded', false )
-
-                // * A Firefox bug, when `html` has `overflow:hidden`, results in
-                //   killing transitions :(. So remove the “opened” state on the next tick.
-                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
-                setTimeout( function() {
-
-                    // Remove the “opened” and “focused” class from the picker root.
-                    P.$root.removeClass( CLASSES.opened + ' ' + CLASSES.focused )
-                    aria( P.$root[0], 'hidden', true )
-
-                }, 0 )
-
-                // If it’s already closed, do nothing more.
-                if ( !STATE.open ) return P
-
-                // Set it as closed.
-                STATE.open = false
-
-                // Allow the page to scroll.
-                if ( IS_DEFAULT_THEME ) {
-                    $html.
-                        css( 'overflow', '' ).
-                        css( 'padding-right', '-=' + getScrollbarWidth() )
-                }
-
-                // Unbind the document events.
-                $document.off( '.' + STATE.id )
-
-                // Trigger the queued “close” events.
-                return P.trigger( 'close' )
-            }, //close
-
-
-            /**
-             * Clear the values
-             */
-            clear: function( options ) {
-                return P.set( 'clear', null, options )
-            }, //clear
-
-
-            /**
-             * Set something
-             */
-            set: function( thing, value, options ) {
-
-                var thingItem, thingValue,
-                    thingIsObject = $.isPlainObject( thing ),
-                    thingObject = thingIsObject ? thing : {}
-
-                // Make sure we have usable options.
-                options = thingIsObject && $.isPlainObject( value ) ? value : options || {}
-
-                if ( thing ) {
-
-                    // If the thing isn’t an object, make it one.
-                    if ( !thingIsObject ) {
-                        thingObject[ thing ] = value
-                    }
-
-                    // Go through the things of items to set.
-                    for ( thingItem in thingObject ) {
-
-                        // Grab the value of the thing.
-                        thingValue = thingObject[ thingItem ]
-
-                        // First, if the item exists and there’s a value, set it.
-                        if ( thingItem in P.component.item ) {
-                            if ( thingValue === undefined ) thingValue = null
-                            P.component.set( thingItem, thingValue, options )
-                        }
-
-                        // Then, check to update the element value and broadcast a change.
-                        if ( thingItem == 'select' || thingItem == 'clear' ) {
-                            $ELEMENT.
-                                val( thingItem == 'clear' ? '' : P.get( thingItem, SETTINGS.format ) ).
-                                trigger( 'change' )
-                        }
-                    }
-
-                    // Render a new picker.
-                    P.render()
-                }
-
-                // When the method isn’t muted, trigger queued “set” events and pass the `thingObject`.
-                return options.muted ? P : P.trigger( 'set', thingObject )
-            }, //set
-
-
-            /**
-             * Get something
-             */
-            get: function( thing, format ) {
-
-                // Make sure there’s something to get.
-                thing = thing || 'value'
-
-                // If a picker state exists, return that.
-                if ( STATE[ thing ] != null ) {
-                    return STATE[ thing ]
-                }
-
-                // Return the value, if that.
-                if ( thing == 'value' ) {
-                    return ELEMENT.value
-                }
-
-                // Check if a component item exists, return that.
-                if ( thing in P.component.item ) {
-                    if ( typeof format == 'string' ) {
-                        var thingValue = P.component.get( thing )
-                        return thingValue ?
-                            PickerConstructor._.trigger(
-                                P.component.formats.toString,
-                                P.component,
-                                [ format, thingValue ]
-                            ) : ''
-                    }
-                    return P.component.get( thing )
-                }
-            }, //get
-
-
-
-            /**
-             * Bind events on the things.
-             */
-            on: function( thing, method, internal ) {
-
-                var thingName, thingMethod,
-                    thingIsObject = $.isPlainObject( thing ),
-                    thingObject = thingIsObject ? thing : {}
-
-                if ( thing ) {
-
-                    // If the thing isn’t an object, make it one.
-                    if ( !thingIsObject ) {
-                        thingObject[ thing ] = method
-                    }
-
-                    // Go through the things to bind to.
-                    for ( thingName in thingObject ) {
-
-                        // Grab the method of the thing.
-                        thingMethod = thingObject[ thingName ]
-
-                        // If it was an internal binding, prefix it.
-                        if ( internal ) {
-                            thingName = '_' + thingName
-                        }
-
-                        // Make sure the thing methods collection exists.
-                        STATE.methods[ thingName ] = STATE.methods[ thingName ] || []
-
-                        // Add the method to the relative method collection.
-                        STATE.methods[ thingName ].push( thingMethod )
-                    }
-                }
-
-                return P
-            }, //on
-
-
-
-            /**
-             * Unbind events on the things.
-             */
-            off: function() {
-                var i, thingName,
-                    names = arguments;
-                for ( i = 0, namesCount = names.length; i < namesCount; i += 1 ) {
-                    thingName = names[i]
-                    if ( thingName in STATE.methods ) {
-                        delete STATE.methods[thingName]
-                    }
-                }
-                return P
-            },
-
-
-            /**
-             * Fire off method events.
-             */
-            trigger: function( name, data ) {
-                var _trigger = function( name ) {
-                    var methodList = STATE.methods[ name ]
-                    if ( methodList ) {
-                        methodList.map( function( method ) {
-                            PickerConstructor._.trigger( method, P, [ data ] )
-                        })
-                    }
-                }
-                _trigger( '_' + name )
-                _trigger( name )
-                return P
-            } //trigger
-        } //PickerInstance.prototype
-
-
-    /**
-     * Wrap the picker holder components together.
-     */
-    function createWrappedComponent() {
-
-        // Create a picker wrapper holder
-        return PickerConstructor._.node( 'div',
-
-            // Create a picker wrapper node
-            PickerConstructor._.node( 'div',
-
-                // Create a picker frame
-                PickerConstructor._.node( 'div',
-
-                    // Create a picker box node
-                    PickerConstructor._.node( 'div',
-
-                        // Create the components nodes.
-                        P.component.nodes( STATE.open ),
-
-                        // The picker box class
-                        CLASSES.box
-                    ),
-
-                    // Picker wrap class
-                    CLASSES.wrap
-                ),
-
-                // Picker frame class
-                CLASSES.frame
-            ),
-
-            // Picker holder class
-            CLASSES.holder
-        ) //endreturn
-    } //createWrappedComponent
-
-
-
-    /**
-     * Prepare the input element with all bindings.
-     */
-    function prepareElement() {
-
-        $ELEMENT.
-
-            // Store the picker data by component name.
-            data(NAME, P).
-
-            // Add the “input” class name.
-            addClass(CLASSES.input).
-
-            // If there’s a `data-value`, update the value of the element.
-            val( $ELEMENT.data('value') ?
-                P.get('select', SETTINGS.format) :
-                ELEMENT.value
-            ).
-
-            // On focus/click, open the picker and adjust the root “focused” state.
-            on('focus.' + STATE.id + ' click.' + STATE.id, focusToOpen)
-
-
-        // Only bind keydown events if the element isn’t editable.
-        if ( !SETTINGS.editable ) {
-
-            // Handle keyboard event based on the picker being opened or not.
-            $ELEMENT.on('keydown.' + STATE.id, function(event) {
-
-                var keycode = event.keyCode,
-
-                    // Check if one of the delete keys was pressed.
-                    isKeycodeDelete = /^(8|46)$/.test(keycode)
-
-                // For some reason IE clears the input value on “escape”.
-                if ( keycode == 27 ) {
-                    P.close()
-                    return false
-                }
-
-                // Check if `space` or `delete` was pressed or the picker is closed with a key movement.
-                if ( keycode == 32 || isKeycodeDelete || !STATE.open && P.component.key[keycode] ) {
-
-                    // Prevent it from moving the page and bubbling to doc.
-                    event.preventDefault()
-                    event.stopPropagation()
-
-                    // If `delete` was pressed, clear the values and close the picker.
-                    // Otherwise open the picker.
-                    if ( isKeycodeDelete ) { P.clear().close() }
-                    else { P.open() }
-                }
-            })
-        }
-
-
-        // Update the aria attributes.
-        aria(ELEMENT, {
-            haspopup: true,
-            expanded: false,
-            readonly: false,
-            owns: ELEMENT.id + '_root' + (P._hidden ? ' ' + P._hidden.id : '')
-        })
-    }
-
-
-    /**
-     * Prepare the root picker element with all bindings.
-     */
-    function prepareElementRoot() {
-
-        P.$root.
-
-            on({
-
-                // When something within the root is focused, stop from bubbling
-                // to the doc and remove the “focused” state from the root.
-                focusin: function( event ) {
-                    P.$root.removeClass( CLASSES.focused )
-                    event.stopPropagation()
-                },
-
-                // When something within the root holder is clicked, stop it
-                // from bubbling to the doc.
-                'mousedown click': function( event ) {
-
-                    var target = event.target
-
-                    // Make sure the target isn’t the root holder so it can bubble up.
-                    if ( target != P.$root.children()[ 0 ] ) {
-
-                        event.stopPropagation()
-
-                        // * For mousedown events, cancel the default action in order to
-                        //   prevent cases where focus is shifted onto external elements
-                        //   when using things like jQuery mobile or MagnificPopup (ref: #249 & #120).
-                        //   Also, for Firefox, don’t prevent action on the `option` element.
-                        if ( event.type == 'mousedown' && !$( target ).is( ':input' ) && target.nodeName != 'OPTION' ) {
-
-                            event.preventDefault()
-
-                            // Re-focus onto the element so that users can click away
-                            // from elements focused within the picker.
-                            ELEMENT.focus()
-                        }
-                    }
-                }
-            }).
-
-            // If there’s a click on an actionable element, carry out the actions.
-            on( 'click', '[data-pick], [data-nav], [data-clear], [data-close]', function() {
-
-                var $target = $( this ),
-                    targetData = $target.data(),
-                    targetDisabled = $target.hasClass( CLASSES.navDisabled ) || $target.hasClass( CLASSES.disabled ),
-
-                    // * For IE, non-focusable elements can be active elements as well
-                    //   (http://stackoverflow.com/a/2684561).
-                    activeElement = document.activeElement
-                    activeElement = activeElement && ( activeElement.type || activeElement.href ) && activeElement
-
-                // If it’s disabled or nothing inside is actively focused, re-focus the element.
-                if ( targetDisabled || activeElement && !$.contains( P.$root[0], activeElement ) ) {
-                    ELEMENT.focus()
-                }
-
-                // If something is superficially changed, update the `highlight` based on the `nav`.
-                if ( !targetDisabled && targetData.nav ) {
-                    P.set( 'highlight', P.component.item.highlight, { nav: targetData.nav } )
-                }
-
-                // If something is picked, set `select` then close with focus.
-                else if ( !targetDisabled && 'pick' in targetData ) {
-                    P.set( 'select', targetData.pick ).close( true )
-                }
-
-                // If a “clear” button is pressed, empty the values and close with focus.
-                else if ( targetData.clear ) {
-                    P.clear().close( true )
-                }
-
-                else if ( targetData.close ) {
-                    P.close( true )
-                }
-
-            }) //P.$root
-
-        aria( P.$root[0], 'hidden', true )
-    }
-
-
-     /**
-      * Prepare the hidden input element along with all bindings.
-      */
-    function prepareElementHidden() {
-
-        var name
-
-        if ( SETTINGS.hiddenName === true ) {
-            name = ELEMENT.name
-            ELEMENT.name = ''
-        }
-        else {
-            name = [
-                typeof SETTINGS.hiddenPrefix == 'string' ? SETTINGS.hiddenPrefix : '',
-                typeof SETTINGS.hiddenSuffix == 'string' ? SETTINGS.hiddenSuffix : '_submit'
-            ]
-            name = name[0] + ELEMENT.name + name[1]
-        }
-
-        P._hidden = $(
-            '<input ' +
-            'type=hidden ' +
-
-            // Create the name using the original input’s with a prefix and suffix.
-            'name="' + name + '"' +
-
-            // If the element has a value, set the hidden value as well.
-            (
-                $ELEMENT.data('value') || ELEMENT.value ?
-                    ' value="' + P.get('select', SETTINGS.formatSubmit) + '"' :
-                    ''
-            ) +
-            '>'
-        )[0]
-
-        $ELEMENT.
-
-            // If the value changes, update the hidden input with the correct format.
-            on('change.' + STATE.id, function() {
-                P._hidden.value = ELEMENT.value ?
-                    P.get('select', SETTINGS.formatSubmit) :
-                    ''
-            }).
-
-            // Insert the hidden input after the element.
-            after(P._hidden)
-    }
-
-
-    // Separated for IE
-    function focusToOpen( event ) {
-
-        // Stop the event from propagating to the doc.
-        event.stopPropagation()
-
-        // If it’s a focus event, add the “focused” class to the root.
-        if ( event.type == 'focus' ) {
-            P.$root.addClass( CLASSES.focused )
-        }
-
-        // And then finally open the picker.
-        P.open()
-    }
-
-
-    // Return a new picker instance.
-    return new PickerInstance()
-} //PickerConstructor
-
-
-
-/**
- * The default classes and prefix to use for the HTML classes.
- */
-PickerConstructor.klasses = function( prefix ) {
-    prefix = prefix || 'picker'
-    return {
-
-        picker: prefix,
-        opened: prefix + '--opened',
-        focused: prefix + '--focused',
-
-        input: prefix + '__input',
-        active: prefix + '__input--active',
-
-        holder: prefix + '__holder',
-
-        frame: prefix + '__frame',
-        wrap: prefix + '__wrap',
-
-        box: prefix + '__box'
-    }
-} //PickerConstructor.klasses
-
-
-
-/**
- * Check if the default theme is being used.
- */
-function isUsingDefaultTheme( element ) {
-
-    var theme,
-        prop = 'position'
-
-    // For IE.
-    if ( element.currentStyle ) {
-        theme = element.currentStyle[prop]
-    }
-
-    // For normal browsers.
-    else if ( window.getComputedStyle ) {
-        theme = getComputedStyle( element )[prop]
-    }
-
-    return theme == 'fixed'
-}
-
-
-
-/**
- * Get the width of the browser’s scrollbar.
- * Taken from: https://github.com/VodkaBears/Remodal/blob/master/src/jquery.remodal.js
- */
-function getScrollbarWidth() {
-
-    if ( $html.height() <= $window.height() ) {
-        return 0
-    }
-
-    var $outer = $( '<div style="visibility:hidden;width:100px" />' ).
-        appendTo( 'body' )
-
-    // Get the width without scrollbars.
-    var widthWithoutScroll = $outer[0].offsetWidth
-
-    // Force adding scrollbars.
-    $outer.css( 'overflow', 'scroll' )
-
-    // Add the inner div.
-    var $inner = $( '<div style="width:100%" />' ).appendTo( $outer )
-
-    // Get the width with scrollbars.
-    var widthWithScroll = $inner[0].offsetWidth
-
-    // Remove the divs.
-    $outer.remove()
-
-    // Return the difference between the widths.
-    return widthWithoutScroll - widthWithScroll
-}
-
-
-
-/**
- * PickerConstructor helper methods.
- */
-PickerConstructor._ = {
-
-    /**
-     * Create a group of nodes. Expects:
-     * `
-        {
-            min:    {Integer},
-            max:    {Integer},
-            i:      {Integer},
-            node:   {String},
-            item:   {Function}
-        }
-     * `
-     */
-    group: function( groupObject ) {
-
-        var
-            // Scope for the looped object
-            loopObjectScope,
-
-            // Create the nodes list
-            nodesList = '',
-
-            // The counter starts from the `min`
-            counter = PickerConstructor._.trigger( groupObject.min, groupObject )
-
-
-        // Loop from the `min` to `max`, incrementing by `i`
-        for ( ; counter <= PickerConstructor._.trigger( groupObject.max, groupObject, [ counter ] ); counter += groupObject.i ) {
-
-            // Trigger the `item` function within scope of the object
-            loopObjectScope = PickerConstructor._.trigger( groupObject.item, groupObject, [ counter ] )
-
-            // Splice the subgroup and create nodes out of the sub nodes
-            nodesList += PickerConstructor._.node(
-                groupObject.node,
-                loopObjectScope[ 0 ],   // the node
-                loopObjectScope[ 1 ],   // the classes
-                loopObjectScope[ 2 ]    // the attributes
-            )
-        }
-
-        // Return the list of nodes
-        return nodesList
-    }, //group
-
-
-    /**
-     * Create a dom node string
-     */
-    node: function( wrapper, item, klass, attribute ) {
-
-        // If the item is false-y, just return an empty string
-        if ( !item ) return ''
-
-        // If the item is an array, do a join
-        item = $.isArray( item ) ? item.join( '' ) : item
-
-        // Check for the class
-        klass = klass ? ' class="' + klass + '"' : ''
-
-        // Check for any attributes
-        attribute = attribute ? ' ' + attribute : ''
-
-        // Return the wrapped item
-        return '<' + wrapper + klass + attribute + '>' + item + '</' + wrapper + '>'
-    }, //node
-
-
-    /**
-     * Lead numbers below 10 with a zero.
-     */
-    lead: function( number ) {
-        return ( number < 10 ? '0': '' ) + number
-    },
-
-
-    /**
-     * Trigger a function otherwise return the value.
-     */
-    trigger: function( callback, scope, args ) {
-        return typeof callback == 'function' ? callback.apply( scope, args || [] ) : callback
-    },
-
-
-    /**
-     * If the second character is a digit, length is 2 otherwise 1.
-     */
-    digits: function( string ) {
-        return ( /\d/ ).test( string[ 1 ] ) ? 2 : 1
-    },
-
-
-    /**
-     * Tell if something is a date object.
-     */
-    isDate: function( value ) {
-        return {}.toString.call( value ).indexOf( 'Date' ) > -1 && this.isInteger( value.getUTCDate() )
-    },
-
-
-    /**
-     * Tell if something is an integer.
-     */
-    isInteger: function( value ) {
-        return {}.toString.call( value ).indexOf( 'Number' ) > -1 && value % 1 === 0
-    },
-
-
-    /**
-     * Create ARIA attribute strings.
-     */
-    ariaAttr: ariaAttr
-} //PickerConstructor._
-
-
-
-/**
- * Extend the picker with a component and defaults.
- */
-PickerConstructor.extend = function( name, Component ) {
-
-    // Extend jQuery.
-    $.fn[ name ] = function( options, action ) {
-
-        // Grab the component data.
-        var componentData = this.data( name )
-
-        // If the picker is requested, return the data object.
-        if ( options == 'picker' ) {
-            return componentData
-        }
-
-        // If the component data exists and `options` is a string, carry out the action.
-        if ( componentData && typeof options == 'string' ) {
-            return PickerConstructor._.trigger( componentData[ options ], componentData, [ action ] )
-        }
-
-        // Otherwise go through each matched element and if the component
-        // doesn’t exist, create a new picker using `this` element
-        // and merging the defaults and options with a deep copy.
-        return this.each( function() {
-            var $this = $( this )
-            if ( !$this.data( name ) ) {
-                new PickerConstructor( this, name, Component, options )
-            }
-        })
-    }
-
-    // Set the defaults.
-    $.fn[ name ].defaults = Component.defaults
-} //PickerConstructor.extend
-
-
-
-function aria(element, attribute, value) {
-    if ( $.isPlainObject(attribute) ) {
-        for ( var key in attribute ) {
-            ariaSet(element, key, attribute[key])
-        }
-    }
-    else {
-        ariaSet(element, attribute, value)
-    }
-}
-function ariaSet(element, attribute, value) {
-    element.setAttribute(
-        (attribute == 'role' ? '' : 'aria-') + attribute,
-        value
-    )
-}
-function ariaAttr(attribute, data) {
-    if ( !$.isPlainObject(attribute) ) {
-        attribute = { attribute: data }
-    }
-    data = ''
-    for ( var key in attribute ) {
-        var attr = (key == 'role' ? '' : 'aria-') + key,
-            attrVal = attribute[key]
-        data += attrVal == null ? '' : attr + '="' + attribute[key] + '"'
-    }
-    return data
-}
-
-
-
-// Expose the picker constructor.
-return PickerConstructor
-
-
-}));
-
-
-
-/*!
- * Date picker for pickadate.js v3.5.4
+ * Date picker for pickadate.js v3.5.6
  * http://amsul.github.io/pickadate.js/date.htm
  */
 
@@ -12435,7 +11359,7 @@ return PickerConstructor
 
     // AMD.
     if ( typeof define == 'function' && define.amd )
-        define( ['picker','jquery'], factory )
+        define( ['picker', 'jquery'], factory )
 
     // Node.js/browserify.
     else if ( typeof exports == 'object' )
@@ -12510,7 +11434,10 @@ function DatePicker( picker, settings ) {
     // When there’s a value, set the `select`, which in turn
     // also sets the `highlight` and `view`.
     if ( valueString ) {
-        calendar.set( 'select', valueString, { format: formatString })
+        calendar.set( 'select', valueString, {
+            format: formatString,
+            defaultValue: true
+        })
     }
 
     // If there’s no value, default to highlighting “today”.
@@ -12529,7 +11456,7 @@ function DatePicker( picker, settings ) {
         37: function() { return isRTL() ? 1 : -1 }, // Left
         go: function( timeChange ) {
             var highlightedObject = calendar.item.highlight,
-                targetDate = new Date( Date.UTC(highlightedObject.year, highlightedObject.month, highlightedObject.date + timeChange) )
+                targetDate = new Date( highlightedObject.year, highlightedObject.month, highlightedObject.date + timeChange )
             calendar.set(
                 'highlight',
                 targetDate,
@@ -12649,18 +11576,13 @@ DatePicker.prototype.create = function( type, value, options ) {
     // If it’s an array, convert it into a date and make sure
     // that it’s a valid date – otherwise default to today.
     else if ( $.isArray( value ) ) {
-        value = new Date(Date.UTC(value[ 0 ], value[ 1 ], value[ 2 ] ))
+        value = new Date( value[ 0 ], value[ 1 ], value[ 2 ] )
         value = _.isDate( value ) ? value : calendar.create().obj
     }
 
-    // If it’s a number, make a normalized date.
-    else if ( _.isInteger( value ) ) {
+    // If it’s a number or date object, make a normalized date.
+    else if ( _.isInteger( value ) || _.isDate( value ) ) {
         value = calendar.normalize( new Date( value ), options )
-    }
-
-    // If it’s a date object, make a normalized date.
-    else if ( _.isDate( value ) ) {
-        value = calendar.normalize( value, options )
     }
 
     // If it’s a literal true or any other case, set it to now.
@@ -12670,10 +11592,10 @@ DatePicker.prototype.create = function( type, value, options ) {
 
     // Return the compiled object.
     return {
-        year: isInfiniteValue || value.getUTCFullYear(),
-        month: isInfiniteValue || value.getUTCMonth(),
-        date: isInfiniteValue || value.getUTCDate(),
-        day: isInfiniteValue || value.getUTCDay(),
+        year: isInfiniteValue || value.getFullYear(),
+        month: isInfiniteValue || value.getMonth(),
+        date: isInfiniteValue || value.getDate(),
+        day: isInfiniteValue || value.getDay(),
         obj: isInfiniteValue || value,
         pick: isInfiniteValue || value.getTime()
     }
@@ -12748,7 +11670,7 @@ DatePicker.prototype.overlapRanges = function( one, two ) {
 DatePicker.prototype.now = function( type, value, options ) {
     value = new Date()
     if ( options && options.rel ) {
-        value.setUTCDate( value.getUTCDate() + options.rel )
+        value.setDate( value.getDate() + options.rel )
     }
     return this.normalize( value, options )
 }
@@ -12790,13 +11712,13 @@ DatePicker.prototype.navigate = function( type, value, options ) {
         }
 
         // Figure out the expected target year and month.
-        targetDateObject = new Date( Date.UTC( targetYear, targetMonth + ( options && options.nav ? options.nav : 0 ), 1 ) )
-        targetYear = targetDateObject.getUTCFullYear()
-        targetMonth = targetDateObject.getUTCMonth()
+        targetDateObject = new Date( targetYear, targetMonth + ( options && options.nav ? options.nav : 0 ), 1 )
+        targetYear = targetDateObject.getFullYear()
+        targetMonth = targetDateObject.getMonth()
 
         // If the month we’re going to doesn’t have enough days,
         // keep decreasing the date until we reach the month’s last date.
-        while ( /*safety &&*/ new Date( Date.UTC( targetYear, targetMonth, targetDate ) ).getUTCMonth() !== targetMonth ) {
+        while ( /*safety &&*/ new Date( targetYear, targetMonth, targetDate ).getMonth() !== targetMonth ) {
             targetDate -= 1
             /*safety -= 1
             if ( !safety ) {
@@ -12815,7 +11737,7 @@ DatePicker.prototype.navigate = function( type, value, options ) {
  * Normalize a date by setting the hours to midnight.
  */
 DatePicker.prototype.normalize = function( value/*, options*/ ) {
-    value.setUTCHours( 0, 0, 0, 0 )
+    value.setHours( 0, 0, 0, 0 )
     return value
 }
 
@@ -12908,7 +11830,7 @@ DatePicker.prototype.validate = function( type, dateObject, options ) {
     // • Not inverted and date enabled.
     // • Inverted and all dates disabled.
     // • ..and anything else.
-    if ( !options || !options.nav ) if (
+    if ( !options || (!options.nav && !options.defaultValue) ) if (
         /* 1 */ ( !isFlippedBase && calendar.disabled( dateObject ) ) ||
         /* 2 */ ( isFlippedBase && calendar.disabled( dateObject ) && ( hasEnabledWeekdays || hasEnabledBeforeTarget || hasEnabledAfterTarget ) ) ||
         /* 3 */ ( !isFlippedBase && (dateObject.pick <= minLimitObject.pick || dateObject.pick >= maxLimitObject.pick) )
@@ -13077,7 +11999,8 @@ DatePicker.prototype.formats = (function() {
     function getWordLengthFromCollection( string, collection, dateObject ) {
 
         // Grab the first word from the string.
-        var word = string.match( /\w+/ )[ 0 ]
+        // Regex pattern from http://stackoverflow.com/q/150033
+        var word = string.match( /[^\x00-\x7F]+|\w+/ )[ 0 ]
 
         // If there's no month index, add it to the date object
         if ( !dateObject.mm && !dateObject.m ) {
@@ -13360,7 +12283,7 @@ DatePicker.prototype.activate = function( type, datesToEnable ) {
                         if ( !matchFound[3] ) matchFound.push( 'inverted' )
                     }
                     else if ( _.isDate( unitToEnable ) ) {
-                        matchFound = [ unitToEnable.getUTCFullYear(), unitToEnable.getUTCMonth(), unitToEnable.getUTCDate(), 'inverted' ]
+                        matchFound = [ unitToEnable.getFullYear(), unitToEnable.getMonth(), unitToEnable.getDate(), 'inverted' ]
                     }
                     break
                 }
@@ -13617,7 +12540,8 @@ DatePicker.prototype.nodes = function( isOpen ) {
 
                                 var isSelected = selectedObject && selectedObject.pick == targetDate.pick,
                                     isHighlighted = highlightedObject && highlightedObject.pick == targetDate.pick,
-                                    isDisabled = disabledCollection && calendar.disabled( targetDate ) || targetDate.pick < minLimitObject.pick || targetDate.pick > maxLimitObject.pick
+                                    isDisabled = disabledCollection && calendar.disabled( targetDate ) || targetDate.pick < minLimitObject.pick || targetDate.pick > maxLimitObject.pick,
+                                    formattedDate = _.trigger( calendar.formats.toString, calendar, [ settings.format, targetDate ] )
 
                                 return [
                                     _.node(
@@ -13652,11 +12576,8 @@ DatePicker.prototype.nodes = function( isOpen ) {
                                         })([ settings.klass.day ]),
                                         'data-pick=' + targetDate.pick + ' ' + _.ariaAttr({
                                             role: 'gridcell',
-                                            selected: isSelected && calendar.$node.val() === _.trigger(
-                                                    calendar.formats.toString,
-                                                    calendar,
-                                                    [ settings.format, targetDate ]
-                                                ) ? true : null,
+                                            label: formattedDate,
+                                            selected: isSelected && calendar.$node.val() === formattedDate ? true : null,
                                             activedescendant: isHighlighted ? true : null,
                                             disabled: isDisabled ? true : null
                                         })
@@ -13726,6 +12647,10 @@ DatePicker.defaults = (function( prefix ) {
         clear: 'Clear',
         close: 'Close',
 
+        // Picker close behavior
+        closeOnSelect: true,
+        closeOnClear: true,
+
         // The format to show on the `input` element
         format: 'd mmmm, yyyy',
 
@@ -13778,7 +12703,1174 @@ Picker.extend( 'pickadate', DatePicker )
 }));
 
 
-},{"./../../jquery/dist/jquery.js":3,"./picker.js":4}],5:[function(require,module,exports){
+
+
+},{"./../../jquery/dist/jquery.js":3,"./picker.js":5}],5:[function(require,module,exports){
+/*!
+ * pickadate.js v3.5.6, 2015/04/20
+ * By Amsul, http://amsul.ca
+ * Hosted on http://amsul.github.io/pickadate.js
+ * Licensed under MIT
+ */
+
+(function ( factory ) {
+
+    // AMD.
+    if ( typeof define == 'function' && define.amd )
+        define( 'picker', ['jquery'], factory )
+
+    // Node.js/browserify.
+    else if ( typeof exports == 'object' )
+        module.exports = factory( require("./../../jquery/dist/jquery.js") )
+
+    // Browser globals.
+    else this.Picker = factory( jQuery )
+
+}(function( $ ) {
+
+var $window = $( window )
+var $document = $( document )
+var $html = $( document.documentElement )
+var supportsTransitions = document.documentElement.style.transition != null
+
+
+/**
+ * The picker constructor that creates a blank picker.
+ */
+function PickerConstructor( ELEMENT, NAME, COMPONENT, OPTIONS ) {
+
+    // If there’s no element, return the picker constructor.
+    if ( !ELEMENT ) return PickerConstructor
+
+
+    var
+        IS_DEFAULT_THEME = false,
+
+
+        // The state of the picker.
+        STATE = {
+            id: ELEMENT.id || 'P' + Math.abs( ~~(Math.random() * new Date()) )
+        },
+
+
+        // Merge the defaults and options passed.
+        SETTINGS = COMPONENT ? $.extend( true, {}, COMPONENT.defaults, OPTIONS ) : OPTIONS || {},
+
+
+        // Merge the default classes with the settings classes.
+        CLASSES = $.extend( {}, PickerConstructor.klasses(), SETTINGS.klass ),
+
+
+        // The element node wrapper into a jQuery object.
+        $ELEMENT = $( ELEMENT ),
+
+
+        // Pseudo picker constructor.
+        PickerInstance = function() {
+            return this.start()
+        },
+
+
+        // The picker prototype.
+        P = PickerInstance.prototype = {
+
+            constructor: PickerInstance,
+
+            $node: $ELEMENT,
+
+
+            /**
+             * Initialize everything
+             */
+            start: function() {
+
+                // If it’s already started, do nothing.
+                if ( STATE && STATE.start ) return P
+
+
+                // Update the picker states.
+                STATE.methods = {}
+                STATE.start = true
+                STATE.open = false
+                STATE.type = ELEMENT.type
+
+
+                // Confirm focus state, convert into text input to remove UA stylings,
+                // and set as readonly to prevent keyboard popup.
+                ELEMENT.autofocus = ELEMENT == getActiveElement()
+                ELEMENT.readOnly = !SETTINGS.editable
+                ELEMENT.id = ELEMENT.id || STATE.id
+                if ( ELEMENT.type != 'text' ) {
+                    ELEMENT.type = 'text'
+                }
+
+
+                // Create a new picker component with the settings.
+                P.component = new COMPONENT(P, SETTINGS)
+
+
+                // Create the picker root and then prepare it.
+                P.$root = $( '<div class="' + CLASSES.picker + '" id="' + ELEMENT.id + '_root" />' )
+                prepareElementRoot()
+
+
+                // Create the picker holder and then prepare it.
+                P.$holder = $( createWrappedComponent() ).appendTo( P.$root )
+                prepareElementHolder()
+
+
+                // If there’s a format for the hidden input element, create the element.
+                if ( SETTINGS.formatSubmit ) {
+                    prepareElementHidden()
+                }
+
+
+                // Prepare the input element.
+                prepareElement()
+
+
+                // Insert the hidden input as specified in the settings.
+                if ( SETTINGS.containerHidden ) $( SETTINGS.containerHidden ).append( P._hidden )
+                else $ELEMENT.after( P._hidden )
+
+
+                // Insert the root as specified in the settings.
+                if ( SETTINGS.container ) $( SETTINGS.container ).append( P.$root )
+                else $ELEMENT.after( P.$root )
+
+
+                // Bind the default component and settings events.
+                P.on({
+                    start: P.component.onStart,
+                    render: P.component.onRender,
+                    stop: P.component.onStop,
+                    open: P.component.onOpen,
+                    close: P.component.onClose,
+                    set: P.component.onSet
+                }).on({
+                    start: SETTINGS.onStart,
+                    render: SETTINGS.onRender,
+                    stop: SETTINGS.onStop,
+                    open: SETTINGS.onOpen,
+                    close: SETTINGS.onClose,
+                    set: SETTINGS.onSet
+                })
+
+
+                // Once we’re all set, check the theme in use.
+                IS_DEFAULT_THEME = isUsingDefaultTheme( P.$holder[0] )
+
+
+                // If the element has autofocus, open the picker.
+                if ( ELEMENT.autofocus ) {
+                    P.open()
+                }
+
+
+                // Trigger queued the “start” and “render” events.
+                return P.trigger( 'start' ).trigger( 'render' )
+            }, //start
+
+
+            /**
+             * Render a new picker
+             */
+            render: function( entireComponent ) {
+
+                // Insert a new component holder in the root or box.
+                if ( entireComponent ) {
+                    P.$holder = $( createWrappedComponent() )
+                    prepareElementHolder()
+                    P.$root.html( P.$holder )
+                }
+                else P.$root.find( '.' + CLASSES.box ).html( P.component.nodes( STATE.open ) )
+
+                // Trigger the queued “render” events.
+                return P.trigger( 'render' )
+            }, //render
+
+
+            /**
+             * Destroy everything
+             */
+            stop: function() {
+
+                // If it’s already stopped, do nothing.
+                if ( !STATE.start ) return P
+
+                // Then close the picker.
+                P.close()
+
+                // Remove the hidden field.
+                if ( P._hidden ) {
+                    P._hidden.parentNode.removeChild( P._hidden )
+                }
+
+                // Remove the root.
+                P.$root.remove()
+
+                // Remove the input class, remove the stored data, and unbind
+                // the events (after a tick for IE - see `P.close`).
+                $ELEMENT.removeClass( CLASSES.input ).removeData( NAME )
+                setTimeout( function() {
+                    $ELEMENT.off( '.' + STATE.id )
+                }, 0)
+
+                // Restore the element state
+                ELEMENT.type = STATE.type
+                ELEMENT.readOnly = false
+
+                // Trigger the queued “stop” events.
+                P.trigger( 'stop' )
+
+                // Reset the picker states.
+                STATE.methods = {}
+                STATE.start = false
+
+                return P
+            }, //stop
+
+
+            /**
+             * Open up the picker
+             */
+            open: function( dontGiveFocus ) {
+
+                // If it’s already open, do nothing.
+                if ( STATE.open ) return P
+
+                // Add the “active” class.
+                $ELEMENT.addClass( CLASSES.active )
+                aria( ELEMENT, 'expanded', true )
+
+                // * A Firefox bug, when `html` has `overflow:hidden`, results in
+                //   killing transitions :(. So add the “opened” state on the next tick.
+                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
+                setTimeout( function() {
+
+                    // Add the “opened” class to the picker root.
+                    P.$root.addClass( CLASSES.opened )
+                    aria( P.$root[0], 'hidden', false )
+
+                }, 0 )
+
+                // If we have to give focus, bind the element and doc events.
+                if ( dontGiveFocus !== false ) {
+
+                    // Set it as open.
+                    STATE.open = true
+
+                    // Prevent the page from scrolling.
+                    if ( IS_DEFAULT_THEME ) {
+                        $html.
+                            css( 'overflow', 'hidden' ).
+                            css( 'padding-right', '+=' + getScrollbarWidth() )
+                    }
+
+                    // Pass focus to the root element’s jQuery object.
+                    focusPickerOnceOpened()
+
+                    // Bind the document events.
+                    $document.on( 'click.' + STATE.id + ' focusin.' + STATE.id, function( event ) {
+
+                        var target = event.target
+
+                        // If the target of the event is not the element, close the picker picker.
+                        // * Don’t worry about clicks or focusins on the root because those don’t bubble up.
+                        //   Also, for Firefox, a click on an `option` element bubbles up directly
+                        //   to the doc. So make sure the target wasn't the doc.
+                        // * In Firefox stopPropagation() doesn’t prevent right-click events from bubbling,
+                        //   which causes the picker to unexpectedly close when right-clicking it. So make
+                        //   sure the event wasn’t a right-click.
+                        if ( target != ELEMENT && target != document && event.which != 3 ) {
+
+                            // If the target was the holder that covers the screen,
+                            // keep the element focused to maintain tabindex.
+                            P.close( target === P.$holder[0] )
+                        }
+
+                    }).on( 'keydown.' + STATE.id, function( event ) {
+
+                        var
+                            // Get the keycode.
+                            keycode = event.keyCode,
+
+                            // Translate that to a selection change.
+                            keycodeToMove = P.component.key[ keycode ],
+
+                            // Grab the target.
+                            target = event.target
+
+
+                        // On escape, close the picker and give focus.
+                        if ( keycode == 27 ) {
+                            P.close( true )
+                        }
+
+
+                        // Check if there is a key movement or “enter” keypress on the element.
+                        else if ( target == P.$holder[0] && ( keycodeToMove || keycode == 13 ) ) {
+
+                            // Prevent the default action to stop page movement.
+                            event.preventDefault()
+
+                            // Trigger the key movement action.
+                            if ( keycodeToMove ) {
+                                PickerConstructor._.trigger( P.component.key.go, P, [ PickerConstructor._.trigger( keycodeToMove ) ] )
+                            }
+
+                            // On “enter”, if the highlighted item isn’t disabled, set the value and close.
+                            else if ( !P.$root.find( '.' + CLASSES.highlighted ).hasClass( CLASSES.disabled ) ) {
+                                P.set( 'select', P.component.item.highlight )
+                                if ( SETTINGS.closeOnSelect ) {
+                                    P.close( true )
+                                }
+                            }
+                        }
+
+
+                        // If the target is within the root and “enter” is pressed,
+                        // prevent the default action and trigger a click on the target instead.
+                        else if ( $.contains( P.$root[0], target ) && keycode == 13 ) {
+                            event.preventDefault()
+                            target.click()
+                        }
+                    })
+                }
+
+                // Trigger the queued “open” events.
+                return P.trigger( 'open' )
+            }, //open
+
+
+            /**
+             * Close the picker
+             */
+            close: function( giveFocus ) {
+
+                // If we need to give focus, do it before changing states.
+                if ( giveFocus ) {
+                    if ( SETTINGS.editable ) {
+                        ELEMENT.focus()
+                    }
+                    else {
+                        // ....ah yes! It would’ve been incomplete without a crazy workaround for IE :|
+                        // The focus is triggered *after* the close has completed - causing it
+                        // to open again. So unbind and rebind the event at the next tick.
+                        P.$holder.off( 'focus.toOpen' ).focus()
+                        setTimeout( function() {
+                            P.$holder.on( 'focus.toOpen', handleFocusToOpenEvent )
+                        }, 0 )
+                    }
+                }
+
+                // Remove the “active” class.
+                $ELEMENT.removeClass( CLASSES.active )
+                aria( ELEMENT, 'expanded', false )
+
+                // * A Firefox bug, when `html` has `overflow:hidden`, results in
+                //   killing transitions :(. So remove the “opened” state on the next tick.
+                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
+                setTimeout( function() {
+
+                    // Remove the “opened” and “focused” class from the picker root.
+                    P.$root.removeClass( CLASSES.opened + ' ' + CLASSES.focused )
+                    aria( P.$root[0], 'hidden', true )
+
+                }, 0 )
+
+                // If it’s already closed, do nothing more.
+                if ( !STATE.open ) return P
+
+                // Set it as closed.
+                STATE.open = false
+
+                // Allow the page to scroll.
+                if ( IS_DEFAULT_THEME ) {
+                    $html.
+                        css( 'overflow', '' ).
+                        css( 'padding-right', '-=' + getScrollbarWidth() )
+                }
+
+                // Unbind the document events.
+                $document.off( '.' + STATE.id )
+
+                // Trigger the queued “close” events.
+                return P.trigger( 'close' )
+            }, //close
+
+
+            /**
+             * Clear the values
+             */
+            clear: function( options ) {
+                return P.set( 'clear', null, options )
+            }, //clear
+
+
+            /**
+             * Set something
+             */
+            set: function( thing, value, options ) {
+
+                var thingItem, thingValue,
+                    thingIsObject = $.isPlainObject( thing ),
+                    thingObject = thingIsObject ? thing : {}
+
+                // Make sure we have usable options.
+                options = thingIsObject && $.isPlainObject( value ) ? value : options || {}
+
+                if ( thing ) {
+
+                    // If the thing isn’t an object, make it one.
+                    if ( !thingIsObject ) {
+                        thingObject[ thing ] = value
+                    }
+
+                    // Go through the things of items to set.
+                    for ( thingItem in thingObject ) {
+
+                        // Grab the value of the thing.
+                        thingValue = thingObject[ thingItem ]
+
+                        // First, if the item exists and there’s a value, set it.
+                        if ( thingItem in P.component.item ) {
+                            if ( thingValue === undefined ) thingValue = null
+                            P.component.set( thingItem, thingValue, options )
+                        }
+
+                        // Then, check to update the element value and broadcast a change.
+                        if ( thingItem == 'select' || thingItem == 'clear' ) {
+                            $ELEMENT.
+                                val( thingItem == 'clear' ? '' : P.get( thingItem, SETTINGS.format ) ).
+                                trigger( 'change' )
+                        }
+                    }
+
+                    // Render a new picker.
+                    P.render()
+                }
+
+                // When the method isn’t muted, trigger queued “set” events and pass the `thingObject`.
+                return options.muted ? P : P.trigger( 'set', thingObject )
+            }, //set
+
+
+            /**
+             * Get something
+             */
+            get: function( thing, format ) {
+
+                // Make sure there’s something to get.
+                thing = thing || 'value'
+
+                // If a picker state exists, return that.
+                if ( STATE[ thing ] != null ) {
+                    return STATE[ thing ]
+                }
+
+                // Return the submission value, if that.
+                if ( thing == 'valueSubmit' ) {
+                    if ( P._hidden ) {
+                        return P._hidden.value
+                    }
+                    thing = 'value'
+                }
+
+                // Return the value, if that.
+                if ( thing == 'value' ) {
+                    return ELEMENT.value
+                }
+
+                // Check if a component item exists, return that.
+                if ( thing in P.component.item ) {
+                    if ( typeof format == 'string' ) {
+                        var thingValue = P.component.get( thing )
+                        return thingValue ?
+                            PickerConstructor._.trigger(
+                                P.component.formats.toString,
+                                P.component,
+                                [ format, thingValue ]
+                            ) : ''
+                    }
+                    return P.component.get( thing )
+                }
+            }, //get
+
+
+
+            /**
+             * Bind events on the things.
+             */
+            on: function( thing, method, internal ) {
+
+                var thingName, thingMethod,
+                    thingIsObject = $.isPlainObject( thing ),
+                    thingObject = thingIsObject ? thing : {}
+
+                if ( thing ) {
+
+                    // If the thing isn’t an object, make it one.
+                    if ( !thingIsObject ) {
+                        thingObject[ thing ] = method
+                    }
+
+                    // Go through the things to bind to.
+                    for ( thingName in thingObject ) {
+
+                        // Grab the method of the thing.
+                        thingMethod = thingObject[ thingName ]
+
+                        // If it was an internal binding, prefix it.
+                        if ( internal ) {
+                            thingName = '_' + thingName
+                        }
+
+                        // Make sure the thing methods collection exists.
+                        STATE.methods[ thingName ] = STATE.methods[ thingName ] || []
+
+                        // Add the method to the relative method collection.
+                        STATE.methods[ thingName ].push( thingMethod )
+                    }
+                }
+
+                return P
+            }, //on
+
+
+
+            /**
+             * Unbind events on the things.
+             */
+            off: function() {
+                var i, thingName,
+                    names = arguments;
+                for ( i = 0, namesCount = names.length; i < namesCount; i += 1 ) {
+                    thingName = names[i]
+                    if ( thingName in STATE.methods ) {
+                        delete STATE.methods[thingName]
+                    }
+                }
+                return P
+            },
+
+
+            /**
+             * Fire off method events.
+             */
+            trigger: function( name, data ) {
+                var _trigger = function( name ) {
+                    var methodList = STATE.methods[ name ]
+                    if ( methodList ) {
+                        methodList.map( function( method ) {
+                            PickerConstructor._.trigger( method, P, [ data ] )
+                        })
+                    }
+                }
+                _trigger( '_' + name )
+                _trigger( name )
+                return P
+            } //trigger
+        } //PickerInstance.prototype
+
+
+    /**
+     * Wrap the picker holder components together.
+     */
+    function createWrappedComponent() {
+
+        // Create a picker wrapper holder
+        return PickerConstructor._.node( 'div',
+
+            // Create a picker wrapper node
+            PickerConstructor._.node( 'div',
+
+                // Create a picker frame
+                PickerConstructor._.node( 'div',
+
+                    // Create a picker box node
+                    PickerConstructor._.node( 'div',
+
+                        // Create the components nodes.
+                        P.component.nodes( STATE.open ),
+
+                        // The picker box class
+                        CLASSES.box
+                    ),
+
+                    // Picker wrap class
+                    CLASSES.wrap
+                ),
+
+                // Picker frame class
+                CLASSES.frame
+            ),
+
+            // Picker holder class
+            CLASSES.holder,
+
+            'tabindex="-1"'
+        ) //endreturn
+    } //createWrappedComponent
+
+
+
+    /**
+     * Prepare the input element with all bindings.
+     */
+    function prepareElement() {
+
+        $ELEMENT.
+
+            // Store the picker data by component name.
+            data(NAME, P).
+
+            // Add the “input” class name.
+            addClass(CLASSES.input).
+
+            // If there’s a `data-value`, update the value of the element.
+            val( $ELEMENT.data('value') ?
+                P.get('select', SETTINGS.format) :
+                ELEMENT.value
+            )
+
+
+        // Only bind keydown events if the element isn’t editable.
+        if ( !SETTINGS.editable ) {
+
+            $ELEMENT.
+
+                // On focus/click, open the picker.
+                on( 'focus.' + STATE.id + ' click.' + STATE.id, function(event) {
+                    event.preventDefault()
+                    P.open()
+                }).
+
+                // Handle keyboard event based on the picker being opened or not.
+                on( 'keydown.' + STATE.id, handleKeydownEvent )
+        }
+
+
+        // Update the aria attributes.
+        aria(ELEMENT, {
+            haspopup: true,
+            expanded: false,
+            readonly: false,
+            owns: ELEMENT.id + '_root'
+        })
+    }
+
+
+    /**
+     * Prepare the root picker element with all bindings.
+     */
+    function prepareElementRoot() {
+        aria( P.$root[0], 'hidden', true )
+    }
+
+
+     /**
+      * Prepare the holder picker element with all bindings.
+      */
+    function prepareElementHolder() {
+
+        P.$holder.
+
+            on({
+
+                // For iOS8.
+                keydown: handleKeydownEvent,
+
+                'focus.toOpen': handleFocusToOpenEvent,
+
+                blur: function() {
+                    // Remove the “target” class.
+                    $ELEMENT.removeClass( CLASSES.target )
+                },
+
+                // When something within the holder is focused, stop from bubbling
+                // to the doc and remove the “focused” state from the root.
+                focusin: function( event ) {
+                    P.$root.removeClass( CLASSES.focused )
+                    event.stopPropagation()
+                },
+
+                // When something within the holder is clicked, stop it
+                // from bubbling to the doc.
+                'mousedown click': function( event ) {
+
+                    var target = event.target
+
+                    // Make sure the target isn’t the root holder so it can bubble up.
+                    if ( target != P.$holder[0] ) {
+
+                        event.stopPropagation()
+
+                        // * For mousedown events, cancel the default action in order to
+                        //   prevent cases where focus is shifted onto external elements
+                        //   when using things like jQuery mobile or MagnificPopup (ref: #249 & #120).
+                        //   Also, for Firefox, don’t prevent action on the `option` element.
+                        if ( event.type == 'mousedown' && !$( target ).is( 'input, select, textarea, button, option' )) {
+
+                            event.preventDefault()
+
+                            // Re-focus onto the holder so that users can click away
+                            // from elements focused within the picker.
+                            P.$holder[0].focus()
+                        }
+                    }
+                }
+
+            }).
+
+            // If there’s a click on an actionable element, carry out the actions.
+            on( 'click', '[data-pick], [data-nav], [data-clear], [data-close]', function() {
+
+                var $target = $( this ),
+                    targetData = $target.data(),
+                    targetDisabled = $target.hasClass( CLASSES.navDisabled ) || $target.hasClass( CLASSES.disabled ),
+
+                    // * For IE, non-focusable elements can be active elements as well
+                    //   (http://stackoverflow.com/a/2684561).
+                    activeElement = getActiveElement()
+                    activeElement = activeElement && ( activeElement.type || activeElement.href )
+
+                // If it’s disabled or nothing inside is actively focused, re-focus the element.
+                if ( targetDisabled || activeElement && !$.contains( P.$root[0], activeElement ) ) {
+                    P.$holder[0].focus()
+                }
+
+                // If something is superficially changed, update the `highlight` based on the `nav`.
+                if ( !targetDisabled && targetData.nav ) {
+                    P.set( 'highlight', P.component.item.highlight, { nav: targetData.nav } )
+                }
+
+                // If something is picked, set `select` then close with focus.
+                else if ( !targetDisabled && 'pick' in targetData ) {
+                    P.set( 'select', targetData.pick )
+                    if ( SETTINGS.closeOnSelect ) {
+                        P.close( true )
+                    }
+                }
+
+                // If a “clear” button is pressed, empty the values and close with focus.
+                else if ( targetData.clear ) {
+                    P.clear()
+                    if ( SETTINGS.closeOnClear ) {
+                        P.close( true )
+                    }
+                }
+
+                else if ( targetData.close ) {
+                    P.close( true )
+                }
+
+            }) //P.$holder
+
+    }
+
+
+     /**
+      * Prepare the hidden input element along with all bindings.
+      */
+    function prepareElementHidden() {
+
+        var name
+
+        if ( SETTINGS.hiddenName === true ) {
+            name = ELEMENT.name
+            ELEMENT.name = ''
+        }
+        else {
+            name = [
+                typeof SETTINGS.hiddenPrefix == 'string' ? SETTINGS.hiddenPrefix : '',
+                typeof SETTINGS.hiddenSuffix == 'string' ? SETTINGS.hiddenSuffix : '_submit'
+            ]
+            name = name[0] + ELEMENT.name + name[1]
+        }
+
+        P._hidden = $(
+            '<input ' +
+            'type=hidden ' +
+
+            // Create the name using the original input’s with a prefix and suffix.
+            'name="' + name + '"' +
+
+            // If the element has a value, set the hidden value as well.
+            (
+                $ELEMENT.data('value') || ELEMENT.value ?
+                    ' value="' + P.get('select', SETTINGS.formatSubmit) + '"' :
+                    ''
+            ) +
+            '>'
+        )[0]
+
+        $ELEMENT.
+
+            // If the value changes, update the hidden input with the correct format.
+            on('change.' + STATE.id, function() {
+                P._hidden.value = ELEMENT.value ?
+                    P.get('select', SETTINGS.formatSubmit) :
+                    ''
+            })
+    }
+
+
+    // Wait for transitions to end before focusing the holder. Otherwise, while
+    // using the `container` option, the view jumps to the container.
+    function focusPickerOnceOpened() {
+
+        if (IS_DEFAULT_THEME && supportsTransitions) {
+            P.$holder.find('.' + CLASSES.frame).one('transitionend', function() {
+                P.$holder[0].focus()
+            })
+        }
+        else {
+            P.$holder[0].focus()
+        }
+    }
+
+
+    function handleFocusToOpenEvent(event) {
+
+        // Stop the event from propagating to the doc.
+        event.stopPropagation()
+
+        // Add the “target” class.
+        $ELEMENT.addClass( CLASSES.target )
+
+        // Add the “focused” class to the root.
+        P.$root.addClass( CLASSES.focused )
+
+        // And then finally open the picker.
+        P.open()
+    }
+
+
+    // For iOS8.
+    function handleKeydownEvent( event ) {
+
+        var keycode = event.keyCode,
+
+            // Check if one of the delete keys was pressed.
+            isKeycodeDelete = /^(8|46)$/.test(keycode)
+
+        // For some reason IE clears the input value on “escape”.
+        if ( keycode == 27 ) {
+            P.close( true )
+            return false
+        }
+
+        // Check if `space` or `delete` was pressed or the picker is closed with a key movement.
+        if ( keycode == 32 || isKeycodeDelete || !STATE.open && P.component.key[keycode] ) {
+
+            // Prevent it from moving the page and bubbling to doc.
+            event.preventDefault()
+            event.stopPropagation()
+
+            // If `delete` was pressed, clear the values and close the picker.
+            // Otherwise open the picker.
+            if ( isKeycodeDelete ) { P.clear().close() }
+            else { P.open() }
+        }
+    }
+
+
+    // Return a new picker instance.
+    return new PickerInstance()
+} //PickerConstructor
+
+
+
+/**
+ * The default classes and prefix to use for the HTML classes.
+ */
+PickerConstructor.klasses = function( prefix ) {
+    prefix = prefix || 'picker'
+    return {
+
+        picker: prefix,
+        opened: prefix + '--opened',
+        focused: prefix + '--focused',
+
+        input: prefix + '__input',
+        active: prefix + '__input--active',
+        target: prefix + '__input--target',
+
+        holder: prefix + '__holder',
+
+        frame: prefix + '__frame',
+        wrap: prefix + '__wrap',
+
+        box: prefix + '__box'
+    }
+} //PickerConstructor.klasses
+
+
+
+/**
+ * Check if the default theme is being used.
+ */
+function isUsingDefaultTheme( element ) {
+
+    var theme,
+        prop = 'position'
+
+    // For IE.
+    if ( element.currentStyle ) {
+        theme = element.currentStyle[prop]
+    }
+
+    // For normal browsers.
+    else if ( window.getComputedStyle ) {
+        theme = getComputedStyle( element )[prop]
+    }
+
+    return theme == 'fixed'
+}
+
+
+
+/**
+ * Get the width of the browser’s scrollbar.
+ * Taken from: https://github.com/VodkaBears/Remodal/blob/master/src/jquery.remodal.js
+ */
+function getScrollbarWidth() {
+
+    if ( $html.height() <= $window.height() ) {
+        return 0
+    }
+
+    var $outer = $( '<div style="visibility:hidden;width:100px" />' ).
+        appendTo( 'body' )
+
+    // Get the width without scrollbars.
+    var widthWithoutScroll = $outer[0].offsetWidth
+
+    // Force adding scrollbars.
+    $outer.css( 'overflow', 'scroll' )
+
+    // Add the inner div.
+    var $inner = $( '<div style="width:100%" />' ).appendTo( $outer )
+
+    // Get the width with scrollbars.
+    var widthWithScroll = $inner[0].offsetWidth
+
+    // Remove the divs.
+    $outer.remove()
+
+    // Return the difference between the widths.
+    return widthWithoutScroll - widthWithScroll
+}
+
+
+
+/**
+ * PickerConstructor helper methods.
+ */
+PickerConstructor._ = {
+
+    /**
+     * Create a group of nodes. Expects:
+     * `
+        {
+            min:    {Integer},
+            max:    {Integer},
+            i:      {Integer},
+            node:   {String},
+            item:   {Function}
+        }
+     * `
+     */
+    group: function( groupObject ) {
+
+        var
+            // Scope for the looped object
+            loopObjectScope,
+
+            // Create the nodes list
+            nodesList = '',
+
+            // The counter starts from the `min`
+            counter = PickerConstructor._.trigger( groupObject.min, groupObject )
+
+
+        // Loop from the `min` to `max`, incrementing by `i`
+        for ( ; counter <= PickerConstructor._.trigger( groupObject.max, groupObject, [ counter ] ); counter += groupObject.i ) {
+
+            // Trigger the `item` function within scope of the object
+            loopObjectScope = PickerConstructor._.trigger( groupObject.item, groupObject, [ counter ] )
+
+            // Splice the subgroup and create nodes out of the sub nodes
+            nodesList += PickerConstructor._.node(
+                groupObject.node,
+                loopObjectScope[ 0 ],   // the node
+                loopObjectScope[ 1 ],   // the classes
+                loopObjectScope[ 2 ]    // the attributes
+            )
+        }
+
+        // Return the list of nodes
+        return nodesList
+    }, //group
+
+
+    /**
+     * Create a dom node string
+     */
+    node: function( wrapper, item, klass, attribute ) {
+
+        // If the item is false-y, just return an empty string
+        if ( !item ) return ''
+
+        // If the item is an array, do a join
+        item = $.isArray( item ) ? item.join( '' ) : item
+
+        // Check for the class
+        klass = klass ? ' class="' + klass + '"' : ''
+
+        // Check for any attributes
+        attribute = attribute ? ' ' + attribute : ''
+
+        // Return the wrapped item
+        return '<' + wrapper + klass + attribute + '>' + item + '</' + wrapper + '>'
+    }, //node
+
+
+    /**
+     * Lead numbers below 10 with a zero.
+     */
+    lead: function( number ) {
+        return ( number < 10 ? '0': '' ) + number
+    },
+
+
+    /**
+     * Trigger a function otherwise return the value.
+     */
+    trigger: function( callback, scope, args ) {
+        return typeof callback == 'function' ? callback.apply( scope, args || [] ) : callback
+    },
+
+
+    /**
+     * If the second character is a digit, length is 2 otherwise 1.
+     */
+    digits: function( string ) {
+        return ( /\d/ ).test( string[ 1 ] ) ? 2 : 1
+    },
+
+
+    /**
+     * Tell if something is a date object.
+     */
+    isDate: function( value ) {
+        return {}.toString.call( value ).indexOf( 'Date' ) > -1 && this.isInteger( value.getDate() )
+    },
+
+
+    /**
+     * Tell if something is an integer.
+     */
+    isInteger: function( value ) {
+        return {}.toString.call( value ).indexOf( 'Number' ) > -1 && value % 1 === 0
+    },
+
+
+    /**
+     * Create ARIA attribute strings.
+     */
+    ariaAttr: ariaAttr
+} //PickerConstructor._
+
+
+
+/**
+ * Extend the picker with a component and defaults.
+ */
+PickerConstructor.extend = function( name, Component ) {
+
+    // Extend jQuery.
+    $.fn[ name ] = function( options, action ) {
+
+        // Grab the component data.
+        var componentData = this.data( name )
+
+        // If the picker is requested, return the data object.
+        if ( options == 'picker' ) {
+            return componentData
+        }
+
+        // If the component data exists and `options` is a string, carry out the action.
+        if ( componentData && typeof options == 'string' ) {
+            return PickerConstructor._.trigger( componentData[ options ], componentData, [ action ] )
+        }
+
+        // Otherwise go through each matched element and if the component
+        // doesn’t exist, create a new picker using `this` element
+        // and merging the defaults and options with a deep copy.
+        return this.each( function() {
+            var $this = $( this )
+            if ( !$this.data( name ) ) {
+                new PickerConstructor( this, name, Component, options )
+            }
+        })
+    }
+
+    // Set the defaults.
+    $.fn[ name ].defaults = Component.defaults
+} //PickerConstructor.extend
+
+
+
+function aria(element, attribute, value) {
+    if ( $.isPlainObject(attribute) ) {
+        for ( var key in attribute ) {
+            ariaSet(element, key, attribute[key])
+        }
+    }
+    else {
+        ariaSet(element, attribute, value)
+    }
+}
+function ariaSet(element, attribute, value) {
+    element.setAttribute(
+        (attribute == 'role' ? '' : 'aria-') + attribute,
+        value
+    )
+}
+function ariaAttr(attribute, data) {
+    if ( !$.isPlainObject(attribute) ) {
+        attribute = { attribute: data }
+    }
+    data = ''
+    for ( var key in attribute ) {
+        var attr = (key == 'role' ? '' : 'aria-') + key,
+            attrVal = attribute[key]
+        data += attrVal == null ? '' : attr + '="' + attribute[key] + '"'
+    }
+    return data
+}
+
+// IE8 bug throws an error for activeElements within iframes.
+function getActiveElement() {
+    try {
+        return document.activeElement
+    } catch ( err ) { }
+}
+
+
+
+// Expose the picker constructor.
+return PickerConstructor
+
+
+}));
+
+
+
+
+},{"./../../jquery/dist/jquery.js":3}],6:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Category = require('../models/Category');
  
@@ -13786,10 +13878,11 @@ module.exports = Backbone.Collection.extend({
 	model: Category,
 	url: '/api/categories'
 });
-},{"../models/Category":10,"backbone":39}],6:[function(require,module,exports){
+},{"../models/Category":11,"backbone":40}],7:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Transaction = require('../models/Transaction');
 var ApplicationState = require('../models/ApplicationState');
+var moment = require('moment');
  
 var TransactionCollection = Backbone.Collection.extend({
 	
@@ -13803,8 +13896,10 @@ var TransactionCollection = Backbone.Collection.extend({
 		this.filter = 'all';
 		this.page = 1;
 		this.updateCurrentPeriod();
+		this.updateCurrentSearch();
 
-		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );
+		this.listenTo( ApplicationState, 'change:currentSearch', this.updateCurrentSearch );
 	},
 
 	parse: function(response) {
@@ -13820,8 +13915,12 @@ var TransactionCollection = Backbone.Collection.extend({
 			data: {
 				filter: this.filter, 
 				p: this.page, 
-				m: this.month, 
-				y: this.year
+				// m: this.month, 
+				// y: this.year
+				df: this.df,
+				dt: this.dt,
+				d: this.d, 
+				c: this.c
 			}
 		});
 	},
@@ -13833,26 +13932,40 @@ var TransactionCollection = Backbone.Collection.extend({
 			data: {
 				filter: this.filter, 
 				p: this.page, 
-				m: this.month, 
-				y: this.year
+				// m: this.month, 
+				// y: this.year
+				df: this.df,
+				dt: this.dt,
+				d: this.d, 
+				c: this.c
 			}, 
 			success: callback
 		});
 	},
 
 	updateCurrentPeriod: function() {
-		this.month = parseInt(ApplicationState.get('currentPeriod').getMonth()) +1;
-		this.year = parseInt(ApplicationState.get('currentPeriod').getFullYear());
+		var cp = moment(ApplicationState.get('currentPeriod')).toDate();
+		console.log(cp);
+		this.month = parseInt(cp.getMonth()) +1;
+		this.year = parseInt(cp.getFullYear());
+	},
+
+	updateCurrentSearch: function() {
+		this.df = ApplicationState.get('currentSearch').from;
+		this.dt = ApplicationState.get('currentSearch').to;
+		this.d = ApplicationState.get('currentSearch').description;
+		this.c = ApplicationState.get('currentSearch').category;
 	}
 
 });
 
 module.exports = new TransactionCollection();
 console.log("new TransactionCollection");
-},{"../models/ApplicationState":9,"../models/Transaction":11,"backbone":39}],7:[function(require,module,exports){
+},{"../models/ApplicationState":10,"../models/Transaction":12,"backbone":40,"moment":45}],8:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Category = require('../../models/report/Category');
 var ApplicationState = require('../../models/ApplicationState');
+var moment = require('moment');
  
 module.exports = Backbone.Collection.extend({
 	
@@ -13869,8 +13982,9 @@ module.exports = Backbone.Collection.extend({
 	},
 
 	updateCurrentPeriod: function() {
-		this.month = parseInt(ApplicationState.get('currentPeriod').getMonth()) +1;
-		this.year = parseInt(ApplicationState.get('currentPeriod').getFullYear());
+		var cp = moment(ApplicationState.get('currentPeriod')).toDate();
+		this.month = parseInt(cp.getMonth()) +1;
+		this.year = parseInt(cp.getFullYear());
 	},
 
 	refetch: function() {
@@ -13891,10 +14005,11 @@ module.exports = Backbone.Collection.extend({
 	}
 
 });
-},{"../../models/ApplicationState":9,"../../models/report/Category":13,"backbone":39}],8:[function(require,module,exports){
+},{"../../models/ApplicationState":10,"../../models/report/Category":14,"backbone":40,"moment":45}],9:[function(require,module,exports){
 var Backbone 	= require('backbone');
 var Period = require('../../models/report/Period');
 var ApplicationState = require('../../models/ApplicationState');
+var moment = require('moment');
  
 module.exports = Backbone.Collection.extend({
 	
@@ -13911,8 +14026,9 @@ module.exports = Backbone.Collection.extend({
 	},
 
 	updateCurrentPeriod: function() {
-		this.month = parseInt(ApplicationState.get('currentPeriod').getMonth()) +1;
-		this.year = parseInt(ApplicationState.get('currentPeriod').getFullYear());
+		var cp = moment(ApplicationState.get('currentPeriod')).toDate();
+		this.month = parseInt(cp.getMonth()) +1;
+		this.year = parseInt(cp.getFullYear());
 	},
 
 	refetch: function() {
@@ -13933,23 +14049,47 @@ module.exports = Backbone.Collection.extend({
 	}
 
 });
-},{"../../models/ApplicationState":9,"../../models/report/Period":14,"backbone":39}],9:[function(require,module,exports){
+},{"../../models/ApplicationState":10,"../../models/report/Period":15,"backbone":40,"moment":45}],10:[function(require,module,exports){
 var Backbone = require('backbone');
 var moment = require('moment');
 
-var ApplicationState = Backbone.Model.extend({
-	defaults: {
-		id: 1,
-		currentView: 'transazioni', 
-		currentPeriod: moment().toDate(),
-		periodMonthEnabled: true
+var defaults = {
+	id: 1,
+	currentView: 'transazioni', 
+	currentPeriod: moment().valueOf(),
+	currentSearch: {
+		from: moment().startOf('month').valueOf(),
+		to: moment().endOf('day').valueOf(),
+		description: '',
+		category: ''
 	},
-	localStorage: new Backbone.LocalStorage('application-state'),
+	periodMonthEnabled: true
+};
+
+var ApplicationState = Backbone.Model.extend({
+	defaults: defaults,
+	fetch: function() {
+		console.log("ApplicationState fetched");
+		this.set(JSON.parse(localStorage.getItem(this.id)));
+	},
+	save: function(attributes) {
+		console.log("ApplicationState saved");
+		localStorage.setItem(this.id, JSON.stringify(this.toJSON()));
+	},
+	destroy: function(options) {
+		console.log("ApplicationState destroyed");
+		localStorage.removeItem(this.id);
+	},
+	isEmpty: function() {
+		return (_.size(this.attributes) <= 1); // just 'id'
+	}
+	// ,localStorage: new Backbone.LocalStorage('application-state')
 });
 
-module.exports = new ApplicationState();
+module.exports = new ApplicationState(defaults);
+
 console.log("new ApplicationState");
-},{"backbone":39,"moment":44}],10:[function(require,module,exports){
+},{"backbone":40,"moment":45}],11:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13965,7 +14105,7 @@ module.exports = Backbone.Model.extend({
 	}
 	
 });
-},{"backbone":39}],11:[function(require,module,exports){
+},{"backbone":40}],12:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -13983,7 +14123,7 @@ module.exports = Backbone.Model.extend({
 	urlRoot: '/api/transactions'
 
 });
-},{"backbone":39}],12:[function(require,module,exports){
+},{"backbone":40}],13:[function(require,module,exports){
 var Backbone = require('backbone');
  
 var TransactionBalance = Backbone.Model.extend({
@@ -13996,7 +14136,7 @@ var TransactionBalance = Backbone.Model.extend({
 });
 
 module.exports = new TransactionBalance();
-},{"backbone":39}],13:[function(require,module,exports){
+},{"backbone":40}],14:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -14009,7 +14149,7 @@ module.exports = Backbone.Model.extend({
 	}
 
 });
-},{"backbone":39}],14:[function(require,module,exports){
+},{"backbone":40}],15:[function(require,module,exports){
 var Backbone = require('backbone');
  
 module.exports = Backbone.Model.extend({
@@ -14022,7 +14162,7 @@ module.exports = Backbone.Model.extend({
 	}
 
 });
-},{"backbone":39}],15:[function(require,module,exports){
+},{"backbone":40}],16:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14035,7 +14175,7 @@ __p+='<a href="#" class="category-link">\n	<img src="/images/categories/'+
 return __p;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14044,7 +14184,7 @@ __p+='<h1>In costruzione...</h1>';
 return __p;
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14053,7 +14193,7 @@ __p+='<div class="row">\n	<div class="col-xs-12 text-center">\n		<div class="per
 return __p;
 };
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14064,7 +14204,7 @@ __p+='<div class="row">\n	<div class="col col-sm-6 initial-balance">\n		<div cla
 return __p;
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14073,7 +14213,7 @@ __p+='<form role="form">\n	<div class="row">\n		<div class="col-md-12 form-group
 return __p;
 };
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14106,7 +14246,7 @@ __p+='\n</div>\n<div class="col-xs-4 col-sm-1 text-right delete">\n	<button type
 return __p;
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14161,16 +14301,22 @@ __p+='\n				<button type="button" class="btn btn-primary confirm-transactions-pe
 return __p;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<form role="form">\n	<div class="input-group text-center">\n		<a href="#" class="hide-transactions-search">Annulla</a> &nbsp;\n		<button type="button" class="btn btn-primary confirm-transactions-search">Conferma</button>\n	</div>\n</form>';
+__p+='<form role="form">\n	<div class="row">\n		<div class="col-sm-6 col-md-3 form-group">\n			<label for="dateFrom">Dal:</label>\n		</div>\n		<div class="col-sm-6 col-md-3 form-group">\n			<div class="input-group">\n				<input \n					type="date" \n					name="dateFrom" \n					class="form-control entryDate" \n					id="dateFrom" \n					placeholder="gg/mm/aaaa" \n					value="'+
+((__t=( dateFrom ))==null?'':__t)+
+'" \n				/>\n				<span class="input-group-addon entry-date-icon date-from" data-toggle="booty-datepicker">\n					<span class="glyphicon glyphicon-calendar"></span>\n				</span>\n			</div>\n		</div>\n		<div class="col-sm-6 col-md-3 form-group">\n			<label for="dateFrom">Al:</label>\n		</div>\n		<div class="col-sm-6 col-md-3 form-group">\n			<div class="input-group">\n				<input \n					type="date" \n					name="dateTo" \n					class="form-control entryDate" \n					id="dateTo" \n					placeholder="gg/mm/aaaa" \n					value="'+
+((__t=( dateTo ))==null?'':__t)+
+'"\n				/>\n				<span class="input-group-addon entry-date-icon date-to" data-toggle="booty-datepicker">\n					<span class="glyphicon glyphicon-calendar"></span>\n				</span>\n			</div>\n		</div>\n	</div>\n\n	<div class="row">\n		<div class="col-sm-6 col-md-3 form-group">\n			<label for="dateFrom">Categoria:</label>\n		</div>\n		<div class="col-sm-6 col-md-3 form-group">\n			<div class="input-group width-100">\n				<select name="category" class="form-control">\n					<option value="">Tutte le categorie</option>\n				</select>\n			</div>\n		</div>\n		<div class="col-sm-6 col-md-3 form-group">\n			<label for="dateFrom">Cerca nel testo:</label>\n		</div>\n		<div class="col-sm-6 col-md-3 form-group">\n			<div class="input-group width-100">\n				<input type="text" name="description" value=\''+
+((__t=( description ))==null?'':__t)+
+'\' class="form-control" />\n			</div>\n		</div>\n	</div>\n\n\n	<div class="row">\n		<div class="col-sm-10 form-group">\n			<a href="#" class="hide-transactions-search">Annulla</a> &nbsp;\n			<button type="button" class="btn btn-primary confirm-transactions-search">Conferma</button>\n		</div>\n	</div>\n</form>';
 }
 return __p;
 };
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14179,7 +14325,7 @@ __p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!--
 return __p;
 };
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -14190,12 +14336,12 @@ __p+='<div class="transactions-date-header">\n	'+
 return __p;
 };
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 module.exports = _.extend({}, Backbone.Events);
 
-},{"backbone":39,"underscore":46}],26:[function(require,module,exports){
+},{"backbone":40,"underscore":47}],27:[function(require,module,exports){
 var Backbone = require('backbone');
 var template = require('../templates/categoryItem.html');
 
@@ -14243,7 +14389,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/categoryItem.html":15,"backbone":39}],27:[function(require,module,exports){
+},{"../templates/categoryItem.html":16,"backbone":40}],28:[function(require,module,exports){
 var Backbone = require('backbone');
 var ApplicationState = require('../models/ApplicationState');
 
@@ -14288,7 +14434,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":9,"./GoalsView":28,"./ReportView":30,"./SettingsView":31,"./TransactionView":36,"backbone":39}],28:[function(require,module,exports){
+},{"../models/ApplicationState":10,"./GoalsView":29,"./ReportView":31,"./SettingsView":32,"./TransactionView":37,"backbone":40}],29:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14318,7 +14464,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../templates/goals.html":16,"backbone":39,"underscore":46}],29:[function(require,module,exports){
+},{"../templates/goals.html":17,"backbone":40,"underscore":47}],30:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14344,6 +14490,7 @@ module.exports = Backbone.View.extend({
 
 		var viewName = $(event.currentTarget).attr('data-view');
 		ApplicationState.set('currentView',viewName);
+
 		ApplicationState.save();
 
 		$('#menuView li').removeClass('active');
@@ -14368,7 +14515,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":9,"../utils/EventAggregator":25,"backbone":39,"underscore":46}],30:[function(require,module,exports){
+},{"../models/ApplicationState":10,"../utils/EventAggregator":26,"backbone":40,"underscore":47}],31:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var HighCharts = require('highcharts-browserify');
@@ -14616,7 +14763,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":37,"../collections/report/Categories":7,"../collections/report/Periods":8,"../models/ApplicationState":9,"../templates/report.html":17,"./TransactionPeriodView":34,"backbone":39,"highcharts-browserify":41,"numeral":45,"underscore":46}],31:[function(require,module,exports){
+},{"../../config/settings":38,"../collections/report/Categories":8,"../collections/report/Periods":9,"../models/ApplicationState":10,"../templates/report.html":18,"./TransactionPeriodView":35,"backbone":40,"highcharts-browserify":42,"numeral":46,"underscore":47}],32:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 
@@ -14709,13 +14856,13 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/ApplicationState":9,"../models/Transaction":11,"../models/TransactionBalance":12,"../templates/settings.html":18,"backbone":39,"underscore":46}],32:[function(require,module,exports){
+},{"../models/ApplicationState":10,"../models/Transaction":12,"../models/TransactionBalance":13,"../templates/settings.html":19,"backbone":40,"underscore":47}],33:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
 
 require("./../bower_components/jquery/dist/jquery.js");
-require("./../bower_components/pickadate/lib/picker.js");
+require("./../bower_components/pickadate/lib/picker.date.js");
 
 var template = require('../templates/transactionEditor.html');
 var Transaction = require('../models/Transaction');
@@ -14754,7 +14901,11 @@ module.exports = Backbone.View.extend({
 		
 		this.resetForm();
 
-		this.$datepicker = this.$el.find('.form-group input[name=dateEntry]').pickadate({
+		var dateInput = this.$el.find('.form-group input[name=dateEntry]');
+
+		// console.log($.fn.pickadate);
+
+		this.$datepicker = $(dateInput).pickadate({
 			monthsFull: Settings.monthsFull,
 			monthsShort: Settings.monthsShort,
 			weekdaysFull: Settings.weekdaysFull,
@@ -14801,8 +14952,11 @@ module.exports = Backbone.View.extend({
 		entryData.positive = this.parent.isPositiveEntrySelected();
 		entryData.amount = this.$el.find('input[name=amount]').val().trim();
 		entryData._dateEntry = this.$el.find('input[name=dateEntry]').val().trim();
-		entryData.dateEntry = moment( entryData._dateEntry, 'DD-MM-YYYY', true ).toDate();
+		entryData.dateEntry = moment( entryData._dateEntry, 'DD/MM/YYYY', true ).toDate();
 		entryData.description = this.$el.find('input[name=description]').val().trim();
+
+		console.log(entryData._dateEntry);
+		console.log(entryData.dateEntry);
 
 		var selectedCategories = this.categories.where({selected:true});
 		entryData.category = selectedCategories.length>0 ? selectedCategories[0].get('_id') : '';
@@ -14817,6 +14971,8 @@ module.exports = Backbone.View.extend({
 			}
 
 		} else {
+
+			console.log(entryData);
 
 			var newEntry = new Transaction();
 			newEntry.save( entryData, {
@@ -14932,7 +15088,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":37,"../collections/Categories":5,"../models/Transaction":11,"../templates/transactionEditor.html":19,"../views/CategoryItemView":26,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.js":4,"backbone":39,"moment":44,"underscore":46}],33:[function(require,module,exports){
+},{"../../config/settings":38,"../collections/Categories":6,"../models/Transaction":12,"../templates/transactionEditor.html":20,"../views/CategoryItemView":27,"./../bower_components/jquery/dist/jquery.js":3,"./../bower_components/pickadate/lib/picker.date.js":4,"backbone":40,"moment":45,"underscore":47}],34:[function(require,module,exports){
 var moment = require('moment');
 var numeral = require('numeral');
 var _ = require('underscore');
@@ -14993,7 +15149,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../models/TransactionBalance":12,"../templates/transactionItem.html":20,"backbone":39,"moment":44,"numeral":45,"underscore":46}],34:[function(require,module,exports){
+},{"../models/TransactionBalance":13,"../templates/transactionItem.html":21,"backbone":40,"moment":45,"numeral":46,"underscore":47}],35:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -15017,8 +15173,8 @@ module.exports = Backbone.View.extend({
 		
 		var templateData = {
 			settings:Settings, 
-			currentMonth: parseInt(ApplicationState.get('currentPeriod').getMonth()),
-			currentYear: parseInt(ApplicationState.get('currentPeriod').getFullYear()), 
+			currentMonth: parseInt(moment(ApplicationState.get('currentPeriod')).toDate().getMonth()),
+			currentYear: parseInt(moment(ApplicationState.get('currentPeriod')).toDate().getFullYear()), 
 			showCancelButton: this.showCancelButton,
 			canDisableMonth: this.canDisableMonth,
 			monthEnabled: ApplicationState.get('periodMonthEnabled'),
@@ -15042,7 +15198,7 @@ module.exports = Backbone.View.extend({
 		var year = this.$el.find('select.year').val();
 		var month = parseInt(this.$el.find('select.month').val()) +1;
 		
-		ApplicationState.set('currentPeriod', moment(year+'-'+month+'-01','YYYY-MM-DD').toDate() );
+		ApplicationState.set('currentPeriod', moment(year+'-'+month+'-01','YYYY-MM-DD').valueOf() );
 
 		if ( this.closeOnConfirm ) {
 			this.hide();	
@@ -15077,7 +15233,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":37,"../models/ApplicationState":9,"../templates/transactionPeriod.html":21,"backbone":39,"moment":44,"underscore":46}],35:[function(require,module,exports){
+},{"../../config/settings":38,"../models/ApplicationState":10,"../templates/transactionPeriod.html":22,"backbone":40,"moment":45,"underscore":47}],36:[function(require,module,exports){
 var moment = require('moment');
 var Backbone = require('backbone');
 var _ = require('underscore');
@@ -15085,6 +15241,7 @@ var _ = require('underscore');
 var template = require('../templates/transactionSearch.html');
 var Settings = require('../../config/settings');
 var ApplicationState = require('../models/ApplicationState');
+var CategoryCollection = require('../collections/Categories');
 
 module.exports = Backbone.View.extend({
 
@@ -15092,27 +15249,77 @@ module.exports = Backbone.View.extend({
 	template: template, 
 
 	initialize: function(options) {
-		
+
+		this.categories = new CategoryCollection();
+		this.listenTo( this.categories, 'reset', this.renderCategories );
+		this.categories.fetch({reset:true});
+
+		_.bindAll(this, 'openDatePicker');
+		_.bindAll(this, 'renderCategories');
 	},
 
 	render: function() {
 		
 		var templateData = {
 			settings:Settings, 
+			dateFrom: moment(ApplicationState.get('currentSearch').from).format('DD/MM/YYYY'),
+			dateTo: moment(ApplicationState.get('currentSearch').to).format('DD/MM/YYYY'),
+			description: ApplicationState.get('currentSearch').description,
 			_:_
 		};
 		this.$el.html( this.template(templateData) );
+
+		var pickadateOpts = {
+			monthsFull: Settings.monthsFull,
+			monthsShort: Settings.monthsShort,
+			weekdaysFull: Settings.weekdaysFull,
+			weekdaysShort: Settings.weekdaysShort,
+			today: 'Oggi',
+			clear: 'Reset',
+			close: 'Chiudi',
+			format: 'dd/mm/yyyy',
+			formatSubmit: 'yyyy-mm-dd',
+			firstDay: 1,
+			editable: false
+		};
+
+		var dateInputFrom = this.$el.find('input[name=dateFrom]');
+		this.$datepickerFrom = $(dateInputFrom).pickadate(pickadateOpts);
+
+		var dateInputTo = this.$el.find('input[name=dateTo]');
+		this.$datepickerTo = $(dateInputTo).pickadate(pickadateOpts);
 
 		return this;
 	},
 
 	events: {
 		'click .hide-transactions-search' : 'hide',
-		'click .confirm-transactions-search' : 'confirm'
+		'click .confirm-transactions-search' : 'confirm',
+		'click .entry-date-icon': 'openDatePicker'
 	},
 
 	confirm: function(event) {
 		console.log('confirm');
+
+		var from = this.$el.find('input[name=dateFrom]').val().trim() || '';
+		var to = this.$el.find('input[name=dateTo]').val().trim() || '';
+		var description = this.$el.find('input[name=description]').val().trim() || '';
+		var category = this.$el.find('select[name=category]').val().trim() || '';
+
+		if ( from!=='' && to!=='' ) {
+
+			from = moment( from, 'DD/MM/YYYY', true );
+			to = moment( to, 'DD/MM/YYYY', true );	
+
+			ApplicationState.set('currentSearch', {
+				from: from.valueOf(), 
+				to:to.valueOf(),
+				description: description,
+				category: category
+			});
+			ApplicationState.save();
+		}
+
 		this.hide();	
 	},
 
@@ -15129,10 +15336,51 @@ module.exports = Backbone.View.extend({
 		this.remove();
 		this.unbind();
 		this.stopListening();
+	},
+
+	renderCategories: function() {
+
+		var sel = this.$el.find('select[name="category"]');
+
+		sel.append('<optgroup label="Entrate">');
+		this.categories.each(function(item) {
+			if (item.get('positive')) {
+				sel.append(
+					'<option value="' + item.get('_id') + '">' + item.get('title') + '</option>'
+				);
+			}
+		}, this);
+		sel.append('</optgroup>');
+
+		sel.append('<optgroup label="Uscite">');
+		this.categories.each(function(item) {
+			if (!item.get('positive')) {
+				sel.append(
+					'<option value="' + item.get('_id') + '">' + item.get('title') + '</option>'
+				);
+			}
+		}, this);
+		sel.append('</optgroup>');
+	},
+
+	openDatePicker: function(event) {
+
+		console.log($(event.target));
+		var picker;
+
+		if ($(event.target).hasClass('date-from')) {
+			picker = this.$datepickerFrom.pickadate('picker');	
+			picker.open(false);
+		}
+		
+		if ($(event.target).hasClass('date-to')) {
+			picker = this.$datepickerTo.pickadate('picker');	
+			picker.open(false);
+		}
 	}
 
 });
-},{"../../config/settings":37,"../models/ApplicationState":9,"../templates/transactionSearch.html":22,"backbone":39,"moment":44,"underscore":46}],36:[function(require,module,exports){
+},{"../../config/settings":38,"../collections/Categories":6,"../models/ApplicationState":10,"../templates/transactionSearch.html":23,"backbone":40,"moment":45,"underscore":47}],37:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
@@ -15159,7 +15407,8 @@ module.exports = Backbone.View.extend({
 		this.listenTo( this.collection, 'reset', this.renderFirstPage );
 		this.listenTo( this.collection, 'add', this.renderRow );
 		this.listenTo( TransactionBalance, 'sync', this.updateBalance );
-		this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+		// this.listenTo( ApplicationState, 'change:currentPeriod', this.updateCurrentPeriod );	
+		this.listenTo( ApplicationState, 'change:currentSearch', this.updateCurrentSearch );	
 
 		this.rowViews = [];
 		this.displayDay = '';
@@ -15220,7 +15469,7 @@ module.exports = Backbone.View.extend({
 
 		if ( this.collection.length === 0 ) {
 
-			this.$el.find('.entry-list').html('<hr /><br />Non ci sono movimenti nel mese selezionato.');
+			this.$el.find('.entry-list').html('<hr /><br />Non ci sono movimenti nel periodo selezionato.');
 
 		} else {
 			this.collection.each(function(item) {
@@ -15274,9 +15523,17 @@ module.exports = Backbone.View.extend({
 	},
 
 	updateCurrentPeriod: function() {
-		var month = Settings.monthsFull[ ApplicationState.get('currentPeriod').getMonth() ];
-		var year = ApplicationState.get('currentPeriod').getFullYear();
+		var month = Settings.monthsFull[ moment(ApplicationState.get('currentPeriod')).toDate().getMonth() ];
+		var year = moment(ApplicationState.get('currentPeriod')).toDate().getFullYear();
 		this.$el.find('.search .text').html( month + ' ' + year );
+		this.searchView.hide();
+
+		this.showTransactionsLoader();
+		this.collection.refetch();
+	},
+
+	updateCurrentSearch: function() {
+		
 		this.searchView.hide();
 
 		this.showTransactionsLoader();
@@ -15331,7 +15588,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../config/settings":37,"../collections/Transactions":6,"../models/ApplicationState":9,"../models/TransactionBalance":12,"../templates/transactions.html":23,"../templates/transactionsHeader.html":24,"../utils/EventAggregator":25,"./TransactionEditorView":32,"./TransactionItemView":33,"./TransactionSearchView":35,"backbone":39,"moment":44,"numeral":45,"underscore":46}],37:[function(require,module,exports){
+},{"../../config/settings":38,"../collections/Transactions":7,"../models/ApplicationState":10,"../models/TransactionBalance":13,"../templates/transactions.html":24,"../templates/transactionsHeader.html":25,"../utils/EventAggregator":26,"./TransactionEditorView":33,"./TransactionItemView":34,"./TransactionSearchView":36,"backbone":40,"moment":45,"numeral":46,"underscore":47}],38:[function(require,module,exports){
 exports.monthsFull = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 exports.monthsShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 exports.weekdaysFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
@@ -15344,7 +15601,7 @@ exports.LOADER_GIF_TAG = '<img src=\'/images/loader.gif\' />';
 exports.EMAIL_ADDRESS = 'info@ilbilanciofamiliare.it';
 exports.EMAIL_SUBJECT = 'Conferma registrazione';
 exports.EMAIL_TEXT = 'Il tuo account è stato creato. Per attivarlo clicca su <a href=\'http://www.ilbilanciofamiliare.it/confirm?id={id}\'>questo link</a>. Grazie!';
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /**
  * Backbone localStorage Adapter
  * Version 1.1.16
@@ -15604,7 +15861,7 @@ Backbone.sync = function(method, model, options) {
 return Backbone.LocalStorage;
 }));
 
-},{"backbone":39}],39:[function(require,module,exports){
+},{"backbone":40}],40:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
 
@@ -17528,7 +17785,7 @@ return Backbone.LocalStorage;
 });
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":43,"underscore":40}],40:[function(require,module,exports){
+},{"jquery":44,"underscore":41}],41:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -19078,7 +19335,7 @@ return Backbone.LocalStorage;
   }
 }.call(this));
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var $ = require('jquery');/*
  Highcharts JS v4.0.4 (2014-09-02)
 
@@ -19388,7 +19645,7 @@ function(b){b.setVisible(a,!1)});if(g)d.isDirtyBox=!0;b!==!1&&d.redraw();I(c,f)}
 c<=f.max){h=b[i+1];c=d===u?0:d+1;for(d=b[i+1]?L(t(0,U((e.clientX+(h?h.wrappedClientX||h.clientX:g))/2)),g):g;c>=0&&c<=d;)j[c++]=e}this.tooltipPoints=j}},show:function(){this.setVisible(!0)},hide:function(){this.setVisible(!1)},select:function(a){this.selected=a=a===u?!this.selected:a;if(this.checkbox)this.checkbox.checked=a;I(this,a?"select":"unselect")},drawTracker:T.drawTrackerGraph});r(K,{Axis:na,Chart:Ya,Color:ya,Point:Fa,Tick:Ta,Renderer:Za,Series:O,SVGElement:S,SVGRenderer:ta,arrayMin:Oa,arrayMax:Ca,
 charts:W,dateFormat:cb,format:Ja,pathAnim:vb,getOptions:function(){return E},hasBidiBug:Ob,isTouchDevice:Ib,numberFormat:Ba,seriesTypes:H,setOptions:function(a){E=w(!0,E,a);Bb();return E},addEvent:N,removeEvent:X,createElement:$,discardElement:Qa,css:B,each:q,extend:r,map:Va,merge:w,pick:p,splat:ra,extendClass:ma,pInt:y,wrap:Na,svg:ba,canvas:ga,vml:!ba&&!ga,product:"Highcharts",version:"4.0.4"})})();
 module.exports = window.Highcharts; module.exports.$ = $;
-},{"jquery":42}],42:[function(require,module,exports){
+},{"jquery":43}],43:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v1.11.3
  * http://jquery.com/
@@ -29741,7 +29998,7 @@ return jQuery;
 
 }));
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -39557,7 +39814,7 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 //! moment.js
 //! version : 2.17.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -43860,7 +44117,7 @@ return hooks;
 
 })));
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /*! @preserve
  * numeral.js
  * version : 1.5.6
@@ -44706,6 +44963,6 @@ return hooks;
     }
 }).call(this);
 
-},{}],46:[function(require,module,exports){
-module.exports=require(40)
+},{}],47:[function(require,module,exports){
+module.exports=require(41)
 },{}]},{},[1]);

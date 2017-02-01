@@ -23,6 +23,7 @@ module.exports = Backbone.View.extend({
 
 		var viewName = $(event.currentTarget).attr('data-view');
 		ApplicationState.set('currentView',viewName);
+
 		ApplicationState.save();
 
 		$('#menuView li').removeClass('active');
