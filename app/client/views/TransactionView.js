@@ -68,12 +68,21 @@ module.exports = Backbone.View.extend({
 	},
 
 	renderRow: function(model) {
+		
 		var day = moment(model.get('dateEntry')).format('DD/MM/YYYY');
-		var dayToDisplay = Settings.weekdaysFull[moment(model.get('dateEntry')).format('d')] + ' ' + moment(model.get('dateEntry')).format('D');
+		var dayToDisplay = 
+			Settings.weekdaysFull[moment(model.get('dateEntry')).format('d')] + 
+			' ' + 
+			moment(model.get('dateEntry')).format('D') + 
+			' ' + 
+			Settings.monthsFull[moment(model.get('dateEntry')).format('M')-1]
+		;
+
 		if ( day!=this.displayDay ) {
 			this.displayDay = day;
 			this.$el.find('.entry-list').append(templateGroupHeader( {displayDay:dayToDisplay} ));
 		}
+
 		var row = new TransactionItemView( model,this );
 		this.rowViews.push( row );
 		this.$el.find('.entry-list').append( row.render().el );

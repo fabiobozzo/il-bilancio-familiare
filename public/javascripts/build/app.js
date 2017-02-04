@@ -14320,7 +14320,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance alert alert-success text-center">\n		SALDO: € <span class="balance-value">0.00</span>\n		<span \n			class="ask-for-initial-balance pulse pull-right glyphicon glyphicon-question-sign"\n			rel="tooltip"\n			data-toggle="tooltip" \n			data-placement="bottom" \n			title="Clicca qui per impostare un saldo iniziale"\n		></span>\n	</div>\n\n	<div class="filters text-center">\n		<div class="btn-group type">\n			<!-- <button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button> -->\n			<button type="button" class="btn btn-default btn-lg" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs hidden-sm">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default btn-lg" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs hidden-sm">Uscite</span>\n			</button>\n		</div>\n		<button type="button" class="btn btn-default btn-lg search" title="Ricerca">\n			<span class="glyphicon glyphicon-search"></span>\n		</button>\n		<!-- <button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button> -->\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
+__p+='<div class="controls-container">\n\n	<div class="new-transaction">\n		<!-- <div class="add-entry-label hidden-xs">Nuovo movimento</div> -->\n		<button type="button" class="btn btn-lg btn-success add-positive-entry">\n			<span class="hidden-xs">Entrata</span>\n			<span class="hidden-sm hidden-md hidden-lg">+</span>\n		</button> \n		<button type="button" class="btn btn-lg btn-danger add-negative-entry">\n			<span class="hidden-xs">Uscita</span>\n			<span class="hidden-sm hidden-md hidden-lg">-</span>\n		</button>\n		<div class="clearfix"></div>\n	</div>\n\n	<div class="balance alert alert-success text-center">\n		SALDO: € <span class="balance-value">0.00</span>\n		<span \n			class="ask-for-initial-balance pulse pull-right glyphicon glyphicon-question-sign"\n			rel="tooltip"\n			data-toggle="tooltip" \n			data-placement="bottom" \n			title="Clicca qui per impostare un saldo iniziale"\n		></span>\n	</div>\n\n	<div class="filters text-center">\n		<div class="btn-group type">\n			<button type="button" class="btn btn-default btn-lg" data-filter="positive">\n				<span class="glyphicon glyphicon-thumbs-up"></span>\n				<span class="hidden-xs hidden-sm">Entrate</span>\n			</button>\n			<button type="button" class="btn btn-default btn-lg" data-filter="negative">\n				<span class="glyphicon glyphicon-thumbs-down"></span>\n				<span class="hidden-xs hidden-sm">Uscite</span>\n			</button>\n			<button type="button" class="btn btn-default selected" data-filter="all">\n				<span class="glyphicon glyphicon-list-alt"></span>\n				Tutto\n			</button>\n		</div>\n		<button type="button" class="btn btn-default btn-lg search" title="Ricerca">\n			<span class="glyphicon glyphicon-search"></span>\n		</button>\n		<!-- <button class="btn btn-default period-chooser" type="button">\n			<span class="text">?</span>\n			<span class="caret"></span>\n		</button> -->\n	</div>\n\n</div>\n\n<div class="entry-list"></div>\n<div class="text-center">\n	<button class="btn btn-default more-entries">Altri...</button>\n</div>';
 }
 return __p;
 };
@@ -15451,12 +15451,21 @@ module.exports = Backbone.View.extend({
 	},
 
 	renderRow: function(model) {
+		
 		var day = moment(model.get('dateEntry')).format('DD/MM/YYYY');
-		var dayToDisplay = Settings.weekdaysFull[moment(model.get('dateEntry')).format('d')] + ' ' + moment(model.get('dateEntry')).format('D');
+		var dayToDisplay = 
+			Settings.weekdaysFull[moment(model.get('dateEntry')).format('d')] + 
+			' ' + 
+			moment(model.get('dateEntry')).format('D') + 
+			' ' + 
+			Settings.monthsFull[moment(model.get('dateEntry')).format('M')-1]
+		;
+
 		if ( day!=this.displayDay ) {
 			this.displayDay = day;
 			this.$el.find('.entry-list').append(templateGroupHeader( {displayDay:dayToDisplay} ));
 		}
+
 		var row = new TransactionItemView( model,this );
 		this.rowViews.push( row );
 		this.$el.find('.entry-list').append( row.render().el );
