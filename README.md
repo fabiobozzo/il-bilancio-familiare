@@ -1,7 +1,7 @@
 # Il bilancio familiare
 
 This project is a simple expense tracking software. 
-I developed it for learning purposes, ntsevertheless it is fully functional and ready to be used effectively.
+I developed it for learning purposes, nevertheless it is fully functional and ready to be used effectively.
 
 You can use the app to keep track of personal financial situation, record incomes and outcomes, and get detailed reports.
 
